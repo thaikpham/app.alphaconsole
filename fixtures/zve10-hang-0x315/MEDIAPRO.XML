@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MediaProfile xmlns="http://xmlns.sony.net/pro/metadata/mediaprofile" createdAt="2021-06-08T03:20:32-05:00" version="2.10">
+	<Properties>
+		<System systemId="3490EAFFFEEBCCF7" systemKind="ZV-E10" masterVersion="XAVC-M4@1.10.00"/>
+		<Attached mediaId="0072A623739305CCCCF73490EAFFFEEB" mediaKind="AffordableMemoryCard" mediaName=""/>
+	</Properties>
+</MediaProfile>

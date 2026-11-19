@@ -1,0 +1,564 @@
+{
+ "props": [
+  {
+   "code": 20484,
+   "dataType": 2,
+   "getSet": 1,
+   "isEnabled": 1,
+   "current": 19
+  },
+  {
+   "code": 20485,
+   "dataType": 4,
+   "getSet": 1,
+   "isEnabled": 1,
+   "current": 2
+  },
+  {
+   "code": 20487,
+   "dataType": 4,
+   "getSet": 0,
+   "isEnabled": 1,
+   "current": 450
+  },
+  {
+   "code": 20490,
+   "dataType": 4,
+   "getSet": 1,
+   "isEnabled": 1,
+   "current": 32772
+  },
+  {
+   "code": 20491,
+   "dataType": 4,
+   "getSet": 1,
+   "isEnabled": 1,
+   "current": 32769
+  },
+  {
+   "code": 20492,
+   "dataType": 4,
+   "getSet": 0,
+   "isEnabled": 2,
+   "current": 3
+  },
+  {
+   "code": 20494,
+   "dataType": 4,
+   "getSet": 1,
+   "isEnabled": 1,
+   "current": 3
+  },
+  {
+   "code": 20496,
+   "dataType": 3,
+   "getSet": 0,
+   "isEnabled": 1,
+   "current": 0
+  },
+  {
+   "code": 20499,
+   "dataType": 4,
+   "getSet": 1,
+   "isEnabled": 1,
+   "current": 1
+  },
+  {
+   "code": 53760,
+   "dataType": 3,
+   "getSet": 0,
+   "isEnabled": 1,
+   "current": 0
+  },
+  {
+   "code": 53761,
+   "dataType": 2,
+   "getSet": 1,
+   "isEnabled": 2,
+   "current": 1
+  },
+  {
+   "code": 53763,
+   "dataType": 2,
+   "getSet": 1,
+   "isEnabled": 1,
+   "current": 1
+  },
+  {
+   "code": 53773,
+   "dataType": 6,
+   "getSet": 0,
+   "isEnabled": 2,
+   "current": 65566
+  },
+  {
+   "code": 53774,
+   "dataType": 2,
+   "getSet": 0,
+   "isEnabled": 1,
+   "current": 14
+  },
+  {
+   "code": 53775,
+   "dataType": 4,
+   "getSet": 1,
+   "isEnabled": 0,
+   "current": 5000
+  },
+  {
+   "code": 53776,
+   "dataType": 2,
+   "getSet": 1,
+   "isEnabled": 1,
+   "current": 192
+  },
+  {
+   "code": 53777,
+   "dataType": 2,
+   "getSet": 1,
+   "isEnabled": 1,
+   "current": 1
+  },
+  {
+   "code": 53779,
+   "dataType": 2,
+   "getSet": 0,
+   "isEnabled": 1,
+   "current": 1
+  },
+  {
+   "code": 53780,
+   "dataType": 6,
+   "getSet": 0,
+   "isEnabled": 1,
+   "current": 25960448
+  },
+  {
+   "code": 53781,
+   "dataType": 4,
+   "getSet": 0,
+   "isEnabled": 1,
+   "current": 0
+  },
+  {
+   "code": 53783,
+   "dataType": 2,
+   "getSet": 0,
+   "isEnabled": 1,
+   "current": 1
+  },
+  {
+   "code": 53784,
+   "dataType": 1,
+   "getSet": 0,
+   "isEnabled": 2,
+   "current": 51
+  },
+  {
+   "code": 53787,
+   "dataType": 4,
+   "getSet": 1,
+   "isEnabled": 2,
+   "current": 32768
+  },
+  {
+   "code": 53788,
+   "dataType": 2,
+   "getSet": 1,
+   "isEnabled": 1,
+   "current": 192
+  },
+  {
+   "code": 53789,
+   "dataType": 2,
+   "getSet": 0,
+   "isEnabled": 2,
+   "current": 0
+  },
+  {
+   "code": 53790,
+   "dataType": 6,
+   "getSet": 0,
+   "isEnabled": 1,
+   "current": 16777215
+  },
+  {
+   "code": 53791,
+   "dataType": 2,
+   "getSet": 0,
+   "isEnabled": 1,
+   "current": 1
+  },
+  {
+   "code": 53792,
+   "dataType": 2,
+   "getSet": 1,
+   "isEnabled": 1,
+   "current": 1
+  },
+  {
+   "code": 53793,
+   "dataType": 2,
+   "getSet": 0,
+   "isEnabled": 1,
+   "current": 1
+  },
+  {
+   "code": 53794,
+   "dataType": 4,
+   "getSet": 0,
+   "isEnabled": 1,
+   "current": 1
+  },
+  {
+   "code": 53796,
+   "dataType": 3,
+   "getSet": 1,
+   "isEnabled": 1,
+   "current": 0
+  },
+  {
+   "code": 53798,
+   "dataType": 6,
+   "getSet": 1,
+   "isEnabled": 1,
+   "current": 16777215
+  },
+  {
+   "code": 53799,
+   "dataType": 2,
+   "getSet": 0,
+   "isEnabled": 1,
+   "current": 0
+  },
+  {
+   "code": 53800,
+   "dataType": 2,
+   "getSet": 1,
+   "isEnabled": 0,
+   "current": 5
+  },
+  {
+   "code": 53801,
+   "dataType": 6,
+   "getSet": 1,
+   "isEnabled": 2,
+   "current": 65566
+  },
+  {
+   "code": 53802,
+   "dataType": 2,
+   "getSet": 0,
+   "isEnabled": 0,
+   "current": 1
+  },
+  {
+   "code": 53803,
+   "dataType": 2,
+   "getSet": 0,
+   "isEnabled": 2,
+   "current": 0
+  },
+  {
+   "code": 53813,
+   "dataType": 2,
+   "getSet": 0,
+   "isEnabled": 1,
+   "current": 1
+  },
+  {
+   "code": 53822,
+   "dataType": 2,
+   "getSet": 1,
+   "isEnabled": 0,
+   "current": 0
+  },
+  {
+   "code": 53823,
+   "dataType": 2,
+   "getSet": 1,
+   "isEnabled": 1,
+   "current": 1
+  },
+  {
+   "code": 53824,
+   "dataType": 2,
+   "getSet": 1,
+   "isEnabled": 2,
+   "current": 1
+  },
+  {
+   "code": 53825,
+   "dataType": 2,
+   "getSet": 1,
+   "isEnabled": 1,
+   "current": 9
+  },
+  {
+   "code": 53826,
+   "dataType": 4,
+   "getSet": 1,
+   "isEnabled": 1,
+   "current": 29
+  },
+  {
+   "code": 53827,
+   "dataType": 4,
+   "getSet": 1,
+   "isEnabled": 0,
+   "current": 2
+  },
+  {
+   "code": 53828,
+   "dataType": 4,
+   "getSet": 1,
+   "isEnabled": 0,
+   "current": 2
+  },
+  {
+   "code": 53829,
+   "dataType": 2,
+   "getSet": 1,
+   "isEnabled": 0,
+   "current": 1
+  },
+  {
+   "code": 53830,
+   "dataType": 2,
+   "getSet": 1,
+   "isEnabled": 0,
+   "current": 1
+  },
+  {
+   "code": 53831,
+   "dataType": 2,
+   "getSet": 1,
+   "isEnabled": 1,
+   "current": 17
+  },
+  {
+   "code": 53832,
+   "dataType": 2,
+   "getSet": 0,
+   "isEnabled": 0,
+   "current": 1
+  },
+  {
+   "code": 53833,
+   "dataType": 6,
+   "getSet": 0,
+   "isEnabled": 0,
+   "current": 3634
+  },
+  {
+   "code": 53834,
+   "dataType": 6,
+   "getSet": 0,
+   "isEnabled": 0,
+   "current": 0
+  },
+  {
+   "code": 53835,
+   "dataType": 2,
+   "getSet": 0,
+   "isEnabled": 0,
+   "current": 0
+  },
+  {
+   "code": 53836,
+   "dataType": 2,
+   "getSet": 0,
+   "isEnabled": 2,
+   "current": 100
+  },
+  {
+   "code": 53837,
+   "dataType": 2,
+   "getSet": 1,
+   "isEnabled": 1,
+   "current": 0
+  },
+  {
+   "code": 53838,
+   "dataType": 4,
+   "getSet": 0,
+   "isEnabled": 0,
+   "current": 1
+  },
+  {
+   "code": 53839,
+   "dataType": 2,
+   "getSet": 1,
+   "isEnabled": 1,
+   "current": 1
+  },
+  {
+   "code": 53840,
+   "dataType": 2,
+   "getSet": 0,
+   "isEnabled": 1,
+   "current": 0
+  },
+  {
+   "code": 53851,
+   "dataType": 2,
+   "getSet": 0,
+   "isEnabled": 1,
+   "current": 1
+  },
+  {
+   "code": 53852,
+   "dataType": 6,
+   "getSet": 1,
+   "isEnabled": 0,
+   "current": 1000
+  },
+  {
+   "code": 53853,
+   "dataType": 6,
+   "getSet": 0,
+   "isEnabled": 1,
+   "current": 16777216
+  },
+  {
+   "code": 53855,
+   "dataType": 2,
+   "getSet": 1,
+   "isEnabled": 2,
+   "current": 1
+  },
+  {
+   "code": 53856,
+   "dataType": 2,
+   "getSet": 0,
+   "isEnabled": 0,
+   "current": 1
+  },
+  {
+   "code": 53861,
+   "dataType": 2,
+   "getSet": 0,
+   "isEnabled": 1,
+   "current": 0
+  },
+  {
+   "code": 53862,
+   "dataType": 2,
+   "getSet": 0,
+   "isEnabled": 1,
+   "current": 1
+  },
+  {
+   "code": 53953,
+   "dataType": 4,
+   "getSet": 129,
+   "isEnabled": 1,
+   "current": 2
+  },
+  {
+   "code": 53954,
+   "dataType": 4,
+   "getSet": 129,
+   "isEnabled": 1,
+   "current": 2
+  },
+  {
+   "code": 53955,
+   "dataType": 4,
+   "getSet": 129,
+   "isEnabled": 1,
+   "current": 2
+  },
+  {
+   "code": 53957,
+   "dataType": 4,
+   "getSet": 131,
+   "isEnabled": 1,
+   "current": 1
+  },
+  {
+   "code": 53959,
+   "dataType": 4,
+   "getSet": 129,
+   "isEnabled": 1,
+   "current": 1
+  },
+  {
+   "code": 53960,
+   "dataType": 4,
+   "getSet": 129,
+   "isEnabled": 1,
+   "current": 2
+  },
+  {
+   "code": 53961,
+   "dataType": 4,
+   "getSet": 129,
+   "isEnabled": 1,
+   "current": 2
+  },
+  {
+   "code": 53962,
+   "dataType": 4,
+   "getSet": 129,
+   "isEnabled": 1,
+   "current": 2
+  },
+  {
+   "code": 53969,
+   "dataType": 3,
+   "getSet": 130,
+   "isEnabled": 1,
+   "current": 2
+  },
+  {
+   "code": 53973,
+   "dataType": 4,
+   "getSet": 129,
+   "isEnabled": 0,
+   "current": 1
+  },
+  {
+   "code": 53974,
+   "dataType": 4,
+   "getSet": 129,
+   "isEnabled": 0,
+   "current": 1
+  },
+  {
+   "code": 53975,
+   "dataType": 4,
+   "getSet": 129,
+   "isEnabled": 1,
+   "current": 2
+  },
+  {
+   "code": 53976,
+   "dataType": 4,
+   "getSet": 129,
+   "isEnabled": 1,
+   "current": 2
+  },
+  {
+   "code": 53977,
+   "dataType": 4,
+   "getSet": 129,
+   "isEnabled": 1,
+   "current": 2
+  },
+  {
+   "code": 53981,
+   "dataType": 1,
+   "getSet": 132,
+   "isEnabled": 1,
+   "current": 2
+  },
+  {
+   "code": 53982,
+   "dataType": 4,
+   "getSet": 129,
+   "isEnabled": 1,
+   "current": 2
+  }
+ ]
+}

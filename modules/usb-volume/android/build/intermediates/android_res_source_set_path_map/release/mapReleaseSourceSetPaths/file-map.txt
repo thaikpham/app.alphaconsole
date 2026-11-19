@@ -1,0 +1,9 @@
+expo.modules.usbvolume.usb-volume-pngs-0 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/usb-volume/android/build/generated/res/pngs/release
+expo.modules.usbvolume.usb-volume-updated_navigation_xml-1 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/usb-volume/android/build/generated/updated_navigation_xml/release
+expo.modules.usbvolume.usb-volume-mergeReleaseResources-2 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/usb-volume/android/build/intermediates/incremental/release/mergeReleaseResources/merged.dir
+expo.modules.usbvolume.usb-volume-mergeReleaseResources-3 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/usb-volume/android/build/intermediates/incremental/release/mergeReleaseResources/stripped.dir
+expo.modules.usbvolume.usb-volume-release-4 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/usb-volume/android/build/intermediates/merged_res/release/mergeReleaseResources
+expo.modules.usbvolume.usb-volume-release-5 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/usb-volume/android/build/intermediates/packaged_res/release/packageReleaseResources
+expo.modules.usbvolume.usb-volume-main-6 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/usb-volume/android/src/main/res
+expo.modules.usbvolume.usb-volume-release-7 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/usb-volume/android/src/release/res
+gradleHome-0 /home/thaikpham/.gradle

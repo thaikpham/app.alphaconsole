@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.alphacolorlab.spike.app-release-4:/layout_activity_main.xml.flat",
+        "source": "com.alphacolorlab.spike.app-main-5:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.alphacolorlab.spike.app-release-4:/xml_device_filter.xml.flat",
+        "source": "com.alphacolorlab.spike.app-main-5:/xml/device_filter.xml"
+    }
+]

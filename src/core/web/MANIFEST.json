@@ -1,0 +1,140 @@
+{
+  "source": "../Web.AlphaColorLab (web working tree, copied as-is; edit the web repo, then run npm run sync-core)",
+  "files": [
+    {
+      "path": "lib/zve10/dat.ts",
+      "bytes": 45288,
+      "sha256": "ca3281de1a817d42468730c581ffddfb69247e210917a30c40909faae968eca3"
+    },
+    {
+      "path": "lib/zve10/presets.ts",
+      "bytes": 539,
+      "sha256": "b3f753eb23805e6ffdd45f77c4e9640c1f96b390fc63a8ba02a4d751cdc8c438"
+    },
+    {
+      "path": "lib/zve10/presets.json",
+      "bytes": 61208,
+      "sha256": "0b3236ab63eace15596ace9b3f4bb1534707305a9c49351097c667406b0b4cb2"
+    },
+    {
+      "path": "lib/zve10/profile.json",
+      "bytes": 21211,
+      "sha256": "b2648aadb7da8929b2f631682a39c4d270326ef1914a35c93ad9b251ead64efd"
+    },
+    {
+      "path": "lib/a6400/dat.ts",
+      "bytes": 6036,
+      "sha256": "a0a88f51710b8ca1914df38c237542714ba74d445d561ce73c99c5d84c6bf8f8"
+    },
+    {
+      "path": "lib/a7c2/dat.ts",
+      "bytes": 4034,
+      "sha256": "374007b084fed74b23d217ef5bfcb10a70ce9ab52f2aa04ec4dad9c869d7b403"
+    },
+    {
+      "path": "lib/a7c2/settings.ts",
+      "bytes": 12520,
+      "sha256": "d60ca8d2e1e0236ba1cd885c50024f5ed381f6cabb9e9b05c9de388599efcf22"
+    },
+    {
+      "path": "lib/a7c2/apply.ts",
+      "bytes": 19264,
+      "sha256": "aa97465abf296dc7f71ba8c37fe07b84cebd19e97a7989f57021bc76ac207260"
+    },
+    {
+      "path": "lib/presetSets.ts",
+      "bytes": 14092,
+      "sha256": "98211db5060d3e4cc50af488583d860e3ba7cc8ed75124c23fcce81fba2ecb78"
+    },
+    {
+      "path": "lib/ppBanks.ts",
+      "bytes": 2766,
+      "sha256": "bad3846bd9e50e529027078c7244b46bb8e7be8ff2d3c48960763f2c61029c2a"
+    },
+    {
+      "path": "lib/datImport.ts",
+      "bytes": 7071,
+      "sha256": "e94a1325c0fceeeed63092630159d60aadc083396b848d7d0b0bd7ee19003732"
+    },
+    {
+      "path": "data/preset-sets.json",
+      "bytes": 9685,
+      "sha256": "870e94fdcb71345f9b6b456a2eb8025e60e81037b9f1b3c3dda4f5c8d461ac1c"
+    },
+    {
+      "path": "public/dat/zve10-base-pal.dat",
+      "bytes": 4608,
+      "sha256": "591b8a787553f6437d8baa3ac9f2d4e0fd9835e39767a37b2d295d19857e0d21"
+    },
+    {
+      "path": "public/dat/zve10-base-ntsc.dat",
+      "bytes": 4608,
+      "sha256": "ce79ba6faa0f0a4047f1e8d0e51cae7e837a51c1104ab41348c85c18a1e99f75"
+    },
+    {
+      "path": "public/dat/zve10-pal-m1.dat",
+      "bytes": 4608,
+      "sha256": "a42f1e67ba08f69bbfe310c029796d5458af972cbd0ae3e01fb3f1344058d0fc"
+    },
+    {
+      "path": "public/dat/zve10-pal-m2.dat",
+      "bytes": 4608,
+      "sha256": "63b18017f1b04c755cba187017add38ac0a6d383ccdb25401f239ab880fb8ad8"
+    },
+    {
+      "path": "public/dat/zve10-pal-m3.dat",
+      "bytes": 4608,
+      "sha256": "5795a40b94b6ff6b5631b769501522359a12b5cd5a521656a64c94607253498c"
+    },
+    {
+      "path": "public/dat/zve10-pal-m4.dat",
+      "bytes": 4608,
+      "sha256": "365a3b347aed4eb558ec1cc47cb2a3c9ed6e6b1669583a6f23662e85630f1e0c"
+    },
+    {
+      "path": "public/dat/zve10-ntsc-m1.dat",
+      "bytes": 4608,
+      "sha256": "5dddfe9866d64424c047e24887e1acb840204ab9e199f3c0d2a9e0b659ea9285"
+    },
+    {
+      "path": "public/dat/zve10-ntsc-m2.dat",
+      "bytes": 4608,
+      "sha256": "1460cdbb2413ae543b7bafe00ef91ee9eb2658d4999894c87a39d235da1631a2"
+    },
+    {
+      "path": "public/dat/zve10-ntsc-m3.dat",
+      "bytes": 4608,
+      "sha256": "1e61afdb9fec233c012bc4d6e116ecd38ff03c138bf5a85a5d89ca01570babc8"
+    },
+    {
+      "path": "public/dat/zve10-ntsc-m4.dat",
+      "bytes": 4608,
+      "sha256": "ce79ba6faa0f0a4047f1e8d0e51cae7e837a51c1104ab41348c85c18a1e99f75"
+    }
+  ],
+  "generated": [
+    {
+      "path": "generated/datBases.ts",
+      "from": [
+        "public/dat/zve10-base-pal.dat",
+        "public/dat/zve10-base-ntsc.dat",
+        "public/dat/zve10-pal-m1.dat",
+        "public/dat/zve10-pal-m2.dat",
+        "public/dat/zve10-pal-m3.dat",
+        "public/dat/zve10-pal-m4.dat",
+        "public/dat/zve10-ntsc-m1.dat",
+        "public/dat/zve10-ntsc-m2.dat",
+        "public/dat/zve10-ntsc-m3.dat",
+        "public/dat/zve10-ntsc-m4.dat"
+      ],
+      "bytes": 61810,
+      "sha256": "29686be6e8628a41c5be541d513b341eba3ade6c671fdc43766243e7c20773ad"
+    },
+    {
+      "path": "package.json",
+      "from": [],
+      "bytes": 23,
+      "sha256": "3ca9d4afd21425087cf31893b8f9f63c81b0b8408db5e343ca76e5f8aa26ab9a"
+    }
+  ]
+}

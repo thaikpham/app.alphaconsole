@@ -1,0 +1,279 @@
+--------- beginning of main
+11-17 16:12:33.131 I/ACL     ( 2379): USB 054C:0D95 name=/dev/bus/usb/001/002 ifs=1 perm=false
+11-17 16:12:41.120 I/ACL     ( 2379): launched by USB attach: /dev/bus/usb/001/002
+11-17 16:12:54.772 I/ACL     ( 2379): --- volumes ---
+11-17 16:12:54.777 I/ACL     ( 2379): vol 'Internal shared storage' state=mounted removable=false primary=true uuid=null dir=/storage/emulated/0
+11-17 16:12:54.778 I/ACL     ( 2379): vol 'FFFB-E88D' state=mounted removable=true primary=false uuid=FFFB-E88D dir=/storage/FFFB-E88D
+11-17 16:12:54.779 I/ACL     ( 2379): vol '149F-411A' state=mounted removable=true primary=false uuid=149F-411A dir=/storage/149F-411A
+11-17 16:12:54.782 I/ACL     ( 2379): USB 054C:0D95 name=/dev/bus/usb/001/002 ifs=1 perm=true
+11-17 16:12:54.783 I/ACL     ( 2379):   serial=D036807152FE
+11-17 16:12:54.784 I/ACL     ( 2379):   IF#0 class=8 sub=6 proto=80 eps=2
+11-17 16:13:06.050 I/ACL     ( 2379): opening picker on 'FFFB-E88D'
+11-17 16:13:11.725 I/ACL     ( 2379): tree pick cancelled
+11-17 16:13:13.180 I/ACL     ( 2379): opening picker on 'FFFB-E88D'
+11-17 16:13:20.256 I/ACL     ( 2379): tree pick cancelled
+11-17 16:13:23.569 I/ACL     ( 2379): no card folder chosen; press 'Chọn thẻ' first
+11-17 16:13:36.821 I/ACL     ( 2379): no card folder chosen; press 'Chọn thẻ' first
+11-17 16:13:46.442 I/ACL     ( 2379): USB detached /dev/bus/usb/001/002
+11-17 16:17:22.045 I/ACL     ( 2379): USB 054C:0D97 name=/dev/bus/usb/001/002 ifs=1 perm=false
+11-17 16:17:45.931 I/ACL     ( 2379): PTP not connected; press 'PTP: kết nối' first
+11-17 16:17:55.591 I/ACL     ( 2379): requesting USB permission for /dev/bus/usb/001/002
+11-17 16:17:57.647 I/ACL     ( 2379): USB permission for /dev/bus/usb/001/002 granted=true
+11-17 16:17:57.655 I/ACL     ( 2379): IF#0 class=6 sub=1 proto=1 eps=3
+11-17 16:17:57.657 I/ACL     ( 2379): EP bulkIn=0x81 bulkOut=0x02 intrIn=0x83
+11-17 16:17:57.662 I/ACL     ( 2379): claimed IF#0
+11-17 16:17:57.677 I/ACL     ( 2379): GetDeviceInfo resp=0x2001 bytes=301
+11-17 16:17:57.685 I/ACL     ( 2379): StandardVersion=100 VendorExtID=0x00000011 VendorExtVer=100 VendorExtDesc='Sony PTP Extensions'
+11-17 16:17:57.686 I/ACL     ( 2379): FunctionalMode=0x0000 Manufacturer='Sony Corporation' Model='ZV-E10' DeviceVersion='2.03' Serial='00000000000000003285284007426814'
+11-17 16:17:57.686 I/ACL     ( 2379): Events=15 DevProps=0 CaptureFmts=0 ImageFmts=5
+11-17 16:17:57.688 I/ACL     ( 2379): OpenSession(1) resp=0x2001
+11-17 16:17:57.707 I/ACL     ( 2379): SDIO_Connect(1,0,0) resp=0x2001 bytes=8
+11-17 16:17:57.711 I/ACL     ( 2379): SDIO_Connect(2,0,0) resp=0x2001 bytes=8
+11-17 16:17:57.811 I/ACL     ( 2379): SDIO_GetExtDeviceInfo(0xC8) try 1 resp=0x2001 bytes=172
+11-17 16:17:57.812 I/ACL     ( 2379): ExtDeviceInfo extVersion=200
+11-17 16:17:57.816 I/ACL     ( 2379): ExtDeviceInfo head64: C8 00 41 00 00 00 04 50 05 50 07 50 0A 50 0B 50 0C 50 0E 50 10 50 13 50 00 D2 01 D2 03 D2 0D D2 0E D2 0F D2 10 D2 11 D2 13 D2 14 D2 15 D2 17 D2 18 D2 1B D2 1C D2 1D D2 1E D2 1F D2 20 D2 21 D2
+11-17 16:17:57.822 I/ACL     ( 2379): SDIO_Connect(3,0,0) resp=0x2001 bytes=8
+11-17 16:17:57.822 I/ACL     ( 2379): PTP model='ZV-E10' version='2.03' standard=100
+11-17 16:17:57.823 I/ACL     ( 2379): Operations (31): 0x1001 0x1002 0x1003 0x1004 0x1005 0x1006 0x1007 0x1008 0x1009 0x100A 0x100D 0x101B 0x9201 0x9202 0x9205 0x9207 0x9209 0x920A 0x920B 0x920C 0x920D 0x920E 0x920F 0x9210 0x9211 0x9212 0x9214 0x9801 0x9802 0x9803 0x9805
+11-17 16:18:00.684 I/ACL     ( 2379): GetAllExtDevicePropInfo resp=0x2001 bytes=1720
+11-17 16:18:00.686 I/ACL     ( 2379): saved /storage/emulated/0/Android/data/com.alphacolorlab.spike/files/ptp/allprops-20261117-161800.bin
+11-17 16:18:00.689 I/ACL     ( 2379): props parsed=80
+11-17 16:18:00.690 I/ACL     ( 2379): 0x5004 type=0x0002 get=1 en=1 cur=13 form=2
+11-17 16:18:00.691 I/ACL     ( 2379): [WB] 0x5005 type=0x0004 get=1 en=1 cur=02 00 form=2
+11-17 16:18:00.692 I/ACL     ( 2379): [FNumber] 0x5007 type=0x0004 get=0 en=1 cur=C2 01 form=1
+11-17 16:18:00.693 I/ACL     ( 2379): [FocusMode] 0x500A type=0x0004 get=1 en=1 cur=04 80 form=2
+11-17 16:18:00.694 I/ACL     ( 2379): [Metering] 0x500B type=0x0004 get=1 en=1 cur=01 80 form=2
+11-17 16:18:00.694 I/ACL     ( 2379): 0x500C type=0x0004 get=0 en=2 cur=03 00 form=2
+11-17 16:18:00.695 I/ACL     ( 2379): [ExposureProgram] 0x500E type=0x0004 get=1 en=1 cur=03 00 form=2
+11-17 16:18:00.696 I/ACL     ( 2379): 0x5010 type=0x0003 get=0 en=1 cur=00 00 form=2
+11-17 16:18:00.697 I/ACL     ( 2379): 0x5013 type=0x0004 get=1 en=1 cur=01 00 form=2
+11-17 16:18:00.697 I/ACL     ( 2379): 0xD200 type=0x0003 get=0 en=1 cur=00 00 form=2
+11-17 16:18:00.698 I/ACL     ( 2379): [DRO] 0xD201 type=0x0002 get=1 en=2 cur=01 form=2
+11-17 16:18:00.699 I/ACL     ( 2379): 0xD203 type=0x0002 get=1 en=1 cur=01 form=2
+11-17 16:18:00.699 I/ACL     ( 2379): [Shutter] 0xD20D type=0x0006 get=0 en=2 cur=1E 00 01 00 form=1
+11-17 16:18:00.699 I/ACL     ( 2379): 0xD20E type=0x0002 get=0 en=1 cur=0E form=2
+11-17 16:18:00.700 I/ACL     ( 2379): [ColorTemp] 0xD20F type=0x0004 get=1 en=0 cur=88 13 form=1
+11-17 16:18:00.701 I/ACL     ( 2379): 0xD210 type=0x0002 get=1 en=1 cur=C0 form=1
+11-17 16:18:00.702 I/ACL     ( 2379): 0xD211 type=0x0002 get=1 en=1 cur=01 form=2
+11-17 16:18:00.702 I/ACL     ( 2379): 0xD213 type=0x0002 get=0 en=1 cur=01 form=2
+11-17 16:18:00.702 I/ACL     ( 2379): 0xD214 type=0x0006 get=0 en=1 cur=00 20 8C 01 form=1
+11-17 16:18:00.702 I/ACL     ( 2379): 0xD215 type=0x0004 get=0 en=1 cur=00 00 form=1
+11-17 16:18:00.702 I/ACL     ( 2379): 0xD217 type=0x0002 get=0 en=1 cur=01 form=2
+11-17 16:18:00.703 I/ACL     ( 2379): 0xD218 type=0x0001 get=0 en=2 cur=33 form=1
+11-17 16:18:00.703 I/ACL     ( 2379): 0xD21B type=0x0004 get=1 en=2 cur=00 80 form=2
+11-17 16:18:00.703 I/ACL     ( 2379): 0xD21C type=0x0002 get=1 en=1 cur=C0 form=1
+11-17 16:18:00.703 I/ACL     ( 2379): 0xD21D type=0x0002 get=0 en=2 cur=00 form=1
+11-17 16:18:00.703 I/ACL     ( 2379): [ISO] 0xD21E type=0x0006 get=0 en=1 cur=FF FF FF 00 form=2
+11-17 16:18:00.703 I/ACL     ( 2379): 0xD21F type=0x0002 get=0 en=1 cur=01 form=2
+11-17 16:18:00.703 I/ACL     ( 2379): 0xD220 type=0x0002 get=1 en=1 cur=01 form=2
+11-17 16:18:00.704 I/ACL     ( 2379): 0xD221 type=0x0002 get=0 en=1 cur=01 form=2
+11-17 16:18:00.704 I/ACL     ( 2379): 0xD222 type=0x0004 get=0 en=1 cur=01 00 form=2
+11-17 16:18:00.704 I/ACL     ( 2379): 0xD224 type=0x0003 get=1 en=1 cur=00 00 form=2
+11-17 16:18:00.704 I/ACL     ( 2379): 0xD226 type=0x0006 get=1 en=1 cur=FF FF FF 00 form=2
+11-17 16:18:00.704 I/ACL     ( 2379): 0xD227 type=0x0002 get=0 en=1 cur=00 form=2
+11-17 16:18:00.704 I/ACL     ( 2379): 0xD228 type=0x0002 get=1 en=0 cur=05 form=2
+11-17 16:18:00.705 I/ACL     ( 2379): 0xD229 type=0x0006 get=1 en=2 cur=1E 00 01 00 form=2
+11-17 16:18:00.705 I/ACL     ( 2379): 0xD22A type=0x0002 get=0 en=0 cur=01 form=2
+11-17 16:18:00.705 I/ACL     ( 2379): 0xD22B type=0x0002 get=0 en=2 cur=00 form=2
+11-17 16:18:00.705 I/ACL     ( 2379): 0xD235 type=0x0002 get=0 en=1 cur=01 form=2
+11-17 16:18:00.705 I/ACL     ( 2379): 0xD23E type=0x0002 get=1 en=0 cur=00 form=2
+11-17 16:18:00.705 I/ACL     ( 2379): [PictureProfile] 0xD23F type=0x0002 get=1 en=1 cur=01 form=2
+11-17 16:18:00.705 I/ACL     ( 2379): 0xD240 type=0x0002 get=1 en=2 cur=01 form=2
+11-17 16:18:00.706 I/ACL     ( 2379): 0xD241 type=0x0002 get=1 en=1 cur=09 form=2
+11-17 16:18:00.706 I/ACL     ( 2379): 0xD242 type=0x0004 get=1 en=1 cur=1D 00 form=2
+11-17 16:18:00.706 I/ACL     ( 2379): 0xD243 type=0x0004 get=1 en=0 cur=02 00 form=2
+11-17 16:18:00.706 I/ACL     ( 2379): 0xD244 type=0x0004 get=1 en=0 cur=02 00 form=2
+11-17 16:18:00.706 I/ACL     ( 2379): 0xD245 type=0x0002 get=1 en=0 cur=01 form=2
+11-17 16:18:00.706 I/ACL     ( 2379): 0xD246 type=0x0002 get=1 en=0 cur=01 form=2
+11-17 16:18:00.706 I/ACL     ( 2379): 0xD247 type=0x0002 get=1 en=1 cur=11 form=2
+11-17 16:18:00.706 I/ACL     ( 2379): 0xD248 type=0x0002 get=0 en=0 cur=01 form=2
+11-17 16:18:00.707 I/ACL     ( 2379): 0xD249 type=0x0006 get=0 en=0 cur=32 0E 00 00 form=1
+11-17 16:18:00.707 I/ACL     ( 2379): 0xD24A type=0x0006 get=0 en=0 cur=00 00 00 00 form=1
+11-17 16:18:00.707 I/ACL     ( 2379): 0xD24B type=0x0002 get=0 en=0 cur=00 form=2
+11-17 16:18:00.707 I/ACL     ( 2379): 0xD24C type=0x0002 get=0 en=2 cur=64 form=1
+11-17 16:18:00.707 I/ACL     ( 2379): 0xD24D type=0x0002 get=1 en=1 cur=00 form=2
+11-17 16:18:00.707 I/ACL     ( 2379): 0xD24E type=0x0004 get=0 en=0 cur=01 00 form=2
+11-17 16:18:00.707 I/ACL     ( 2379): 0xD24F type=0x0002 get=1 en=1 cur=01 form=2
+11-17 16:18:00.707 I/ACL     ( 2379): 0xD250 type=0x0002 get=0 en=1 cur=00 form=2
+11-17 16:18:00.707 I/ACL     ( 2379): 0xD25B type=0x0002 get=0 en=1 cur=01 form=2
+11-17 16:18:00.707 I/ACL     ( 2379): 0xD25C type=0x0006 get=1 en=0 cur=E8 03 00 00 form=1
+11-17 16:18:00.708 I/ACL     ( 2379): 0xD25D type=0x0006 get=0 en=1 cur=00 00 00 01 form=0
+11-17 16:18:00.708 I/ACL     ( 2379): 0xD25F type=0x0002 get=1 en=2 cur=01 form=2
+11-17 16:18:00.708 I/ACL     ( 2379): 0xD260 type=0x0002 get=0 en=0 cur=01 form=2
+11-17 16:18:00.708 I/ACL     ( 2379): 0xD265 type=0x0002 get=0 en=1 cur=00 form=2
+11-17 16:18:00.708 I/ACL     ( 2379): 0xD266 type=0x0002 get=0 en=1 cur=01 form=2
+11-17 16:18:00.708 I/ACL     ( 2379): 0xD2C1 type=0x0004 get=129 en=1 cur=02 00 form=2
+11-17 16:18:00.708 I/ACL     ( 2379): 0xD2C2 type=0x0004 get=129 en=1 cur=02 00 form=2
+11-17 16:18:00.708 I/ACL     ( 2379): 0xD2C3 type=0x0004 get=129 en=1 cur=02 00 form=2
+11-17 16:18:00.709 I/ACL     ( 2379): 0xD2C5 type=0x0004 get=131 en=1 cur=01 00 form=2
+11-17 16:18:00.709 I/ACL     ( 2379): 0xD2C7 type=0x0004 get=129 en=1 cur=01 00 form=2
+11-17 16:18:00.709 I/ACL     ( 2379): 0xD2C8 type=0x0004 get=129 en=1 cur=02 00 form=2
+11-17 16:18:00.709 I/ACL     ( 2379): 0xD2C9 type=0x0004 get=129 en=1 cur=02 00 form=2
+11-17 16:18:00.709 I/ACL     ( 2379): 0xD2CA type=0x0004 get=129 en=1 cur=02 00 form=2
+11-17 16:18:00.709 I/ACL     ( 2379): 0xD2D1 type=0x0003 get=130 en=1 cur=02 00 form=1
+11-17 16:18:00.709 I/ACL     ( 2379): 0xD2D5 type=0x0004 get=129 en=0 cur=01 00 form=2
+11-17 16:18:00.709 I/ACL     ( 2379): 0xD2D6 type=0x0004 get=129 en=0 cur=01 00 form=2
+11-17 16:18:00.710 I/ACL     ( 2379): 0xD2D7 type=0x0004 get=129 en=1 cur=02 00 form=2
+11-17 16:18:00.710 I/ACL     ( 2379): 0xD2D8 type=0x0004 get=129 en=1 cur=02 00 form=2
+11-17 16:18:00.710 I/ACL     ( 2379): 0xD2D9 type=0x0004 get=129 en=1 cur=02 00 form=2
+11-17 16:18:00.710 I/ACL     ( 2379): 0xD2DD type=0x0001 get=132 en=1 cur=02 form=1
+11-17 16:18:00.710 I/ACL     ( 2379): 0xD2DE type=0x0004 get=129 en=1 cur=02 00 form=2
+11-17 16:18:02.331 I/ACL     ( 2379): GetObjectInfo(LV) resp=0x2001
+11-17 16:18:02.356 I/ACL     ( 2379): first LV frame saved, 81664 bytes
+11-17 16:18:02.434 I/ACL     ( 2379): LV frame not ready resp=0x200F (failures=1)
+11-17 16:18:04.365 I/ACL     ( 2379): LV fps=12.3 frames=25
+11-17 16:18:06.566 I/ACL     ( 2379): LV fps=13.6 frames=55
+11-17 16:18:08.570 I/ACL     ( 2379): LV fps=15.0 frames=85
+11-17 16:18:09.793 I/ACL     ( 2379): LV frame not ready resp=0x200F (failures=21)
+11-17 16:18:10.649 I/ACL     ( 2379): LV fps=12.5 frames=111
+11-17 16:18:12.650 I/ACL     ( 2379): LV fps=15.0 frames=141
+11-17 16:18:14.655 I/ACL     ( 2379): LV fps=12.0 frames=165
+11-17 16:18:16.656 I/ACL     ( 2379): LV fps=15.0 frames=195
+11-17 16:18:17.114 I/ACL     ( 2379): LV frame not ready resp=0x200F (failures=41)
+11-17 16:18:18.764 I/ACL     ( 2379): LV fps=12.8 frames=222
+11-17 16:18:20.774 I/ACL     ( 2379): LV fps=14.9 frames=252
+11-17 16:18:22.779 I/ACL     ( 2379): LV fps=12.0 frames=276
+11-17 16:18:24.271 I/ACL     ( 2379): LV frame not ready resp=0x200F (failures=61)
+11-17 16:18:24.886 I/ACL     ( 2379): LV fps=12.8 frames=303
+11-17 16:18:26.923 I/ACL     ( 2379): LV fps=15.2 frames=334
+11-17 16:18:28.926 I/ACL     ( 2379): LV fps=15.0 frames=364
+11-17 16:18:31.051 I/ACL     ( 2379): LV fps=12.7 frames=391
+11-17 16:18:31.794 I/ACL     ( 2379): LV frame not ready resp=0x200F (failures=81)
+11-17 16:18:33.053 I/ACL     ( 2379): LV fps=12.0 frames=415
+11-17 16:18:35.068 I/ACL     ( 2379): LV fps=11.9 frames=439
+11-17 16:18:37.252 I/ACL     ( 2379): LV fps=10.5 frames=462
+11-17 16:18:38.471 I/ACL     ( 2379): LV frame not ready resp=0x200F (failures=101)
+11-17 16:18:39.322 I/ACL     ( 2379): LV fps=12.6 frames=488
+11-17 16:18:41.369 I/ACL     ( 2379): LV fps=12.2 frames=513
+11-17 16:18:43.372 I/ACL     ( 2379): LV fps=15.0 frames=543
+11-17 16:18:45.455 I/ACL     ( 2379): LV fps=12.5 frames=569
+11-17 16:18:45.473 I/ACL     ( 2379): LV frame not ready resp=0x200F (failures=121)
+11-17 16:18:47.460 I/ACL     ( 2379): LV fps=12.0 frames=593
+11-17 16:18:49.460 I/ACL     ( 2379): LV fps=15.0 frames=623
+11-17 16:18:51.477 I/ACL     ( 2379): LV fps=14.9 frames=653
+11-17 16:18:53.030 I/ACL     ( 2379): LV frame not ready resp=0x200F (failures=141)
+11-17 16:18:53.479 I/ACL     ( 2379): LV fps=12.0 frames=677
+11-17 16:18:55.494 I/ACL     ( 2379): LV fps=14.9 frames=707
+11-17 16:18:57.503 I/ACL     ( 2379): LV fps=11.9 frames=731
+11-17 16:18:59.503 I/ACL     ( 2379): LV fps=15.0 frames=761
+11-17 16:19:00.271 I/ACL     ( 2379): LV frame not ready resp=0x200F (failures=161)
+11-17 16:19:01.535 I/ACL     ( 2379): LV fps=11.8 frames=785
+11-17 16:19:03.607 I/ACL     ( 2379): LV fps=12.5 frames=811
+11-17 16:19:05.607 I/ACL     ( 2379): LV fps=15.0 frames=841
+11-17 16:19:07.652 I/ACL     ( 2379): LV fps=15.2 frames=872
+11-17 16:19:07.667 I/ACL     ( 2379): LV frame not ready resp=0x200F (failures=181)
+11-17 16:19:09.888 I/ACL     ( 2379): LV fps=13.9 frames=903
+11-17 16:19:11.928 I/ACL     ( 2379): LV fps=12.3 frames=928
+11-17 16:19:13.934 I/ACL     ( 2379): LV fps=15.0 frames=958
+11-17 16:19:15.154 I/ACL     ( 2379): LV frame not ready resp=0x200F (failures=201)
+11-17 16:19:16.008 I/ACL     ( 2379): LV fps=12.5 frames=984
+11-17 16:19:18.083 I/ACL     ( 2379): LV fps=12.5 frames=1010
+11-17 16:19:20.285 I/ACL     ( 2379): LV fps=13.6 frames=1040
+11-17 16:19:22.110 I/ACL     ( 2379): LV frame not ready resp=0x200F (failures=221)
+11-17 16:19:22.328 I/ACL     ( 2379): LV fps=12.2 frames=1065
+11-17 16:19:24.337 I/ACL     ( 2379): LV fps=14.9 frames=1095
+11-17 16:20:41.067 I/ACL     ( 2379): LV fps=0.2 frames=1109
+11-17 16:20:43.122 I/ACL     ( 2379): LV fps=12.7 frames=1135
+11-17 16:20:44.911 I/ACL     ( 2379): LV frame not ready resp=0x200F (failures=241)
+11-17 16:20:45.145 I/ACL     ( 2379): LV fps=14.8 frames=1165
+11-17 16:20:47.211 I/ACL     ( 2379): LV fps=12.6 frames=1191
+11-17 16:20:49.324 I/ACL     ( 2379): LV fps=12.8 frames=1218
+11-17 16:20:51.331 I/ACL     ( 2379): LV fps=14.9 frames=1248
+11-17 16:20:52.151 I/ACL     ( 2379): LV frame not ready resp=0x200F (failures=261)
+11-17 16:20:53.336 I/ACL     ( 2379): LV fps=12.0 frames=1272
+11-17 16:20:55.343 I/ACL     ( 2379): LV fps=15.0 frames=1302
+11-17 16:20:57.452 I/ACL     ( 2379): LV fps=12.8 frames=1329
+11-17 16:20:59.353 I/ACL     ( 2379): LV frame not ready resp=0x200F (failures=281)
+11-17 16:20:59.576 I/ACL     ( 2379): LV fps=12.7 frames=1356
+11-17 16:21:01.643 I/ACL     ( 2379): LV fps=12.6 frames=1382
+11-17 16:21:03.682 I/ACL     ( 2379): LV fps=12.3 frames=1407
+11-17 16:21:05.695 I/ACL     ( 2379): LV fps=14.9 frames=1437
+11-17 16:21:06.314 I/ACL     ( 2379): LV frame not ready resp=0x200F (failures=301)
+11-17 16:21:07.703 I/ACL     ( 2379): LV fps=11.9 frames=1461
+11-17 16:21:09.713 I/ACL     ( 2379): LV fps=14.9 frames=1491
+11-17 16:21:11.894 I/ACL     ( 2379): LV fps=13.3 frames=1520
+11-17 16:21:13.710 I/ACL     ( 2379): LV frame not ready resp=0x200F (failures=321)
+11-17 16:21:13.925 I/ACL     ( 2379): LV fps=12.3 frames=1545
+11-17 16:21:15.930 I/ACL     ( 2379): LV fps=15.0 frames=1575
+11-17 16:21:17.944 I/ACL     ( 2379): LV fps=11.9 frames=1599
+11-17 16:21:20.009 I/ACL     ( 2379): LV fps=12.1 frames=1624
+11-17 16:21:20.991 I/ACL     ( 2379): LV frame not ready resp=0x200F (failures=341)
+11-17 16:21:22.039 I/ACL     ( 2379): LV fps=15.3 frames=1655
+11-17 16:21:24.085 I/ACL     ( 2379): LV fps=12.2 frames=1680
+11-17 16:21:26.092 I/ACL     ( 2379): LV fps=14.9 frames=1710
+11-17 16:21:28.168 I/ACL     ( 2379): LV fps=12.5 frames=1736
+11-17 16:21:28.351 I/ACL     ( 2379): LV frame not ready resp=0x200F (failures=361)
+11-17 16:21:30.172 I/ACL     ( 2379): LV fps=15.0 frames=1766
+11-17 16:21:32.407 I/ACL     ( 2379): LV fps=13.9 frames=1797
+11-17 16:21:34.415 I/ACL     ( 2379): LV fps=12.0 frames=1821
+11-17 16:21:35.710 I/ACL     ( 2379): LV frame not ready resp=0x200F (failures=381)
+11-17 16:21:36.556 I/ACL     ( 2379): LV fps=13.1 frames=1849
+11-17 16:21:38.567 I/ACL     ( 2379): LV fps=14.9 frames=1879
+11-17 16:29:09.928 E/ACL     ( 2379): liveView
+11-17 16:29:09.928 E/ACL     ( 2379): java.io.IOException: bulkOut sent -1 of 16
+11-17 16:29:09.928 E/ACL     ( 2379): 	at com.alphacolorlab.spike.PtpDevice.send(PtpUsb.kt:93)
+11-17 16:29:09.928 E/ACL     ( 2379): 	at com.alphacolorlab.spike.PtpDevice.transact(PtpUsb.kt:79)
+11-17 16:29:09.928 E/ACL     ( 2379): 	at com.alphacolorlab.spike.PtpDevice.liveViewGet(PtpUsb.kt:198)
+11-17 16:29:09.928 E/ACL     ( 2379): 	at com.alphacolorlab.spike.MainActivity.liveViewLoop(MainActivity.kt:309)
+11-17 16:29:09.928 E/ACL     ( 2379): 	at com.alphacolorlab.spike.MainActivity.toggleLiveView$lambda$30(MainActivity.kt:288)
+11-17 16:29:09.928 E/ACL     ( 2379): 	at com.alphacolorlab.spike.MainActivity.$r8$lambda$XPZ6UccQVVbxAPtQww_fo3WgcWk(MainActivity.kt:0)
+11-17 16:29:09.928 E/ACL     ( 2379): 	at com.alphacolorlab.spike.MainActivity$$ExternalSyntheticLambda17.invoke(D8$$SyntheticClass:0)
+11-17 16:29:09.928 E/ACL     ( 2379): 	at com.alphacolorlab.spike.MainActivity.bg$lambda$23(MainActivity.kt:147)
+11-17 16:29:09.928 E/ACL     ( 2379): 	at com.alphacolorlab.spike.MainActivity.$r8$lambda$0Jp0zEgI5N0x9sfaeua4fBxzXgw(MainActivity.kt:0)
+11-17 16:29:09.928 E/ACL     ( 2379): 	at com.alphacolorlab.spike.MainActivity$$ExternalSyntheticLambda20.run(D8$$SyntheticClass:0)
+11-17 16:29:09.928 E/ACL     ( 2379): 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1100)
+11-17 16:29:09.928 E/ACL     ( 2379): 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+11-17 16:29:09.928 E/ACL     ( 2379): 	at java.lang.Thread.run(Thread.java:1572)
+11-17 16:29:09.928 I/ACL     ( 2379): EXC liveView: java.io.IOException: bulkOut sent -1 of 16
+11-17 16:29:09.938 I/ACL     ( 2379):   java.io.IOException: bulkOut sent -1 of 16
+11-17 16:29:09.939 I/ACL     ( 2379):   	at com.alphacolorlab.spike.PtpDevice.send(PtpUsb.kt:93)
+11-17 16:29:09.939 I/ACL     ( 2379):   	at com.alphacolorlab.spike.PtpDevice.transact(PtpUsb.kt:79)
+11-17 16:29:09.939 I/ACL     ( 2379):   	at com.alphacolorlab.spike.PtpDevice.liveViewGet(PtpUsb.kt:198)
+11-17 16:29:09.940 I/ACL     ( 2379):   	at com.alphacolorlab.spike.MainActivity.liveViewLoop(MainActivity.kt:309)
+11-17 16:29:09.940 I/ACL     ( 2379):   	at com.alphacolorlab.spike.MainActivity.toggleLiveView$lambda$30(MainActivity.kt:288)
+11-17 16:29:09.941 I/ACL     ( 2379):   	at com.alphacolorlab.spike.MainActivity.$r8$lambda$XPZ6UccQVVbxAPtQww_fo3WgcWk(MainActivity.kt:0)
+11-17 16:29:09.941 I/ACL     ( 2379):   	at com.alphacolorlab.spike.MainActivity$$ExternalSyntheticLambda17.invoke(D8$$SyntheticClass:0)
+11-17 16:29:09.941 I/ACL     ( 2379):   	at com.alphacolorlab.spike.MainActivity.bg$lambda$23(MainActivity.kt:147)
+11-17 16:29:09.941 I/ACL     ( 2379):   	at com.alphacolorlab.spike.MainActivity.$r8$lambda$0Jp0zEgI5N0x9sfaeua4fBxzXgw(MainActivity.kt:0)
+11-17 16:29:09.941 I/ACL     ( 2379):   	at com.alphacolorlab.spike.MainActivity$$ExternalSyntheticLambda20.run(D8$$SyntheticClass:0)
+11-17 16:29:09.941 I/ACL     ( 2379):   	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1100)
+11-17 16:29:09.942 I/ACL     ( 2379):   	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+11-17 16:29:09.942 I/ACL     ( 2379):   	at java.lang.Thread.run(Thread.java:1572)
+11-17 16:29:11.114 I/ACL     ( 2379): USB detached /dev/bus/usb/001/002
+11-17 16:29:11.116 I/ACL     ( 2379): PTP closed
+11-17 16:29:32.402 I/ACL     ( 2379): USB 054C:0D95 name=/dev/bus/usb/001/002 ifs=1 perm=true
+11-17 16:29:32.404 I/ACL     ( 2379): launched by USB attach: /dev/bus/usb/001/002
+11-17 16:29:43.051 I/ACL     ( 2379): opening picker on 'FFFB-E88D'
+11-17 16:29:49.828 I/ACL     ( 2379): card tree saved: content://com.android.externalstorage.documents/tree/FFFB-E88D%3A
+11-17 16:29:49.914 I/ACL     ( 2379): root='FFFB-E88D' canWrite=true
+11-17 16:29:49.979 I/ACL     ( 2379): SONYCARD.IND present
+11-17 16:29:50.090 I/ACL     ( 2379): MEDIAPRO systemKind=ZV-E10 size=403
+11-17 16:29:50.193 I/ACL     ( 2379):   CAMPR01P.DAT size=4608 b315=0x01
+11-17 16:29:50.219 I/ACL     ( 2379):   CAMPR02P.DAT size=4608 b315=0x01
+11-17 16:29:50.245 I/ACL     ( 2379):   CAMPR03P.DAT size=4608 b315=0x01
+11-17 16:29:50.273 I/ACL     ( 2379):   CAMPR04P.DAT size=4608 b315=0x01
+11-17 16:31:00.547 I/ACL     ( 2379): backed up CAMPR01P.DAT size=4608 -> /storage/emulated/0/Android/data/com.alphacolorlab.spike/files/backup/20261117-163100
+11-17 16:31:00.567 I/ACL     ( 2379): backed up CAMPR02P.DAT size=4608 -> /storage/emulated/0/Android/data/com.alphacolorlab.spike/files/backup/20261117-163100
+11-17 16:31:00.582 I/ACL     ( 2379): backed up CAMPR03P.DAT size=4608 -> /storage/emulated/0/Android/data/com.alphacolorlab.spike/files/backup/20261117-163100
+11-17 16:31:00.603 I/ACL     ( 2379): backed up CAMPR04P.DAT size=4608 -> /storage/emulated/0/Android/data/com.alphacolorlab.spike/files/backup/20261117-163100
+11-17 16:31:00.657 I/ACL     ( 2379): OK CAMPR01P.DAT wrote=4608 read=4608 b315=0x01 53ms
+11-17 16:31:00.727 I/ACL     ( 2379): OK CAMPR02P.DAT wrote=4608 read=4608 b315=0x01 69ms
+11-17 16:31:00.797 I/ACL     ( 2379): OK CAMPR03P.DAT wrote=4608 read=4608 b315=0x01 69ms
+11-17 16:31:00.857 I/ACL     ( 2379): OK CAMPR04P.DAT wrote=4608 read=4608 b315=0x01 59ms
+11-17 16:31:00.858 I/ACL     ( 2379): Hybrid write: ALL OK
+11-17 16:31:04.899 I/ACL     ( 2379): newest DSC09401.JPG size=6967921 modified=1623122481320
+11-17 16:31:04.945 I/ACL     ( 2379):   Make=SONY
+11-17 16:31:04.945 I/ACL     ( 2379):   Model=ZV-E10
+11-17 16:31:04.945 I/ACL     ( 2379):   Software=ZV-E10 v2.03
+11-17 16:31:04.946 I/ACL     ( 2379):   DateTimeOriginal=2021:06:08 03:21:21
+11-17 16:31:04.946 I/ACL     ( 2379):   ExposureTime=0.01
+11-17 16:31:04.946 I/ACL     ( 2379):   FNumber=7.1
+11-17 16:31:04.946 I/ACL     ( 2379):   PhotographicSensitivity=1000
+11-17 16:31:04.946 I/ACL     ( 2379):   ExposureProgram=1
+11-17 16:31:04.946 I/ACL     ( 2379):   WhiteBalance=1
+11-17 16:31:04.946 I/ACL     ( 2379):   MeteringMode=5
+11-17 16:31:04.946 I/ACL     ( 2379):   FocalLength=160/10
+11-17 16:31:04.946 I/ACL     ( 2379):   LensModel=E PZ 16-50mm F3.5-5.6 OSS
+11-17 16:31:04.947 I/ACL     ( 2379): no EXIF thumbnail; decoding full image at inSampleSize 8
+11-17 17:12:11.820 I/ACL     ( 2379): USB detached /dev/bus/usb/001/002
+11-17 17:21:53.778 I/ACL     ( 2379): USB 054C:0D95 name=/dev/bus/usb/001/003 ifs=1 perm=false

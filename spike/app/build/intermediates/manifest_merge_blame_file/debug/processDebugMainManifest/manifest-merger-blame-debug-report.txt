@@ -1,0 +1,62 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.alphacolorlab.spike"
+4    android:versionCode="1"
+5    android:versionName="0.1-spike" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="29"
+9        android:targetSdkVersion="35" />
+10
+11    <uses-feature
+11-->/home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/main/AndroidManifest.xml:4:5-87
+12        android:name="android.hardware.usb.host"
+12-->/home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/main/AndroidManifest.xml:4:19-59
+13        android:required="false" />
+13-->/home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/main/AndroidManifest.xml:4:60-84
+14
+15    <application
+15-->/home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/main/AndroidManifest.xml:6:5-25:19
+16        android:debuggable="true"
+17        android:extractNativeLibs="false"
+18        android:label="ACL Spike"
+18-->/home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/main/AndroidManifest.xml:7:9-34
+19        android:supportsRtl="false"
+19-->/home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/main/AndroidManifest.xml:8:9-36
+20        android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar" >
+20-->/home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/main/AndroidManifest.xml:9:9-77
+21        <activity
+21-->/home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/main/AndroidManifest.xml:10:9-24:20
+22            android:name="com.alphacolorlab.spike.MainActivity"
+22-->/home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/main/AndroidManifest.xml:11:13-41
+23            android:exported="true"
+23-->/home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/main/AndroidManifest.xml:12:13-36
+24            android:launchMode="singleTop" >
+24-->/home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/main/AndroidManifest.xml:13:13-43
+25            <intent-filter>
+25-->/home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/main/AndroidManifest.xml:14:13-17:29
+26                <action android:name="android.intent.action.MAIN" />
+26-->/home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/main/AndroidManifest.xml:15:17-69
+26-->/home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/main/AndroidManifest.xml:15:25-66
+27
+28                <category android:name="android.intent.category.LAUNCHER" />
+28-->/home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/main/AndroidManifest.xml:16:17-77
+28-->/home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/main/AndroidManifest.xml:16:27-74
+29            </intent-filter>
+30            <intent-filter>
+30-->/home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/main/AndroidManifest.xml:18:13-20:29
+31                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+31-->/home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/main/AndroidManifest.xml:19:17-90
+31-->/home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/main/AndroidManifest.xml:19:25-87
+32            </intent-filter>
+33
+34            <meta-data
+34-->/home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/main/AndroidManifest.xml:21:13-23:57
+35                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+35-->/home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/main/AndroidManifest.xml:22:17-79
+36                android:resource="@xml/device_filter" />
+36-->/home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/main/AndroidManifest.xml:23:17-54
+37        </activity>
+38    </application>
+39
+40</manifest>

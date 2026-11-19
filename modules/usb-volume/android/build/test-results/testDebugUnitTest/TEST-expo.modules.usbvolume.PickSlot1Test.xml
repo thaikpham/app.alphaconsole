@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="expo.modules.usbvolume.PickSlot1Test" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-11-18T11:44:34.271Z" hostname="thaikpham" time="0.0">
+  <properties/>
+  <testcase name="acceptsVolumeAtMinimumCardSize" classname="expo.modules.usbvolume.PickSlot1Test" time="0.0"/>
+  <testcase name="skipsPmhomeSizedVolumeEvenWhenItHasMarker" classname="expo.modules.usbvolume.PickSlot1Test" time="0.0"/>
+  <testcase name="skipsVolumeWithoutSonyMarker" classname="expo.modules.usbvolume.PickSlot1Test" time="0.0"/>
+  <testcase name="returnsNullWhenNoCardIsPresent" classname="expo.modules.usbvolume.PickSlot1Test" time="0.0"/>
+  <testcase name="firstSonyCardInStorageOrderWins" classname="expo.modules.usbvolume.PickSlot1Test" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

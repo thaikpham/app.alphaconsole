@@ -1,0 +1,7 @@
+com.alphacolorlab.spike.app-pngs-0 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/build/generated/res/pngs/release
+com.alphacolorlab.spike.app-resValues-1 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/build/generated/res/resValues/release
+com.alphacolorlab.spike.app-packageReleaseResources-2 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/build/intermediates/incremental/release/packageReleaseResources/merged.dir
+com.alphacolorlab.spike.app-packageReleaseResources-3 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/build/intermediates/incremental/release/packageReleaseResources/stripped.dir
+com.alphacolorlab.spike.app-release-4 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/build/intermediates/merged_res/release/mergeReleaseResources
+com.alphacolorlab.spike.app-main-5 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/main/res
+com.alphacolorlab.spike.app-release-6 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/spike/app/src/release/res

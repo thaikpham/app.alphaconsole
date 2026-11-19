@@ -1,0 +1,16 @@
+com.alphacolorlab.spike:layout/activity_main = 0x7f020000
+com.alphacolorlab.spike:xml/device_filter = 0x7f030000
+com.alphacolorlab.spike:id/previewFrame = 0x7f01000d
+com.alphacolorlab.spike:id/logScroll = 0x7f01000b
+com.alphacolorlab.spike:id/log = 0x7f01000a
+com.alphacolorlab.spike:id/preview = 0x7f01000c
+com.alphacolorlab.spike:id/btnRestore = 0x7f010007
+com.alphacolorlab.spike:id/btnPtpProps = 0x7f010006
+com.alphacolorlab.spike:id/btnPtpConnect = 0x7f010005
+com.alphacolorlab.spike:id/btnClear = 0x7f010001
+com.alphacolorlab.spike:id/btnPickCard = 0x7f010004
+com.alphacolorlab.spike:id/btnLiveView = 0x7f010003
+com.alphacolorlab.spike:id/btnWriteHybrid = 0x7f010009
+com.alphacolorlab.spike:id/btnExif = 0x7f010002
+com.alphacolorlab.spike:id/btnVolumes = 0x7f010008
+com.alphacolorlab.spike:id/btnCamera2 = 0x7f010000

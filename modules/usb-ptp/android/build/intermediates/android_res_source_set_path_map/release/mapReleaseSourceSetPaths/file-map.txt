@@ -1,0 +1,9 @@
+expo.modules.usbptp.usb-ptp-pngs-0 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/usb-ptp/android/build/generated/res/pngs/release
+expo.modules.usbptp.usb-ptp-updated_navigation_xml-1 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/usb-ptp/android/build/generated/updated_navigation_xml/release
+expo.modules.usbptp.usb-ptp-mergeReleaseResources-2 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/usb-ptp/android/build/intermediates/incremental/release/mergeReleaseResources/merged.dir
+expo.modules.usbptp.usb-ptp-mergeReleaseResources-3 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/usb-ptp/android/build/intermediates/incremental/release/mergeReleaseResources/stripped.dir
+expo.modules.usbptp.usb-ptp-release-4 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/usb-ptp/android/build/intermediates/merged_res/release/mergeReleaseResources
+expo.modules.usbptp.usb-ptp-release-5 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/usb-ptp/android/build/intermediates/packaged_res/release/packageReleaseResources
+expo.modules.usbptp.usb-ptp-main-6 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/usb-ptp/android/src/main/res
+expo.modules.usbptp.usb-ptp-release-7 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/usb-ptp/android/src/release/res
+gradleHome-0 /home/thaikpham/.gradle

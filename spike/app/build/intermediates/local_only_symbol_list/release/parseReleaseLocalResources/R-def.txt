@@ -1,0 +1,18 @@
+R_DEF: Internal format may change without notice
+local
+id btnCamera2
+id btnClear
+id btnExif
+id btnLiveView
+id btnPickCard
+id btnPtpConnect
+id btnPtpProps
+id btnRestore
+id btnVolumes
+id btnWriteHybrid
+id log
+id logScroll
+id preview
+id previewFrame
+layout activity_main
+xml device_filter

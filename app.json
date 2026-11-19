@@ -1,0 +1,58 @@
+{
+  "expo": {
+    "name": "Alpha Color Lab",
+    "slug": "alpha-color-lab",
+    "version": "0.9.2",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "alphacolorlab",
+    "userInterfaceStyle": "automatic",
+    "android": {
+      "package": "com.alphacolorlab.app",
+      "versionCode": 10,
+      "adaptiveIcon": {
+        "backgroundColor": "#f3f4f6",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.MANAGE_EXTERNAL_STORAGE"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#f3f4f6",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 76
+        }
+      ],
+      "./plugins/usb-plugin.js",
+      "./plugins/all-files-plugin.js",
+      "./plugins/abi-plugin.js",
+      "./plugins/signing-plugin.js"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "ios": {
+      "bundleIdentifier": "com.alphacolorlab.app"
+    },
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "dbc1f66b-df5b-46ef-aadf-f2888173151b"
+      }
+    },
+    "owner": "thaikphams"
+  }
+}

@@ -1,0 +1,9 @@
+expo.modules.crashlog.crash-log-pngs-0 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/generated/res/pngs/release
+expo.modules.crashlog.crash-log-updated_navigation_xml-1 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/generated/updated_navigation_xml/release
+expo.modules.crashlog.crash-log-mergeReleaseResources-2 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/intermediates/incremental/release/mergeReleaseResources/merged.dir
+expo.modules.crashlog.crash-log-mergeReleaseResources-3 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/intermediates/incremental/release/mergeReleaseResources/stripped.dir
+expo.modules.crashlog.crash-log-release-4 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/intermediates/merged_res/release/mergeReleaseResources
+expo.modules.crashlog.crash-log-release-5 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/intermediates/packaged_res/release/packageReleaseResources
+expo.modules.crashlog.crash-log-main-6 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/src/main/res
+expo.modules.crashlog.crash-log-release-7 /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/src/release/res
+gradleHome-0 /home/thaikpham/.gradle

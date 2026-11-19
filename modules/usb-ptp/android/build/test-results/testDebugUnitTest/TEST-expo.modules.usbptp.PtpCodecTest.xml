@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="expo.modules.usbptp.PtpCodecTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2026-11-18T02:40:25.666Z" hostname="thaikpham" time="0.052">
+  <properties/>
+  <testcase name="scalarValueIsNullWhenNotRepresentable" classname="expo.modules.usbptp.PtpCodecTest" time="0.001"/>
+  <testcase name="commandRoundTripsThroughDecode" classname="expo.modules.usbptp.PtpCodecTest" time="0.01"/>
+  <testcase name="commandHeaderIsLittleEndian" classname="expo.modules.usbptp.PtpCodecTest" time="0.001"/>
+  <testcase name="decodeRejectsShortInput" classname="expo.modules.usbptp.PtpCodecTest" time="0.004"/>
+  <testcase name="liveViewJpegSlicesByHeader" classname="expo.modules.usbptp.PtpCodecTest" time="0.001"/>
+  <testcase name="deviceInfoParsesHandBuiltBlock" classname="expo.modules.usbptp.PtpCodecTest" time="0.017"/>
+  <testcase name="allPropsReturnsPartialWithNoteOnTruncation" classname="expo.modules.usbptp.PtpCodecTest" time="0.009"/>
+  <testcase name="scalarValueReadsUnsignedAndSignedTypes" classname="expo.modules.usbptp.PtpCodecTest" time="0.001"/>
+  <testcase name="allPropsParsesFourEntries" classname="expo.modules.usbptp.PtpCodecTest" time="0.0"/>
+  <testcase name="propRowCarriesScalarsAndNullsOthers" classname="expo.modules.usbptp.PtpCodecTest" time="0.001"/>
+  <testcase name="decodeRejectsLengthMismatch" classname="expo.modules.usbptp.PtpCodecTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

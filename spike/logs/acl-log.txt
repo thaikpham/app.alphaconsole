@@ -1,0 +1,262 @@
+16:11:45.510 ACL Spike started; log file dir: /storage/emulated/0/Android/data/com.alphacolorlab.spike/files
+16:12:33.131 USB 054C:0D95 name=/dev/bus/usb/001/002 ifs=1 perm=false
+16:12:41.120 launched by USB attach: /dev/bus/usb/001/002
+16:12:54.772 --- volumes ---
+16:12:54.777 vol 'Internal shared storage' state=mounted removable=false primary=true uuid=null dir=/storage/emulated/0
+16:12:54.778 vol 'FFFB-E88D' state=mounted removable=true primary=false uuid=FFFB-E88D dir=/storage/FFFB-E88D
+16:12:54.779 vol '149F-411A' state=mounted removable=true primary=false uuid=149F-411A dir=/storage/149F-411A
+16:12:54.782 USB 054C:0D95 name=/dev/bus/usb/001/002 ifs=1 perm=true
+16:12:54.783   serial=D036807152FE
+16:12:54.784   IF#0 class=8 sub=6 proto=80 eps=2
+16:13:06.050 opening picker on 'FFFB-E88D'
+16:13:11.725 tree pick cancelled
+16:13:13.180 opening picker on 'FFFB-E88D'
+16:13:20.256 tree pick cancelled
+16:13:23.569 no card folder chosen; press 'Chọn thẻ' first
+16:13:36.821 no card folder chosen; press 'Chọn thẻ' first
+16:13:46.442 USB detached /dev/bus/usb/001/002
+16:17:22.045 USB 054C:0D97 name=/dev/bus/usb/001/002 ifs=1 perm=false
+16:17:45.931 PTP not connected; press 'PTP: kết nối' first
+16:17:55.591 requesting USB permission for /dev/bus/usb/001/002
+16:17:57.647 USB permission for /dev/bus/usb/001/002 granted=true
+16:17:57.655 IF#0 class=6 sub=1 proto=1 eps=3
+16:17:57.657 EP bulkIn=0x81 bulkOut=0x02 intrIn=0x83
+16:17:57.662 claimed IF#0
+16:17:57.677 GetDeviceInfo resp=0x2001 bytes=301
+16:17:57.685 StandardVersion=100 VendorExtID=0x00000011 VendorExtVer=100 VendorExtDesc='Sony PTP Extensions'
+16:17:57.686 FunctionalMode=0x0000 Manufacturer='Sony Corporation' Model='ZV-E10' DeviceVersion='2.03' Serial='00000000000000003285284007426814'
+16:17:57.686 Events=15 DevProps=0 CaptureFmts=0 ImageFmts=5
+16:17:57.688 OpenSession(1) resp=0x2001
+16:17:57.707 SDIO_Connect(1,0,0) resp=0x2001 bytes=8
+16:17:57.711 SDIO_Connect(2,0,0) resp=0x2001 bytes=8
+16:17:57.811 SDIO_GetExtDeviceInfo(0xC8) try 1 resp=0x2001 bytes=172
+16:17:57.812 ExtDeviceInfo extVersion=200
+16:17:57.816 ExtDeviceInfo head64: C8 00 41 00 00 00 04 50 05 50 07 50 0A 50 0B 50 0C 50 0E 50 10 50 13 50 00 D2 01 D2 03 D2 0D D2 0E D2 0F D2 10 D2 11 D2 13 D2 14 D2 15 D2 17 D2 18 D2 1B D2 1C D2 1D D2 1E D2 1F D2 20 D2 21 D2
+16:17:57.822 SDIO_Connect(3,0,0) resp=0x2001 bytes=8
+16:17:57.822 PTP model='ZV-E10' version='2.03' standard=100
+16:17:57.823 Operations (31): 0x1001 0x1002 0x1003 0x1004 0x1005 0x1006 0x1007 0x1008 0x1009 0x100A 0x100D 0x101B 0x9201 0x9202 0x9205 0x9207 0x9209 0x920A 0x920B 0x920C 0x920D 0x920E 0x920F 0x9210 0x9211 0x9212 0x9214 0x9801 0x9802 0x9803 0x9805
+16:18:00.684 GetAllExtDevicePropInfo resp=0x2001 bytes=1720
+16:18:00.687 saved /storage/emulated/0/Android/data/com.alphacolorlab.spike/files/ptp/allprops-20261117-161800.bin
+16:18:00.689 props parsed=80
+16:18:00.690 0x5004 type=0x0002 get=1 en=1 cur=13 form=2
+16:18:00.691 [WB] 0x5005 type=0x0004 get=1 en=1 cur=02 00 form=2
+16:18:00.692 [FNumber] 0x5007 type=0x0004 get=0 en=1 cur=C2 01 form=1
+16:18:00.693 [FocusMode] 0x500A type=0x0004 get=1 en=1 cur=04 80 form=2
+16:18:00.694 [Metering] 0x500B type=0x0004 get=1 en=1 cur=01 80 form=2
+16:18:00.694 0x500C type=0x0004 get=0 en=2 cur=03 00 form=2
+16:18:00.695 [ExposureProgram] 0x500E type=0x0004 get=1 en=1 cur=03 00 form=2
+16:18:00.696 0x5010 type=0x0003 get=0 en=1 cur=00 00 form=2
+16:18:00.697 0x5013 type=0x0004 get=1 en=1 cur=01 00 form=2
+16:18:00.698 0xD200 type=0x0003 get=0 en=1 cur=00 00 form=2
+16:18:00.698 [DRO] 0xD201 type=0x0002 get=1 en=2 cur=01 form=2
+16:18:00.699 0xD203 type=0x0002 get=1 en=1 cur=01 form=2
+16:18:00.699 [Shutter] 0xD20D type=0x0006 get=0 en=2 cur=1E 00 01 00 form=1
+16:18:00.700 0xD20E type=0x0002 get=0 en=1 cur=0E form=2
+16:18:00.700 [ColorTemp] 0xD20F type=0x0004 get=1 en=0 cur=88 13 form=1
+16:18:00.701 0xD210 type=0x0002 get=1 en=1 cur=C0 form=1
+16:18:00.702 0xD211 type=0x0002 get=1 en=1 cur=01 form=2
+16:18:00.702 0xD213 type=0x0002 get=0 en=1 cur=01 form=2
+16:18:00.702 0xD214 type=0x0006 get=0 en=1 cur=00 20 8C 01 form=1
+16:18:00.702 0xD215 type=0x0004 get=0 en=1 cur=00 00 form=1
+16:18:00.702 0xD217 type=0x0002 get=0 en=1 cur=01 form=2
+16:18:00.703 0xD218 type=0x0001 get=0 en=2 cur=33 form=1
+16:18:00.703 0xD21B type=0x0004 get=1 en=2 cur=00 80 form=2
+16:18:00.703 0xD21C type=0x0002 get=1 en=1 cur=C0 form=1
+16:18:00.703 0xD21D type=0x0002 get=0 en=2 cur=00 form=1
+16:18:00.703 [ISO] 0xD21E type=0x0006 get=0 en=1 cur=FF FF FF 00 form=2
+16:18:00.703 0xD21F type=0x0002 get=0 en=1 cur=01 form=2
+16:18:00.703 0xD220 type=0x0002 get=1 en=1 cur=01 form=2
+16:18:00.704 0xD221 type=0x0002 get=0 en=1 cur=01 form=2
+16:18:00.704 0xD222 type=0x0004 get=0 en=1 cur=01 00 form=2
+16:18:00.704 0xD224 type=0x0003 get=1 en=1 cur=00 00 form=2
+16:18:00.704 0xD226 type=0x0006 get=1 en=1 cur=FF FF FF 00 form=2
+16:18:00.704 0xD227 type=0x0002 get=0 en=1 cur=00 form=2
+16:18:00.704 0xD228 type=0x0002 get=1 en=0 cur=05 form=2
+16:18:00.705 0xD229 type=0x0006 get=1 en=2 cur=1E 00 01 00 form=2
+16:18:00.705 0xD22A type=0x0002 get=0 en=0 cur=01 form=2
+16:18:00.705 0xD22B type=0x0002 get=0 en=2 cur=00 form=2
+16:18:00.705 0xD235 type=0x0002 get=0 en=1 cur=01 form=2
+16:18:00.705 0xD23E type=0x0002 get=1 en=0 cur=00 form=2
+16:18:00.705 [PictureProfile] 0xD23F type=0x0002 get=1 en=1 cur=01 form=2
+16:18:00.706 0xD240 type=0x0002 get=1 en=2 cur=01 form=2
+16:18:00.706 0xD241 type=0x0002 get=1 en=1 cur=09 form=2
+16:18:00.706 0xD242 type=0x0004 get=1 en=1 cur=1D 00 form=2
+16:18:00.706 0xD243 type=0x0004 get=1 en=0 cur=02 00 form=2
+16:18:00.706 0xD244 type=0x0004 get=1 en=0 cur=02 00 form=2
+16:18:00.706 0xD245 type=0x0002 get=1 en=0 cur=01 form=2
+16:18:00.706 0xD246 type=0x0002 get=1 en=0 cur=01 form=2
+16:18:00.706 0xD247 type=0x0002 get=1 en=1 cur=11 form=2
+16:18:00.706 0xD248 type=0x0002 get=0 en=0 cur=01 form=2
+16:18:00.707 0xD249 type=0x0006 get=0 en=0 cur=32 0E 00 00 form=1
+16:18:00.707 0xD24A type=0x0006 get=0 en=0 cur=00 00 00 00 form=1
+16:18:00.707 0xD24B type=0x0002 get=0 en=0 cur=00 form=2
+16:18:00.707 0xD24C type=0x0002 get=0 en=2 cur=64 form=1
+16:18:00.707 0xD24D type=0x0002 get=1 en=1 cur=00 form=2
+16:18:00.707 0xD24E type=0x0004 get=0 en=0 cur=01 00 form=2
+16:18:00.707 0xD24F type=0x0002 get=1 en=1 cur=01 form=2
+16:18:00.707 0xD250 type=0x0002 get=0 en=1 cur=00 form=2
+16:18:00.707 0xD25B type=0x0002 get=0 en=1 cur=01 form=2
+16:18:00.708 0xD25C type=0x0006 get=1 en=0 cur=E8 03 00 00 form=1
+16:18:00.708 0xD25D type=0x0006 get=0 en=1 cur=00 00 00 01 form=0
+16:18:00.708 0xD25F type=0x0002 get=1 en=2 cur=01 form=2
+16:18:00.708 0xD260 type=0x0002 get=0 en=0 cur=01 form=2
+16:18:00.708 0xD265 type=0x0002 get=0 en=1 cur=00 form=2
+16:18:00.708 0xD266 type=0x0002 get=0 en=1 cur=01 form=2
+16:18:00.708 0xD2C1 type=0x0004 get=129 en=1 cur=02 00 form=2
+16:18:00.708 0xD2C2 type=0x0004 get=129 en=1 cur=02 00 form=2
+16:18:00.708 0xD2C3 type=0x0004 get=129 en=1 cur=02 00 form=2
+16:18:00.709 0xD2C5 type=0x0004 get=131 en=1 cur=01 00 form=2
+16:18:00.709 0xD2C7 type=0x0004 get=129 en=1 cur=01 00 form=2
+16:18:00.709 0xD2C8 type=0x0004 get=129 en=1 cur=02 00 form=2
+16:18:00.709 0xD2C9 type=0x0004 get=129 en=1 cur=02 00 form=2
+16:18:00.709 0xD2CA type=0x0004 get=129 en=1 cur=02 00 form=2
+16:18:00.709 0xD2D1 type=0x0003 get=130 en=1 cur=02 00 form=1
+16:18:00.709 0xD2D5 type=0x0004 get=129 en=0 cur=01 00 form=2
+16:18:00.709 0xD2D6 type=0x0004 get=129 en=0 cur=01 00 form=2
+16:18:00.710 0xD2D7 type=0x0004 get=129 en=1 cur=02 00 form=2
+16:18:00.710 0xD2D8 type=0x0004 get=129 en=1 cur=02 00 form=2
+16:18:00.710 0xD2D9 type=0x0004 get=129 en=1 cur=02 00 form=2
+16:18:00.710 0xD2DD type=0x0001 get=132 en=1 cur=02 form=1
+16:18:00.710 0xD2DE type=0x0004 get=129 en=1 cur=02 00 form=2
+16:18:02.331 GetObjectInfo(LV) resp=0x2001
+16:18:02.356 first LV frame saved, 81664 bytes
+16:18:02.434 LV frame not ready resp=0x200F (failures=1)
+16:18:04.365 LV fps=12.3 frames=25
+16:18:06.566 LV fps=13.6 frames=55
+16:18:08.570 LV fps=15.0 frames=85
+16:18:09.793 LV frame not ready resp=0x200F (failures=21)
+16:18:10.649 LV fps=12.5 frames=111
+16:18:12.650 LV fps=15.0 frames=141
+16:18:14.655 LV fps=12.0 frames=165
+16:18:16.656 LV fps=15.0 frames=195
+16:18:17.114 LV frame not ready resp=0x200F (failures=41)
+16:18:18.764 LV fps=12.8 frames=222
+16:18:20.774 LV fps=14.9 frames=252
+16:18:22.779 LV fps=12.0 frames=276
+16:18:24.271 LV frame not ready resp=0x200F (failures=61)
+16:18:24.886 LV fps=12.8 frames=303
+16:18:26.923 LV fps=15.2 frames=334
+16:18:28.926 LV fps=15.0 frames=364
+16:18:31.051 LV fps=12.7 frames=391
+16:18:31.794 LV frame not ready resp=0x200F (failures=81)
+16:18:33.053 LV fps=12.0 frames=415
+16:18:35.068 LV fps=11.9 frames=439
+16:18:37.252 LV fps=10.5 frames=462
+16:18:38.471 LV frame not ready resp=0x200F (failures=101)
+16:18:39.322 LV fps=12.6 frames=488
+16:18:41.369 LV fps=12.2 frames=513
+16:18:43.372 LV fps=15.0 frames=543
+16:18:45.455 LV fps=12.5 frames=569
+16:18:45.473 LV frame not ready resp=0x200F (failures=121)
+16:18:47.460 LV fps=12.0 frames=593
+16:18:49.460 LV fps=15.0 frames=623
+16:18:51.477 LV fps=14.9 frames=653
+16:18:53.030 LV frame not ready resp=0x200F (failures=141)
+16:18:53.479 LV fps=12.0 frames=677
+16:18:55.494 LV fps=14.9 frames=707
+16:18:57.503 LV fps=11.9 frames=731
+16:18:59.503 LV fps=15.0 frames=761
+16:19:00.271 LV frame not ready resp=0x200F (failures=161)
+16:19:01.536 LV fps=11.8 frames=785
+16:19:03.607 LV fps=12.5 frames=811
+16:19:05.607 LV fps=15.0 frames=841
+16:19:07.653 LV fps=15.2 frames=872
+16:19:07.667 LV frame not ready resp=0x200F (failures=181)
+16:19:09.888 LV fps=13.9 frames=903
+16:19:11.928 LV fps=12.3 frames=928
+16:19:13.934 LV fps=15.0 frames=958
+16:19:15.154 LV frame not ready resp=0x200F (failures=201)
+16:19:16.008 LV fps=12.5 frames=984
+16:19:18.083 LV fps=12.5 frames=1010
+16:19:20.285 LV fps=13.6 frames=1040
+16:19:22.111 LV frame not ready resp=0x200F (failures=221)
+16:19:22.328 LV fps=12.2 frames=1065
+16:19:24.337 LV fps=14.9 frames=1095
+16:20:41.067 LV fps=0.2 frames=1109
+16:20:43.122 LV fps=12.7 frames=1135
+16:20:44.911 LV frame not ready resp=0x200F (failures=241)
+16:20:45.145 LV fps=14.8 frames=1165
+16:20:47.211 LV fps=12.6 frames=1191
+16:20:49.324 LV fps=12.8 frames=1218
+16:20:51.332 LV fps=14.9 frames=1248
+16:20:52.152 LV frame not ready resp=0x200F (failures=261)
+16:20:53.336 LV fps=12.0 frames=1272
+16:20:55.343 LV fps=15.0 frames=1302
+16:20:57.452 LV fps=12.8 frames=1329
+16:20:59.353 LV frame not ready resp=0x200F (failures=281)
+16:20:59.576 LV fps=12.7 frames=1356
+16:21:01.643 LV fps=12.6 frames=1382
+16:21:03.683 LV fps=12.3 frames=1407
+16:21:05.695 LV fps=14.9 frames=1437
+16:21:06.314 LV frame not ready resp=0x200F (failures=301)
+16:21:07.703 LV fps=11.9 frames=1461
+16:21:09.713 LV fps=14.9 frames=1491
+16:21:11.894 LV fps=13.3 frames=1520
+16:21:13.710 LV frame not ready resp=0x200F (failures=321)
+16:21:13.925 LV fps=12.3 frames=1545
+16:21:15.930 LV fps=15.0 frames=1575
+16:21:17.944 LV fps=11.9 frames=1599
+16:21:20.009 LV fps=12.1 frames=1624
+16:21:20.991 LV frame not ready resp=0x200F (failures=341)
+16:21:22.039 LV fps=15.3 frames=1655
+16:21:24.085 LV fps=12.2 frames=1680
+16:21:26.092 LV fps=14.9 frames=1710
+16:21:28.168 LV fps=12.5 frames=1736
+16:21:28.351 LV frame not ready resp=0x200F (failures=361)
+16:21:30.172 LV fps=15.0 frames=1766
+16:21:32.407 LV fps=13.9 frames=1797
+16:21:34.415 LV fps=12.0 frames=1821
+16:21:35.710 LV frame not ready resp=0x200F (failures=381)
+16:21:36.556 LV fps=13.1 frames=1849
+16:21:38.567 LV fps=14.9 frames=1879
+16:29:09.928 EXC liveView: java.io.IOException: bulkOut sent -1 of 16
+16:29:09.938   java.io.IOException: bulkOut sent -1 of 16
+16:29:09.939   	at com.alphacolorlab.spike.PtpDevice.send(PtpUsb.kt:93)
+16:29:09.939   	at com.alphacolorlab.spike.PtpDevice.transact(PtpUsb.kt:79)
+16:29:09.939   	at com.alphacolorlab.spike.PtpDevice.liveViewGet(PtpUsb.kt:198)
+16:29:09.940   	at com.alphacolorlab.spike.MainActivity.liveViewLoop(MainActivity.kt:309)
+16:29:09.940   	at com.alphacolorlab.spike.MainActivity.toggleLiveView$lambda$30(MainActivity.kt:288)
+16:29:09.941   	at com.alphacolorlab.spike.MainActivity.$r8$lambda$XPZ6UccQVVbxAPtQww_fo3WgcWk(MainActivity.kt:0)
+16:29:09.941   	at com.alphacolorlab.spike.MainActivity$$ExternalSyntheticLambda17.invoke(D8$$SyntheticClass:0)
+16:29:09.941   	at com.alphacolorlab.spike.MainActivity.bg$lambda$23(MainActivity.kt:147)
+16:29:09.941   	at com.alphacolorlab.spike.MainActivity.$r8$lambda$0Jp0zEgI5N0x9sfaeua4fBxzXgw(MainActivity.kt:0)
+16:29:09.941   	at com.alphacolorlab.spike.MainActivity$$ExternalSyntheticLambda20.run(D8$$SyntheticClass:0)
+16:29:09.941   	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1100)
+16:29:09.942   	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+16:29:09.942   	at java.lang.Thread.run(Thread.java:1572)
+16:29:11.114 USB detached /dev/bus/usb/001/002
+16:29:11.116 PTP closed
+16:29:32.402 USB 054C:0D95 name=/dev/bus/usb/001/002 ifs=1 perm=true
+16:29:32.404 launched by USB attach: /dev/bus/usb/001/002
+16:29:43.051 opening picker on 'FFFB-E88D'
+16:29:49.828 card tree saved: content://com.android.externalstorage.documents/tree/FFFB-E88D%3A
+16:29:49.915 root='FFFB-E88D' canWrite=true
+16:29:49.979 SONYCARD.IND present
+16:29:50.091 MEDIAPRO systemKind=ZV-E10 size=403
+16:29:50.193   CAMPR01P.DAT size=4608 b315=0x01
+16:29:50.219   CAMPR02P.DAT size=4608 b315=0x01
+16:29:50.245   CAMPR03P.DAT size=4608 b315=0x01
+16:29:50.273   CAMPR04P.DAT size=4608 b315=0x01
+16:31:00.547 backed up CAMPR01P.DAT size=4608 -> /storage/emulated/0/Android/data/com.alphacolorlab.spike/files/backup/20261117-163100
+16:31:00.567 backed up CAMPR02P.DAT size=4608 -> /storage/emulated/0/Android/data/com.alphacolorlab.spike/files/backup/20261117-163100
+16:31:00.582 backed up CAMPR03P.DAT size=4608 -> /storage/emulated/0/Android/data/com.alphacolorlab.spike/files/backup/20261117-163100
+16:31:00.603 backed up CAMPR04P.DAT size=4608 -> /storage/emulated/0/Android/data/com.alphacolorlab.spike/files/backup/20261117-163100
+16:31:00.657 OK CAMPR01P.DAT wrote=4608 read=4608 b315=0x01 53ms
+16:31:00.727 OK CAMPR02P.DAT wrote=4608 read=4608 b315=0x01 69ms
+16:31:00.797 OK CAMPR03P.DAT wrote=4608 read=4608 b315=0x01 69ms
+16:31:00.857 OK CAMPR04P.DAT wrote=4608 read=4608 b315=0x01 59ms
+16:31:00.858 Hybrid write: ALL OK
+16:31:04.899 newest DSC09401.JPG size=6967921 modified=1623122481320
+16:31:04.945   Make=SONY
+16:31:04.945   Model=ZV-E10
+16:31:04.945   Software=ZV-E10 v2.03
+16:31:04.946   DateTimeOriginal=2021:06:08 03:21:21
+16:31:04.946   ExposureTime=0.01
+16:31:04.946   FNumber=7.1
+16:31:04.946   PhotographicSensitivity=1000
+16:31:04.946   ExposureProgram=1
+16:31:04.946   WhiteBalance=1
+16:31:04.946   MeteringMode=5
+16:31:04.946   FocalLength=160/10
+16:31:04.946   LensModel=E PZ 16-50mm F3.5-5.6 OSS
+16:31:04.947 no EXIF thumbnail; decoding full image at inSampleSize 8

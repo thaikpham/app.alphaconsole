@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.alphacolorlab.spike.PtpCodecTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-11-17T09:05:41" hostname="thaikpham" time="0.069">
+  <properties/>
+  <testcase name="commandRoundTripsThroughDecode" classname="com.alphacolorlab.spike.PtpCodecTest" time="0.018"/>
+  <testcase name="commandHeaderIsLittleEndian" classname="com.alphacolorlab.spike.PtpCodecTest" time="0.0"/>
+  <testcase name="decodeRejectsShortInput" classname="com.alphacolorlab.spike.PtpCodecTest" time="0.006"/>
+  <testcase name="liveViewJpegSlicesByHeader" classname="com.alphacolorlab.spike.PtpCodecTest" time="0.0"/>
+  <testcase name="deviceInfoParsesHandBuiltBlock" classname="com.alphacolorlab.spike.PtpCodecTest" time="0.018"/>
+  <testcase name="allPropsReturnsPartialWithNoteOnTruncation" classname="com.alphacolorlab.spike.PtpCodecTest" time="0.018"/>
+  <testcase name="allPropsParsesFourEntries" classname="com.alphacolorlab.spike.PtpCodecTest" time="0.001"/>
+  <testcase name="decodeRejectsLengthMismatch" classname="com.alphacolorlab.spike.PtpCodecTest" time="0.006"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

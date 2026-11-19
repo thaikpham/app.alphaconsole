@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="expo.modules.usbvolume.FileBackendTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2026-11-18T11:44:34.228Z" hostname="thaikpham" time="0.041">
+  <properties/>
+  <testcase name="inspectReportsNoFamilyWhenPAndNMixed" classname="expo.modules.usbvolume.FileBackendTest" time="0.01"/>
+  <testcase name="inspectReportsSonyMarkerFamilyAndSettingFiles" classname="expo.modules.usbvolume.FileBackendTest" time="0.001"/>
+  <testcase name="restoreRemovesFilesThatDidNotExistBeforeTheWrite" classname="expo.modules.usbvolume.FileBackendTest" time="0.016"/>
+  <testcase name="refusesPathsOutsideTheSettingFolder" classname="expo.modules.usbvolume.FileBackendTest" time="0.001"/>
+  <testcase name="backupHoldsOnlyFilesThatExistedBeforeTheWrite" classname="expo.modules.usbvolume.FileBackendTest" time="0.002"/>
+  <testcase name="refusesCardWithoutSonyMarkerAndCreatesNoSettingFolder" classname="expo.modules.usbvolume.FileBackendTest" time="0.001"/>
+  <testcase name="restoreReturnsCardToBackup" classname="expo.modules.usbvolume.FileBackendTest" time="0.001"/>
+  <testcase name="readBackMismatchRestoresOriginal" classname="expo.modules.usbvolume.FileBackendTest" time="0.004"/>
+  <testcase name="writeFailureRestoresEveryAttemptedFileAndLeavesRestUntouched" classname="expo.modules.usbvolume.FileBackendTest" time="0.002"/>
+  <testcase name="writeVerifiedWritesAndReadsBack" classname="expo.modules.usbvolume.FileBackendTest" time="0.001"/>
+  <testcase name="restoreRefusesBadOrMissingBackupId" classname="expo.modules.usbvolume.FileBackendTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
