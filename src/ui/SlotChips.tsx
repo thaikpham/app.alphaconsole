@@ -23,6 +23,7 @@ type Props = {
 const TRACK_HEIGHT = 48;
 const INSET = 4;
 const BASIS = 60;
+const PILL_RADIUS = (TRACK_HEIGHT - 2 * INSET) / 2;
 
 /** Slot picker (M1 to M4) on a solid track (L1). The selected pill grows with a spring and shows its slot name. */
 export function SlotChips({ slots, value, onChange }: Props) {
@@ -127,7 +128,9 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     gap: 5,
-    borderRadius: radii.pill,
+    // Exact half height, not radii.pill: Android does not re-clamp a huge radius after Reanimated changes the width,
+    // so the pill went square once it moved.
+    borderRadius: PILL_RADIUS,
     alignItems: "center",
     justifyContent: "center",
   },
