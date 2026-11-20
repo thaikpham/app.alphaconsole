@@ -1,29 +1,19 @@
-import { useEffect, useState, type ReactNode } from "react";
-import {
-  Animated,
-  KeyboardAvoidingView,
-  Modal,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { KeyboardAvoidingView, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
+import Reanimated, { cancelAnimation, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
+import { scheduleOnRN } from "react-native-worklets";
 import { content } from "@/content";
 import { detentHeight, type Detent } from "./detent";
 import { Glass, ModalScope } from "./Glass";
-import { durations, radii, typeScale } from "./tokens";
-import { animatedSpring, exitEasing } from "./motion";
+import { haptic } from "./haptics";
+import { exitEasing, springs } from "./motion";
+import { durations, gesture, radii, typeScale } from "./tokens";
 import { spacing, useTheme } from "./theme";
 import { useReduceMotion } from "./useReduceMotion";
 
-// Sheet exit is ease-in over durations.short (SPEC-IOS §1.5). Enter is the sheet spring.
-// Design sheet radii (AlphaIOS.dc.html): top 38 on every sheet. A floating medium sheet also rounds its bottom at 47.
-// The token radii.sheet (32) is not used, so the sheet matches the design.
-const SHEET_RADIUS = 38;
-const FLOAT_RADIUS = 47;
+// A medium (floating) sheet is inset from the left, right and bottom edges. Both detents round at radii.sheet.
 const FLOAT_INSET = 8;
 
 type Props = {
@@ -40,7 +30,9 @@ type Props = {
 };
 
 /**
- * Solid sheet in a Modal with a grabber, spring enter and 200 ms exit (SPEC-IOS §4, §6, O3, O6, O8).
+ * Solid sheet in a Modal with a grabber. Drag the grabber or header down and the sheet follows the finger. Release carries the
+ * velocity into a spring: past half the sheet height it dismisses, otherwise it springs back to the detent with a rigid haptic.
+ * Enter is the sheet spring. Exit is durations.short on the exit curve. Reduce Motion fades in place and turns the drag off.
  * Scrim tap, the close button and Android back call onClose. The parent sets visible to false,
  * then the sheet slides out and unmounts, so its children start fresh on every open.
  */
@@ -50,74 +42,129 @@ export function BottomSheet({ visible, title, onClose, children, detent = "mediu
   const { height: windowHeight } = useWindowDimensions();
   const reduce = useReduceMotion();
   const [shown, setShown] = useState(visible);
-  const [enter] = useState(() => new Animated.Value(0));
   const height = detentHeight(detent, windowHeight, insets.top);
-  // Medium floats inset from the edges with all four corners rounded. Large is flush to the bottom.
+  // Medium floats inset from the edges. Large is flush to the bottom.
   const floating = detent === "medium";
   // Slide-in starts fully below the screen, including the float inset.
   const slide = floating ? height + FLOAT_INSET : height;
+  // Share of the window the sheet covers. The scrim darkens with it, so a full-height sheet sits on a more opaque scrim.
+  const coverage = windowHeight > 0 ? Math.min(1, height / windowHeight) : 0;
+
+  // Points below the detent: 0 at rest, `slide` off screen.
+  const offset = useSharedValue(slide);
+  // Sheet and scrim opacity. Reduce Motion uses it in place of the slide.
+  const fade = useSharedValue(1);
+  // Offset where the current drag began.
+  const dragFrom = useSharedValue(0);
 
   // Mount as soon as it opens. Setting state during render avoids a frame with the old state.
   if (visible && !shown) setShown(true);
 
-  // When closed, slide out, then unmount.
-  useEffect(() => {
-    if (visible || !shown) return;
-    const exit = Animated.timing(enter, {
-      toValue: 0,
-      duration: reduce ? 0 : durations.short,
-      easing: exitEasing,
-      useNativeDriver: true,
-    });
-    exit.start(({ finished }) => {
-      if (finished) setShown(false);
-    });
-    return () => exit.stop();
-  }, [visible, shown, enter, reduce]);
+  const hide = useCallback(() => setShown(false), []);
 
+  // Opens: slide up on the sheet spring, or fade in place under Reduce Motion.
   useEffect(() => {
     if (!visible || !shown) return;
     if (reduce) {
-      enter.setValue(1);
+      offset.set(0);
+      fade.set(0);
+      fade.set(withTiming(1, { duration: durations.short }));
       return;
     }
-    const open = animatedSpring(enter, 1, "sheet");
-    open.start();
-    return () => open.stop();
-  }, [visible, shown, enter, reduce]);
+    fade.set(1);
+    offset.set(slide);
+    offset.set(withSpring(0, springs.sheet));
+  }, [visible, shown, reduce, slide, offset, fade]);
 
-  const translateY = enter.interpolate({ inputRange: [0, 1], outputRange: [slide, 0] });
-  // The spring overshoots past 1. Clamp the scrim so it never gets brighter than its resting value.
-  const scrimOpacity = enter.interpolate({ inputRange: [0, 1], outputRange: [0, 1], extrapolate: "clamp" });
+  // Closes: slide out on the exit curve, or fade out under Reduce Motion. Unmounts when the animation finishes.
+  useEffect(() => {
+    if (visible || !shown) return;
+    const done = (finished?: boolean) => {
+      "worklet";
+      if (finished) scheduleOnRN(hide);
+    };
+    if (reduce) fade.set(withTiming(0, { duration: durations.short }, done));
+    else offset.set(withTiming(slide, { duration: durations.short, easing: exitEasing }, done));
+    return () => {
+      cancelAnimation(offset);
+      cancelAnimation(fade);
+    };
+  }, [visible, shown, reduce, slide, offset, fade, hide]);
+
+  const drag = useMemo(
+    () =>
+      Gesture.Pan()
+        .enabled(!reduce)
+        .activeOffsetY(gesture.dragSlopPx)
+        .onStart(() => {
+          dragFrom.set(offset.get());
+        })
+        .onUpdate((event) => {
+          offset.set(Math.min(slide, Math.max(0, dragFrom.get() + event.translationY)));
+        })
+        .onEnd((event) => {
+          const landing = offset.get() + event.velocityY * gesture.flingProjectionS;
+          if (landing > height / 2) {
+            offset.set(
+              withSpring(slide, { ...springs.snappy, velocity: event.velocityY }, (finished) => {
+                "worklet";
+                if (finished) scheduleOnRN(onClose);
+              }),
+            );
+            return;
+          }
+          offset.set(withSpring(0, { ...springs.bouncy, velocity: event.velocityY }));
+          scheduleOnRN(haptic, "impactRigid");
+        }),
+    [dragFrom, height, offset, onClose, reduce, slide],
+  );
+
+  const sheetStyle = useAnimatedStyle(() => ({
+    opacity: fade.get(),
+    transform: [{ translateY: offset.get() }],
+  }));
+
+  // The spring overshoots past rest. The clamp keeps the scrim from getting brighter than its resting value.
+  const scrimStyle = useAnimatedStyle(() => {
+    const open = slide > 0 ? Math.min(1, Math.max(0, 1 - offset.get() / slide)) : 0;
+    return { opacity: fade.get() * open * coverage };
+  }, [slide, coverage]);
 
   return (
     <Modal visible={shown} transparent animationType="none" presentationStyle="overFullScreen" onRequestClose={onClose}>
       <ModalScope>
-        <KeyboardAvoidingView behavior="padding" style={styles.root}>
-          <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: theme.scrim, opacity: scrimOpacity }]} />
-          <Pressable accessible={false} onPress={onClose} style={StyleSheet.absoluteFill} />
-          <Animated.View
-            style={[
-              styles.sheet,
-              floating ? styles.floating : null,
-              { height, backgroundColor: theme.sheet, paddingBottom: insets.bottom, transform: [{ translateY }] },
-            ]}
-          >
-            <View style={styles.grabberBox}>
-              <View style={[styles.grabber, { backgroundColor: theme.fill2 }]} />
-            </View>
-            <View style={styles.header}>
-              <View style={styles.side}>{leading}</View>
-              <Text accessibilityRole="header" numberOfLines={1} style={[styles.title, { color: theme.label }]}>
-                {title}
-              </Text>
-              <View style={[styles.side, styles.sideEnd]}>{trailing ?? <CloseButton onPress={onClose} />}</View>
-            </View>
-            <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} keyboardShouldPersistTaps="handled">
-              {children}
-            </ScrollView>
-          </Animated.View>
-        </KeyboardAvoidingView>
+        <GestureHandlerRootView style={styles.fill}>
+          <KeyboardAvoidingView behavior="padding" style={styles.root}>
+            <Reanimated.View style={[StyleSheet.absoluteFill, { backgroundColor: theme.scrim }, scrimStyle]} />
+            <Pressable accessible={false} onPress={onClose} style={StyleSheet.absoluteFill} />
+            <Reanimated.View
+              style={[
+                styles.sheet,
+                floating ? styles.floating : null,
+                { height, backgroundColor: theme.sheet, paddingBottom: insets.bottom },
+                sheetStyle,
+              ]}
+            >
+              <GestureDetector gesture={drag}>
+                <View>
+                  <View style={styles.grabberBox}>
+                    <View style={[styles.grabber, { backgroundColor: theme.fill2 }]} />
+                  </View>
+                  <View style={styles.header}>
+                    <View style={styles.side}>{leading}</View>
+                    <Text accessibilityRole="header" numberOfLines={1} style={[styles.title, { color: theme.label }]}>
+                      {title}
+                    </Text>
+                    <View style={[styles.side, styles.sideEnd]}>{trailing ?? <CloseButton onPress={onClose} />}</View>
+                  </View>
+                </View>
+              </GestureDetector>
+              <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} keyboardShouldPersistTaps="handled">
+                {children}
+              </ScrollView>
+            </Reanimated.View>
+          </KeyboardAvoidingView>
+        </GestureHandlerRootView>
       </ModalScope>
     </Modal>
   );
@@ -177,19 +224,20 @@ function CloseButton({ onPress }: { onPress: () => void }) {
 }
 
 const styles = StyleSheet.create({
+  fill: { flex: 1 },
   root: { flex: 1, justifyContent: "flex-end" },
   sheet: {
     // Keyboard padding shrinks the root, so the sheet shrinks with it instead of running off the top.
     maxHeight: "100%",
-    borderTopLeftRadius: SHEET_RADIUS,
-    borderTopRightRadius: SHEET_RADIUS,
+    borderTopLeftRadius: radii.sheet,
+    borderTopRightRadius: radii.sheet,
     overflow: "hidden",
   },
   floating: {
     marginHorizontal: FLOAT_INSET,
     marginBottom: FLOAT_INSET,
-    borderBottomLeftRadius: FLOAT_RADIUS,
-    borderBottomRightRadius: FLOAT_RADIUS,
+    borderBottomLeftRadius: radii.sheet,
+    borderBottomRightRadius: radii.sheet,
   },
   grabberBox: { height: 20, paddingTop: 7, alignItems: "center" },
   grabber: { width: 36, height: 5, borderRadius: 3 },

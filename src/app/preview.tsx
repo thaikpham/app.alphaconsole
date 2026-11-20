@@ -35,7 +35,7 @@ import { Snackbar, useSnackbar } from "@/ui/Snackbar";
 import { StatusChip } from "@/ui/StatusChip";
 import { settingsLine } from "@/ui/summaryLine";
 import { radii, spacing, useTheme } from "@/ui/theme";
-import { timing, typeScale } from "@/ui/tokens";
+import { press, timing, typeScale } from "@/ui/tokens";
 import { mismatchSummary } from "@/write/mismatch";
 import { usbHint } from "@/write/usbHint";
 import {
@@ -520,7 +520,7 @@ const styles = StyleSheet.create({
   liveGlass: { borderRadius: radii.pill, paddingHorizontal: spacing.md, paddingVertical: spacing.xs },
   closeAnchor: { position: "absolute", right: spacing.lg },
   closeGlass: { borderRadius: radii.pill, paddingHorizontal: spacing.lg, paddingVertical: spacing.sm },
-  pressed: { transform: [{ scale: 0.96 }] },
+  pressed: { transform: [{ scale: press.button }] },
   row: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
   center: { textAlign: "center" },
   strip: { flexDirection: "row", gap: spacing.sm },

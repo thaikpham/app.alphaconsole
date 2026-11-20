@@ -25,7 +25,7 @@ import { Snackbar, useSnackbar } from "@/ui/Snackbar";
 import { ValueRow } from "@/ui/ValueRow";
 import { navHeader } from "@/ui/navHeader";
 import { useTheme } from "@/ui/theme";
-import { typeScale } from "@/ui/tokens";
+import { press, typeScale } from "@/ui/tokens";
 
 const noop = () => undefined;
 
@@ -175,7 +175,7 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  pressedScale: { transform: [{ scale: 0.96 }] },
+  pressedScale: { transform: [{ scale: press.button }] },
   // Person glyph for the signed-out avatar (drawn with Views; no icon library).
   avatar: { width: 36, height: 36, borderRadius: 18, alignItems: "center", justifyContent: "center", gap: 2 },
   head: { width: 12, height: 12, borderRadius: 6 },

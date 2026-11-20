@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
+import Reanimated from "react-native-reanimated";
 import { Glass } from "./Glass";
+import { haptic } from "./haptics";
 import { usePressScale } from "./motion";
 import { durations, typeScale } from "./tokens";
 import { controlHeight, radii, spacing, useTheme, type Palette } from "./theme";
@@ -17,14 +19,19 @@ type Props = {
 
 /**
  * Primary is a solid `prime` capsule, secondary is Liquid Glass, plain is `accent` text.
- * Press feedback scales to `press.button` (snappy in, bouncy out). Glass also lights a soft glow on the non-native
- * fallback. Reduce Motion drops the animation and keeps the end state.
+ * Press feedback scales to `press.button` (snappy in, bouncy out). Primary also gives a light impact haptic. Glass also
+ * lights a soft glow on the non-native fallback. Reduce Motion drops the animation and keeps the end state.
  */
 export function Button({ label, onPress, variant = "primary", disabled = false }: Props) {
   const theme = useTheme();
   const reduce = useReduceMotion();
-  const { scale, onPressIn, onPressOut } = usePressScale("button");
+  const { style, onPressIn, onPressOut } = usePressScale("button");
   const [glow] = useState(() => new Animated.Value(0));
+
+  const handlePress = () => {
+    if (variant === "primary") haptic("impactLight");
+    onPress();
+  };
 
   const pressIn = () => {
     onPressIn();
@@ -43,11 +50,11 @@ export function Button({ label, onPress, variant = "primary", disabled = false }
       accessibilityRole="button"
       accessibilityState={{ disabled }}
       disabled={disabled}
-      onPress={onPress}
+      onPress={handlePress}
       onPressIn={pressIn}
       onPressOut={pressOut}
     >
-      <Animated.View style={{ transform: [{ scale }] }}>
+      <Reanimated.View style={style}>
         {variant === "primary" ? (
           <View style={[styles.capsule, { backgroundColor: disabled ? theme.disabled : theme.prime }]}>{text}</View>
         ) : variant === "secondary" ? (
@@ -57,7 +64,7 @@ export function Button({ label, onPress, variant = "primary", disabled = false }
         ) : (
           <View style={styles.plain}>{text}</View>
         )}
-      </Animated.View>
+      </Reanimated.View>
     </Pressable>
   );
 }

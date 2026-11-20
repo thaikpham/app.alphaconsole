@@ -74,10 +74,21 @@ export const timing = {
   mountWaitMs: 60_000,
   replugFallbackMs: 8_000,
   sheetCloseHoldMs: 280,
+  snackbarPlainMs: 2_400,
+  snackbarActionMs: 4_000,
 } as const;
 
 /** Offsets for enter transforms. Gap. */
 export const distance = { snackbarEnterPx: 8 } as const;
+
+/** Scale at the top of the progress ring's completion pop. Gap. */
+export const ringPop = { scale: 1.08 } as const;
+
+/**
+ * Drag tuning. dragSlopPx: horizontal movement before a drag takes over from a scroll. flingProjectionS: how far a release
+ * carries past its position, in seconds of release velocity, before the snap picks the nearest segment. Gap.
+ */
+export const gesture = { dragSlopPx: 8, flingProjectionS: 0.2 } as const;
 
 export const glass = {
   ...generated.glass,

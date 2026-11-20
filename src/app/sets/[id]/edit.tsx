@@ -55,7 +55,7 @@ import { Toggle } from "@/ui/Toggle";
 import { ValuePicker } from "@/ui/ValuePicker";
 import { ValueRow } from "@/ui/ValueRow";
 import { controlHeight, radii, spacing, useTheme } from "@/ui/theme";
-import { durations, typeScale } from "@/ui/tokens";
+import { durations, press, typeScale } from "@/ui/tokens";
 import { useKeyboardVisible } from "@/ui/useKeyboardVisible";
 import { useReduceMotion } from "@/ui/useReduceMotion";
 
@@ -671,7 +671,7 @@ const styles = StyleSheet.create({
   },
   capsuleDivider: { width: 1, height: 20 },
   capsuleText: { ...typeScale.subhead, fontWeight: "600" },
-  pressedScale: { transform: [{ scale: 0.96 }] },
+  pressedScale: { transform: [{ scale: press.button }] },
   fixed: { gap: spacing.sm },
   fixedRow: { gap: spacing.xs },
   path: { ...typeScale.footnote },

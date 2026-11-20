@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { Animated, Platform, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
+import { Platform, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
+import Reanimated from "react-native-reanimated";
 import { usePressScale } from "./motion";
 import { Glass, GlassContainer } from "./Glass";
 import { controlHeight, radii, spacing } from "./tokens";
@@ -26,7 +27,7 @@ export type GlassToolbarButtonProps = {
 
 /** Button inside a toolbar group. Presses to `press.button` (M6). Hit area: 48 dp on Android (P2), 44 pt on iOS. */
 export function GlassToolbarButton({ accessibilityLabel, onPress, disabled = false, children }: GlassToolbarButtonProps) {
-  const { scale, onPressIn, onPressOut } = usePressScale("button");
+  const { style, onPressIn, onPressOut } = usePressScale("button");
   return (
     <Pressable
       accessibilityRole="button"
@@ -36,9 +37,7 @@ export function GlassToolbarButton({ accessibilityLabel, onPress, disabled = fal
       onPressIn={onPressIn}
       onPressOut={onPressOut}
     >
-      <Animated.View style={[styles.button, disabled && styles.disabled, { transform: [{ scale }] }]}>
-        {children}
-      </Animated.View>
+      <Reanimated.View style={[styles.button, disabled && styles.disabled, style]}>{children}</Reanimated.View>
     </Pressable>
   );
 }

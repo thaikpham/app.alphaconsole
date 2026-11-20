@@ -6,6 +6,7 @@ import { content } from "@/content";
 import { SEGMENT_LIMIT } from "@/core/web/lib/app-core/sets/rows";
 import { BottomSheet } from "./BottomSheet";
 import { Button } from "./Button";
+import { haptic } from "./haptics";
 import { SegmentedTabs } from "./SegmentedTabs";
 import { Stepper } from "./Stepper";
 import { Toggle } from "./Toggle";
@@ -162,10 +163,13 @@ function Wheel({ options, labelOf, picked, position, enabled, onPick }: WheelPro
     onPick(value);
   };
 
+  const rowAt = (y: number) => Math.min(options.length - 1, Math.max(0, Math.round(y / ROW)));
+  // Row the last selection haptic fired for. The wheel ticks each time the offset crosses onto another row.
+  const ticked = useRef(position);
+
   // Picks the row nearest the offset where the scroll settled.
   const settle = (y: number) => {
-    const i = Math.min(options.length - 1, Math.max(0, Math.round(y / ROW)));
-    const value = options[i];
+    const value = options[rowAt(y)];
     if (value !== undefined) onPick(value);
   };
 
@@ -190,6 +194,13 @@ function Wheel({ options, labelOf, picked, position, enabled, onPick }: WheelPro
         showsVerticalScrollIndicator={false}
         scrollEnabled={enabled}
         accessibilityElementsHidden
+        scrollEventThrottle={16}
+        onScroll={(event) => {
+          const i = rowAt(event.nativeEvent.contentOffset.y);
+          if (i === ticked.current) return;
+          ticked.current = i;
+          haptic("selection");
+        }}
         onScrollEndDrag={(event) => settle(event.nativeEvent.contentOffset.y)}
         onMomentumScrollEnd={(event) => settle(event.nativeEvent.contentOffset.y)}
       >

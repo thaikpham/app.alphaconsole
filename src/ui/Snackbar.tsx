@@ -1,19 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Animated, Pressable, StyleSheet, Text } from "react-native";
+import Reanimated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Glass } from "./Glass";
-import { animatedSpring } from "./motion";
-import { distance, press, typeScale } from "./tokens";
+import { animatedSpring, usePressScale } from "./motion";
+import { distance, timing, typeScale } from "./tokens";
 import { controlHeight, radii, spacing, useTheme } from "./theme";
 import { useReduceMotion } from "./useReduceMotion";
 
 export type SnackbarAction = { label: string; onPress: () => void };
 export type SnackbarState = { id: number; message: string; action?: SnackbarAction };
 
-const PLAIN_MS = 2400;
-const ACTION_MS = 4000;
-
-/** Holds the current snackbar. It hides after 2400 ms, or 4000 ms when it has an action. */
+/** Holds the current snackbar. It hides after `timing.snackbarPlainMs`, or `timing.snackbarActionMs` when it has an action. */
 export function useSnackbar() {
   const [state, setState] = useState<SnackbarState | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -29,7 +27,7 @@ export function useSnackbar() {
       clearTimeout(timer.current);
       nextId.current += 1;
       setState({ id: nextId.current, message, action });
-      timer.current = setTimeout(hide, action ? ACTION_MS : PLAIN_MS);
+      timer.current = setTimeout(hide, action ? timing.snackbarActionMs : timing.snackbarPlainMs);
     },
     [hide],
   );
@@ -73,20 +71,30 @@ function SnackbarBar({ message, action, onDismiss }: { message: string; action?:
     >
       <Glass style={styles.surface}>
         <Text style={[styles.message, { color: theme.label }]}>{message}</Text>
-        {action ? (
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => {
-              action.onPress();
-              onDismiss();
-            }}
-            style={({ pressed }) => [styles.action, pressed && styles.pressed]}
-          >
-            <Text style={[styles.actionLabel, { color: theme.accentText }]}>{action.label}</Text>
-          </Pressable>
-        ) : null}
+        {action ? <SnackbarActionButton action={action} onDismiss={onDismiss} /> : null}
       </Glass>
     </Animated.View>
+  );
+}
+
+/** Action label. Presses in and out on the button spring (M6). */
+function SnackbarActionButton({ action, onDismiss }: { action: SnackbarAction; onDismiss: () => void }) {
+  const theme = useTheme();
+  const pressScale = usePressScale("button");
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={() => {
+        action.onPress();
+        onDismiss();
+      }}
+      onPressIn={pressScale.onPressIn}
+      onPressOut={pressScale.onPressOut}
+    >
+      <Reanimated.View style={[styles.action, pressScale.style]}>
+        <Text style={[styles.actionLabel, { color: theme.accentText }]}>{action.label}</Text>
+      </Reanimated.View>
+    </Pressable>
   );
 }
 
@@ -115,5 +123,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
   },
   actionLabel: { ...typeScale.button },
-  pressed: { transform: [{ scale: press.button }] },
 });

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Animated, StyleSheet, Text, View } from "react-native";
 import { animatedSpring } from "./motion";
-import { typeScale } from "./tokens";
+import { ringPop, typeScale } from "./tokens";
 import { useTheme } from "./theme";
 import { useReduceMotion } from "./useReduceMotion";
 
@@ -14,7 +14,7 @@ const INSET = (SIZE - BOX) / 2;
 /**
  * Four-quarter ring with "filled/4" in the middle (SPEC-IOS §4.7). Same drawing as ProgressRing.tsx: zero dependencies,
  * each quarter is a circle whose only visible border is the top side. When the ring completes it springs once,
- * scale 1 → 1.08 → 1, in place of the symbolEffect bounce. Reduce Motion skips the spring.
+ * scale 1 → ringPop.scale → 1, in place of the symbolEffect bounce. Reduce Motion skips the spring.
  */
 export function ProgressRing({ filled }: { filled: number }) {
   const theme = useTheme();
@@ -29,7 +29,7 @@ export function ProgressRing({ filled }: { filled: number }) {
       return;
     }
     const run = Animated.sequence([
-      animatedSpring(pop, 1.08, "smooth"),
+      animatedSpring(pop, ringPop.scale, "smooth"),
       animatedSpring(pop, 1, "smooth"),
     ]);
     run.start();

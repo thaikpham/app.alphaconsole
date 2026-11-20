@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
 import { content } from "@/content";
 import { Glass } from "./Glass";
+import { haptic } from "./haptics";
 import { ModifiedDot } from "./ModifiedDot";
 import { animatedSpring } from "./motion";
 import { typeScale } from "./tokens";
@@ -24,11 +25,15 @@ const BASIS = 56;
 
 /** Slot picker (M1 to M4) on a glass track. The selected pill grows with a spring and shows its slot name. */
 export function SlotChips({ slots, value, onChange }: Props) {
+  const choose = (id: string) => {
+    if (id !== value) haptic("selection");
+    onChange(id);
+  };
   return (
     <View accessibilityRole="radiogroup">
       <Glass style={styles.track}>
         {slots.map((slot) => (
-          <SlotChip key={slot.id} slot={slot} selected={slot.id === value} onPress={() => onChange(slot.id)} />
+          <SlotChip key={slot.id} slot={slot} selected={slot.id === value} onPress={() => choose(slot.id)} />
         ))}
       </Glass>
     </View>

@@ -1,6 +1,7 @@
-import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { content } from "@/content";
 import { ModifiedDot } from "./ModifiedDot";
+import { ToggleSwitch } from "./ToggleSwitch";
 import { typeScale } from "./tokens";
 import { rowMinHeight, spacing, useTheme } from "./theme";
 
@@ -31,13 +32,7 @@ export function Toggle({ label, value, onChange, detail, modified = false }: Pro
         </View>
         {detail ? <Text style={[styles.detail, { color: theme.secondary }]}>{detail}</Text> : null}
       </View>
-      <Switch
-        pointerEvents="none"
-        value={value}
-        onValueChange={onChange}
-        trackColor={{ false: theme.tog, true: theme.success }}
-        ios_backgroundColor={theme.tog}
-      />
+      <ToggleSwitch value={value} onValueChange={onChange} />
     </Pressable>
   );
 }

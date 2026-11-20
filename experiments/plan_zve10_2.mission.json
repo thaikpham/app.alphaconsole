@@ -1,0 +1,113 @@
+{
+  "id": "plan_zve10_2",
+  "model": "zve10",
+  "seed": 2,
+  "createdAt": 1795145619366,
+  "slots": [
+    {
+      "slot": 1,
+      "steps": [
+        {
+          "settingId": "flash-mode",
+          "valueId": "rear-sync",
+          "role": "control"
+        },
+        {
+          "settingId": "e-front-curtain",
+          "valueId": "off",
+          "role": "control"
+        },
+        {
+          "settingId": "wb",
+          "valueId": "fluorescent-1",
+          "role": "target"
+        },
+        {
+          "settingId": "dro",
+          "valueId": "off",
+          "role": "target"
+        },
+        {
+          "settingId": "isoMax",
+          "valueId": "1600",
+          "role": "target"
+        }
+      ]
+    },
+    {
+      "slot": 2,
+      "steps": [
+        {
+          "settingId": "softSkin",
+          "valueId": "off",
+          "role": "control"
+        },
+        {
+          "settingId": "expComp",
+          "valueId": "minus-1.0",
+          "role": "control"
+        },
+        {
+          "settingId": "wb",
+          "valueId": "incandescent",
+          "role": "target"
+        },
+        {
+          "settingId": "isoMax",
+          "valueId": "6400",
+          "role": "target"
+        }
+      ]
+    },
+    {
+      "slot": 3,
+      "steps": [
+        {
+          "settingId": "focusMode",
+          "valueId": "AF-S",
+          "role": "control"
+        },
+        {
+          "settingId": "dro",
+          "valueId": "dro-auto",
+          "role": "control"
+        },
+        {
+          "settingId": "wb",
+          "valueId": "fluorescent-3",
+          "role": "target"
+        },
+        {
+          "settingId": "isoMax",
+          "valueId": "3200",
+          "role": "target"
+        }
+      ]
+    },
+    {
+      "slot": 4,
+      "steps": [
+        {
+          "settingId": "focusMode",
+          "valueId": "AF-C",
+          "role": "control"
+        },
+        {
+          "settingId": "focusArea",
+          "valueId": "flexible-spot-l",
+          "role": "control"
+        },
+        {
+          "settingId": "wb",
+          "valueId": "underwater",
+          "role": "target"
+        },
+        {
+          "settingId": "isoMin",
+          "valueId": "200",
+          "role": "target"
+        }
+      ]
+    }
+  ]
+}

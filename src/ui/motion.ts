@@ -1,5 +1,6 @@
-import { useCallback, useState } from "react";
-import { Animated, Easing } from "react-native";
+import { useCallback } from "react";
+import { Animated } from "react-native";
+import { Easing, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 import { durations, press, springs as tokenSprings, exitEase } from "./tokens";
 import { useReduceMotion } from "./useReduceMotion";
 
@@ -22,7 +23,7 @@ export const springs = {
 
 export type SpringName = keyof typeof springs;
 
-/** Sheet exit curve: ease-in, from the `exitEase` token. */
+/** Sheet exit curve: ease-in, from the `exitEase` token. Reanimated's Easing, so it also runs inside worklets. */
 const [x1, y1, x2, y2] = exitEase;
 export const exitEasing = Easing.bezier(x1, y1, x2, y2);
 
@@ -37,22 +38,23 @@ export function animatedSpring(
 }
 
 /**
- * Press scale for a button or card: presses in with `snappy` to `press[kind]`, releases with `bouncy` back to 1.
- * Under Reduce Motion the scale stays at 1.
+ * Press scale for a button or card, on Reanimated: presses in with `snappy` to `press[kind]`, releases with `bouncy` back to 1.
+ * Put `style` on a Reanimated Animated.View. Under Reduce Motion the scale stays at 1.
  */
 export function usePressScale(kind: "button" | "card") {
   const reduce = useReduceMotion();
-  const [scale] = useState(() => new Animated.Value(1));
+  const scale = useSharedValue(1);
+  const style = useAnimatedStyle(() => ({ transform: [{ scale: scale.get() }] }));
 
   const onPressIn = useCallback(() => {
     if (reduce) return;
-    animatedSpring(scale, press[kind], "snappy").start();
+    scale.set(withSpring(press[kind], springs.snappy));
   }, [reduce, scale, kind]);
 
   const onPressOut = useCallback(() => {
     if (reduce) return;
-    animatedSpring(scale, 1, "bouncy").start();
+    scale.set(withSpring(1, springs.bouncy));
   }, [reduce, scale]);
 
-  return { scale, onPressIn, onPressOut };
+  return { style, onPressIn, onPressOut };
 }

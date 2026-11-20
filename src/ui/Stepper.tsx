@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { content } from "@/content";
+import { haptic } from "./haptics";
 import { radii, rowMinHeight, spacing, useTheme } from "./theme";
 
 type Props = {
@@ -51,7 +52,10 @@ function Step({
       accessibilityLabel={label}
       accessibilityState={{ disabled: !enabled }}
       disabled={!enabled}
-      onPress={onPress}
+      onPress={() => {
+        haptic("selection");
+        onPress();
+      }}
       style={({ pressed }) => [styles.step, pressed && enabled && { backgroundColor: theme.fill2 }]}
     >
       <View style={styles.glyph}>
