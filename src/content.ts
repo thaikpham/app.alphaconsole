@@ -385,7 +385,6 @@ export const content = {
     title: "M1–M4 lên máy, gọi bằng MR",
     slotScenes: ["Đời thường", "Chân dung", "Hoàng hôn", "Đêm"],
     rows: ["Một bộ màu có 4 cảnh: M1–M4", "Ghi cả 4 vào máy qua cáp USB-C", "Lúc chụp: MODE → MR → chọn 1–4"],
-    webRows: ["Một bộ màu có 4 cảnh: M1–M4", "Ghi cả 4 vào thẻ máy ảnh", "Lúc chụp: MODE → MR → chọn 1–4"],
     diagramAria: "Trên máy: MODE, MR, chọn 1 đến 4",
     diagram: ["MODE", "MR", "1", "2", "3", "4"],
     exampleAria: "Ví dụ: Đo sáng, Như máy",

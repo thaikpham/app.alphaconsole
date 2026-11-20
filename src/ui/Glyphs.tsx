@@ -178,3 +178,28 @@ const styles = StyleSheet.create({
   abs: { position: "absolute" },
   mark: { fontFamily: fontFamily.medium, textAlign: "center" },
 });
+
+/** Arrow down (design: M12 4v15 M6 13l6 6 6-6, 2.4 stroke): a bar and an open head. */
+export function ArrowDownIcon({ color, size = 24 }: GlyphProps) {
+  const w = Math.max(2, u(size, 2.4));
+  const head = u(size, 8.5);
+  return (
+    <View style={[styles.box, { width: size, height: size }]} importantForAccessibility="no" accessibilityElementsHidden>
+      <View style={{ position: "absolute", left: (size - w) / 2, top: u(size, 4), width: w, height: u(size, 15), borderRadius: w / 2, backgroundColor: color }} />
+      <View
+        style={{
+          position: "absolute",
+          left: (size - head) / 2,
+          top: u(size, 19) - head * 1.1,
+          width: head,
+          height: head,
+          borderRightWidth: w,
+          borderBottomWidth: w,
+          borderColor: color,
+          borderBottomRightRadius: w / 2,
+          transform: [{ rotate: "45deg" }],
+        }}
+      />
+    </View>
+  );
+}

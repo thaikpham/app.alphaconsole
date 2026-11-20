@@ -1,12 +1,12 @@
 // Intro (design v21 SPEC screen 0): how M1–M4 reach the camera. Reached first from the device pick, later from the overflow.
-import { Platform, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { Stack, useCanGoBack, useRouter } from "expo-router";
 
 import { content } from "@/content";
-import { sceneFor } from "@/home/sceneMap";
+import { sceneLook } from "@/home/sceneMap";
 import { useOnboarding } from "@/onboarding/OnboardingContext";
 import { Button } from "@/ui/Button";
-import { ChevronDownIcon } from "@/ui/Glyphs";
+import { ArrowDownIcon } from "@/ui/Glyphs";
 import { PinnedBar } from "@/ui/PinnedBar";
 import { SceneThumb } from "@/ui/SceneThumb";
 import { Screen } from "@/ui/Screen";
@@ -36,7 +36,8 @@ export default function Intro() {
 
   // MODE is left off the sample panel, as in the design: it shows MR and keys 1–4 only.
   const [, mode, ...keys] = content.intro.diagram;
-  const rows = Platform.OS === "web" ? content.intro.webRows : content.intro.rows;
+  // The console shows the app as it is, so the web build keeps the app's wording.
+  const rows = content.intro.rows;
 
   return (
     <Screen
@@ -61,13 +62,13 @@ export default function Intro() {
         <View style={styles.grid}>
           {content.intro.slotScenes.map((scene, index) => (
             <View key={scene} style={styles.cell}>
-              <SceneThumb scene={sceneFor(scene)} style={styles.thumb} />
+              <SceneThumb scene={sceneLook(scene).image} filter={sceneLook(scene).filter} scale={sceneLook(scene).scale} scrim style={styles.thumb} />
               <Text style={[typeScale.captionStrong, styles.mLabel]}>{`M${index + 1}`}</Text>
             </View>
           ))}
         </View>
         <View style={styles.arrow}>
-          <ChevronDownIcon color={theme.accent} size={24} />
+          <ArrowDownIcon color={theme.accent} size={24} />
         </View>
         <View accessible accessibilityLabel={content.intro.diagramAria} style={styles.lcd}>
           <View style={styles.chip}>
