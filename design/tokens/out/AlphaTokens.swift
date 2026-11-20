@@ -52,6 +52,7 @@ enum AlphaRadius {
     static let card: CGFloat = 24
     static let control: CGFloat = 14
     static let badge: CGFloat = 8
+    static let sheet: CGFloat = 32
 }
 
 // Cỡ chữ map sang Dynamic Type của iOS, tự co giãn theo cài đặt trợ năng.
@@ -64,4 +65,55 @@ enum AlphaFont {
     static var title2: Font { .title2 }
     static var title: Font { .title }
     static var display: Font { .largeTitle }
+}
+
+enum AlphaMotion {
+    static let snappy = Animation.spring(response: 0.3, dampingFraction: 0.86)
+    static let smooth = Animation.spring(response: 0.45, dampingFraction: 1)
+    static let bouncy = Animation.spring(response: 0.5, dampingFraction: 0.72)
+    static let sheet = Animation.spring(response: 0.42, dampingFraction: 0.9)
+    static let morph = Animation.spring(response: 0.38, dampingFraction: 0.82)
+}
+
+enum AlphaDuration {
+    static let micro: TimeInterval = 0.12
+    static let short: TimeInterval = 0.2
+    static let medium: TimeInterval = 0.32
+    static let long: TimeInterval = 0.48
+    static let glassTint: TimeInterval = 0.18
+    static let ambient: TimeInterval = 6
+}
+
+enum AlphaPress {
+    static let button: CGFloat = 0.96
+    static let card: CGFloat = 0.98
+}
+
+enum AlphaStagger {
+    static let step: TimeInterval = 0.03
+    static let maxItems: Int = 8
+    static let maxTotal: TimeInterval = 0.24
+}
+
+enum AlphaSize {
+    static let control: CGFloat = 50
+}
+
+enum AlphaSpacing {
+    static let toolbarGroup: CGFloat = 12
+}
+
+extension Color {
+    static let alphaGlassRegularTint = Color(light: .hex(0xFFFFFF, alpha: 0.85), dark: .hex(0x1C1C1E, alpha: 0.8))
+    static let alphaGlassRegularRim = Color(light: .hex(0xFFFFFF, alpha: 0.9), dark: .hex(0xFFFFFF, alpha: 0.2))
+    static let alphaGlassRegularHairline = Color(light: .hex(0x0B0D12, alpha: 0.08), dark: .hex(0xFFFFFF, alpha: 0.14))
+    static let alphaGlassRegularScrim = Color(light: .hex(0x000000, alpha: 0), dark: .hex(0x000000, alpha: 0.5))
+    static let alphaGlassClearTint = Color(light: .hex(0xFFFFFF, alpha: 0.78), dark: .hex(0x1C1C1E, alpha: 0.78))
+    static let alphaGlassClearRim = Color(light: .hex(0xFFFFFF, alpha: 0.9), dark: .hex(0xFFFFFF, alpha: 0.2))
+    static let alphaGlassClearHairline = Color(light: .hex(0x0B0D12, alpha: 0.08), dark: .hex(0xFFFFFF, alpha: 0.14))
+    static let alphaGlassClearScrim = Color(light: .hex(0x000000, alpha: 0), dark: .hex(0x000000, alpha: 0.5))
+    static let alphaGlassProminentTint = Color(light: .hex(0xC2410C, alpha: 0.92), dark: .hex(0xC2410C, alpha: 0.92))
+    static let alphaGlassProminentRim = Color(light: .hex(0xFFFFFF, alpha: 0.35), dark: .hex(0xFFFFFF, alpha: 0.3))
+    static let alphaGlassProminentHairline = Color(light: .hex(0xFFFFFF, alpha: 0.12), dark: .hex(0xFFFFFF, alpha: 0.14))
+    static let alphaGlassProminentScrim = Color(light: .hex(0x000000, alpha: 0), dark: .hex(0x000000, alpha: 0.5))
 }

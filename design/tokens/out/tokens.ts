@@ -67,10 +67,116 @@ export const radius = {
   card: 24,
   control: 14,
   badge: 8,
+  sheet: 32,
 } as const;
 
 export const ease = {
   ios: [0.16, 1, 0.3, 1],
+} as const;
+
+export const motion = {
+  spring: {
+    snappy: { stiffness: 438.65, damping: 36.02, mass: 1, settleMs: 419 },
+    smooth: { stiffness: 194.96, damping: 27.93, mass: 1, settleMs: 661 },
+    bouncy: { stiffness: 157.91, damping: 18.1, mass: 1, settleMs: 804 },
+    sheet: { stiffness: 223.8, damping: 26.93, mass: 1, settleMs: 560 },
+    morph: { stiffness: 273.4, damping: 27.12, mass: 1, settleMs: 522 },
+  },
+  duration: {
+    micro: 120,
+    short: 200,
+    medium: 320,
+    long: 480,
+    glassTint: 180,
+    ambient: 6000,
+  },
+  press: {
+    button: 0.96,
+    card: 0.98,
+  },
+  stagger: {
+    step: 30,
+    maxItems: 8,
+    maxTotal: 240,
+  },
+} as const;
+
+export const glass = {
+  regular: {
+    blur: 24,
+    saturate: 180,
+    light: {
+      tint: "rgba(255, 255, 255, 0.85)",
+      rim: "rgba(255, 255, 255, 0.9)",
+      hairline: "rgba(11, 13, 18, 0.08)",
+      scrim: "rgba(0, 0, 0, 0)",
+    },
+    dark: {
+      tint: "rgba(28, 28, 30, 0.8)",
+      rim: "rgba(255, 255, 255, 0.2)",
+      hairline: "rgba(255, 255, 255, 0.14)",
+      scrim: "rgba(0, 0, 0, 0.5)",
+    },
+  },
+  clear: {
+    blur: 16,
+    saturate: 150,
+    light: {
+      tint: "rgba(255, 255, 255, 0.78)",
+      rim: "rgba(255, 255, 255, 0.9)",
+      hairline: "rgba(11, 13, 18, 0.08)",
+      scrim: "rgba(0, 0, 0, 0)",
+    },
+    dark: {
+      tint: "rgba(28, 28, 30, 0.78)",
+      rim: "rgba(255, 255, 255, 0.2)",
+      hairline: "rgba(255, 255, 255, 0.14)",
+      scrim: "rgba(0, 0, 0, 0.5)",
+    },
+  },
+  prominent: {
+    blur: 24,
+    saturate: 180,
+    light: {
+      tint: "rgba(194, 65, 12, 0.92)",
+      rim: "rgba(255, 255, 255, 0.35)",
+      hairline: "rgba(255, 255, 255, 0.12)",
+      scrim: "rgba(0, 0, 0, 0)",
+    },
+    dark: {
+      tint: "rgba(194, 65, 12, 0.92)",
+      rim: "rgba(255, 255, 255, 0.3)",
+      hairline: "rgba(255, 255, 255, 0.14)",
+      scrim: "rgba(0, 0, 0, 0.5)",
+    },
+  },
+} as const;
+
+export const shadow = {
+  floating: {
+    shadowColor: "#0b0d12",
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.14,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+} as const;
+
+export const size = {
+  control: 50,
+} as const;
+
+export const spacing = {
+  toolbarGroup: 12,
+} as const;
+
+export const haptic = {
+  selection: { call: "selectionAsync" },
+  impactLight: { call: "impactAsync", style: "Light" },
+  impactRigid: { call: "impactAsync", style: "Rigid" },
+  success: { call: "notificationAsync", type: "Success" },
+  warning: { call: "notificationAsync", type: "Warning" },
+  error: { call: "notificationAsync", type: "Error" },
 } as const;
 
 // iOS dùng font hệ thống (SF Pro), không đặt fontFamily.
