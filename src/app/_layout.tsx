@@ -4,7 +4,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { useFonts } from "expo-font";
-import { StyleSheet, Text } from "react-native";
+import { Platform, StyleSheet, Text } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
   NotoSans_400Regular,
@@ -30,6 +30,10 @@ installTextDecoderShim();
 installCrashLog();
 
 SplashScreen.preventAutoHideAsync();
+
+// Web only: hides scrollbars globally and keeps scrolling working. Native hides them per ScrollView.
+// Injected at runtime because the single-page web export does not use src/app/+html.tsx.
+const HIDE_SCROLLBARS = "*{scrollbar-width:none}*::-webkit-scrollbar{display:none}";
 
 /** Shown in place of a screen whose render threw. The error text stays on screen so a release build can be diagnosed, and it is written to the crash log. */
 export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
@@ -68,6 +72,14 @@ export default function RootLayout() {
   useEffect(() => {
     if (ready) SplashScreen.hideAsync();
   }, [ready]);
+
+  useEffect(() => {
+    if (Platform.OS !== "web") return;
+    const style = document.createElement("style");
+    style.textContent = HIDE_SCROLLBARS;
+    document.head.appendChild(style);
+    return () => style.remove();
+  }, []);
 
   const theme = useTheme();
 

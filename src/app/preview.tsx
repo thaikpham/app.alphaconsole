@@ -527,6 +527,7 @@ export default function Preview() {
               horizontal
               pagingEnabled
               showsHorizontalScrollIndicator={false}
+              showsVerticalScrollIndicator={false}
               style={styles.pager}
               contentOffset={{ x: (shown - 1) * width, y: 0 }}
               onMomentumScrollEnd={(e) => setViewer(Math.round(e.nativeEvent.contentOffset.x / width) + 1)}

@@ -51,6 +51,8 @@ export function Screen({
       <View style={styles.area}>
         <ScrollView
           ref={scrollRef}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
           style={{ backgroundColor: theme.bg }}
           contentContainerStyle={styles.content}
           onScroll={scrollEdge ? onScroll : undefined}

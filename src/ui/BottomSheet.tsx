@@ -152,7 +152,7 @@ export function BottomSheet({ visible, title, onClose, children, detent = "mediu
                   </View>
                 </View>
               </GestureDetector>
-              <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} keyboardShouldPersistTaps="handled">
+              <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
                 {children}
               </ScrollView>
             </Reanimated.View>
