@@ -21,7 +21,7 @@ export type PresetSet = {
 
 export class PresetError extends Error {}
 
-/** Giới hạn độ dài chữ của bộ, dùng cho validate và maxLength ở /admin và editor KOL. id, name, description trùng supabase/kol.sql. */
+/** Giới hạn độ dài chữ của bộ, dùng cho validate và maxLength ở /admin. */
 export const PRESET_LIMITS = {
   id: 40,
   name: 60,
