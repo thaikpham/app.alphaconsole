@@ -96,7 +96,8 @@ function SlotChip({
           style={[
             styles.chip,
             { paddingHorizontal: selected ? spacing.s14 : spacing.xs },
-            selected && [styles.on, { backgroundColor: theme.segmentOn }],
+            // Background and shadow are always set (transparent when off): adding them at runtime made Android drop the radius.
+            selected ? [styles.on, { backgroundColor: theme.segmentOn }] : styles.off,
           ]}
         >
           <Text style={[selected ? styles.labelOn : styles.label, { color: selected ? theme.label : theme.secondary }]}>
@@ -136,6 +137,7 @@ const styles = StyleSheet.create({
   },
   // Design: 0 1px 2px rgba(11,13,18,.14) under the selected pill.
   on: { boxShadow: "0 1px 2px rgba(11, 13, 18, 0.14)" },
+  off: { backgroundColor: "transparent", boxShadow: "0 1px 2px rgba(11, 13, 18, 0)" },
   label: { ...typeScale.subhead, fontFamily: fontFamily.medium, flexShrink: 0 },
   labelOn: { ...typeScale.subhead, fontFamily: fontFamily.semibold, flexShrink: 0 },
   name: { ...typeScale.subhead, flexShrink: 1, minWidth: 0 },
