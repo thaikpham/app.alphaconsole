@@ -35,7 +35,7 @@ import { Snackbar, useSnackbar } from "@/ui/Snackbar";
 import { StatusChip } from "@/ui/StatusChip";
 import { settingsLine } from "@/ui/summaryLine";
 import { radii, spacing, useTheme } from "@/ui/theme";
-import { typeScale } from "@/ui/tokens";
+import { timing, typeScale } from "@/ui/tokens";
 import { mismatchSummary } from "@/write/mismatch";
 import { usbHint } from "@/write/usbHint";
 import {
@@ -54,8 +54,6 @@ import { subscribeUsb } from "../../modules/usb-volume";
 type Link = "connecting" | "connected" | "off";
 
 const SLOTS = [1, 2, 3, 4] as const;
-/** The replug line is a fallback: PC Remote on reconnects by itself, so the line waits this long first. */
-const REPLUG_FALLBACK_MS = 8000;
 const labels: PreviewLabels = {
   wb: content.preview.wb,
   focus: content.labels.focus,
@@ -234,12 +232,12 @@ export default function Preview() {
     };
   }, [live]);
 
-  // The PC Remote hint shows while the camera is not on PTP. The replug line is only a fallback after REPLUG_FALLBACK_MS.
+  // The PC Remote hint shows while the camera is not on PTP. PC Remote often reconnects by itself, so the replug line is a fallback after timing.replugFallbackMs.
   const hint = usbHint("preview", usb);
   const waitingPcRemote = hint === "pcRemoteOn" && link !== "connected";
   useEffect(() => {
     if (!waitingPcRemote) return;
-    const timer = setTimeout(() => setFallback(true), REPLUG_FALLBACK_MS);
+    const timer = setTimeout(() => setFallback(true), timing.replugFallbackMs);
     return () => {
       clearTimeout(timer);
       setFallback(false);
@@ -338,7 +336,7 @@ export default function Preview() {
             style={StyleSheet.absoluteFill}
           />
           <View pointerEvents="none" style={styles.liveLabel}>
-            <Glass onImage style={styles.liveGlass}>
+            <Glass luminance={1} style={styles.liveGlass}>
               <Text style={[typeScale.subhead, { color: "#fff" }]}>{content.preview.liveAria}</Text>
             </Glass>
           </View>
@@ -452,7 +450,7 @@ export default function Preview() {
               onPress={() => setFullscreen(false)}
               style={({ pressed }) => [styles.closeAnchor, { top: insets.top + spacing.md }, pressed && styles.pressed]}
             >
-              <Glass onImage style={styles.closeGlass}>
+              <Glass luminance={1} style={styles.closeGlass}>
                 <Text style={styles.closeText}>{content.preview.close}</Text>
               </Glass>
             </Pressable>

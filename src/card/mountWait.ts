@@ -1,9 +1,8 @@
 // Waits for the card after a mass-storage attach. Android can mount the card seconds after the USB attach, so the wait reads
 // at once, reads again on each volume change, and polls slowly in case no change arrives. It ends when a read finds the card,
-// on stop (detach), or after MOUNT_WAIT_MS. Pure: the read and the log line are passed in; the timers are the global ones.
+// on stop (detach), or after timing.mountWaitMs. Pure: the read and the log line are passed in; the timers are the global ones.
 
-export const MOUNT_POLL_MS = 2_000;
-export const MOUNT_WAIT_MS = 60_000;
+import { timing } from "../ui/tokens";
 
 export type MountWait = {
   /** True from a mass-storage attach until a read finds the card, the wait is stopped, or the time runs out. */
@@ -69,8 +68,8 @@ export function createMountWait(options: MountWaitOptions): MountWait {
       clearTimers();
       setWaiting(true);
       log("mount wait start");
-      limit = setTimeout(() => end("timeout"), MOUNT_WAIT_MS);
-      poll = setInterval(() => readFor("mountPoll"), MOUNT_POLL_MS);
+      limit = setTimeout(() => end("timeout"), timing.mountWaitMs);
+      poll = setInterval(() => readFor("mountPoll"), timing.mountPollMs);
       readFor("usbAttach");
     },
     stop() {

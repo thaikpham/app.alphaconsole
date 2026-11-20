@@ -54,8 +54,8 @@ import { StageStepper } from "@/ui/StageStepper";
 import { Toggle } from "@/ui/Toggle";
 import { ValuePicker } from "@/ui/ValuePicker";
 import { ValueRow } from "@/ui/ValueRow";
-import { controlHeight, motion, radii, spacing, useTheme } from "@/ui/theme";
-import { typeScale } from "@/ui/tokens";
+import { controlHeight, radii, spacing, useTheme } from "@/ui/theme";
+import { durations, typeScale } from "@/ui/tokens";
 import { useKeyboardVisible } from "@/ui/useKeyboardVisible";
 import { useReduceMotion } from "@/ui/useReduceMotion";
 
@@ -74,7 +74,7 @@ const TOOLBAR_HEIGHT = 36;
 const TOOLBAR_HIT_SLOP = { top: 4, bottom: 4 };
 /** Height animation for the iOS disclosure. Reduce Motion skips it at the call site. */
 const DISCLOSURE_ANIMATION = {
-  duration: motion.standard.duration,
+  duration: durations.medium,
   create: { type: LayoutAnimation.Types.easeInEaseOut, property: LayoutAnimation.Properties.opacity },
   update: { type: LayoutAnimation.Types.easeInEaseOut },
 };

@@ -114,7 +114,7 @@ export function CreateSetSheet({ visible, bases, initialBaseId, onClose, onCreat
                       {set.slots.map((slot) => slot.label).join(" · ")}
                     </Text>
                   </View>
-                  {on ? <Text style={[typeScale.headline, { color: theme.accent }]}>✓</Text> : null}
+                  {on ? <Text style={[typeScale.headline, { color: theme.accentText }]}>✓</Text> : null}
                 </Pressable>
               );
             })}

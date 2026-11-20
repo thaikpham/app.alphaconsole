@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Animated, StyleSheet, Text, View } from "react-native";
+import { animatedSpring } from "./motion";
 import { typeScale } from "./tokens";
-import { motion, useTheme } from "./theme";
+import { useTheme } from "./theme";
 import { useReduceMotion } from "./useReduceMotion";
 
 const SIZE = 208;
@@ -28,8 +29,8 @@ export function ProgressRing({ filled }: { filled: number }) {
       return;
     }
     const run = Animated.sequence([
-      Animated.spring(pop, { toValue: 1.08, ...motion.spring.btn, useNativeDriver: true }),
-      Animated.spring(pop, { toValue: 1, ...motion.spring.btn, useNativeDriver: true }),
+      animatedSpring(pop, 1.08, "smooth"),
+      animatedSpring(pop, 1, "smooth"),
     ]);
     run.start();
     return () => run.stop();
@@ -47,7 +48,7 @@ export function ProgressRing({ filled }: { filled: number }) {
           style={[
             styles.quarter,
             {
-              borderTopColor: quarter < done ? theme.accent : theme.separator,
+              borderTopColor: quarter < done ? theme.accentText : theme.separator,
               transform: [{ rotate: `${45 + 90 * quarter}deg` }],
             },
           ]}

@@ -2,8 +2,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Animated, Pressable, StyleSheet, Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Glass } from "./Glass";
-import { typeScale } from "./tokens";
-import { controlHeight, motion, radii, spacing, useTheme } from "./theme";
+import { animatedSpring } from "./motion";
+import { distance, press, typeScale } from "./tokens";
+import { controlHeight, radii, spacing, useTheme } from "./theme";
 import { useReduceMotion } from "./useReduceMotion";
 
 export type SnackbarAction = { label: string; onPress: () => void };
@@ -44,7 +45,7 @@ export function Snackbar({ state, onDismiss }: { state: SnackbarState | null; on
   return <SnackbarBar key={state.id} message={state.message} action={state.action} onDismiss={onDismiss} />;
 }
 
-/** Glass capsule above the bottom bar. Enters by a transform-only push spring; no opacity on glass. */
+/** Glass capsule above the bottom bar. Enters by a transform-only smooth spring; no opacity on glass. */
 function SnackbarBar({ message, action, onDismiss }: { message: string; action?: SnackbarAction; onDismiss: () => void }) {
   const theme = useTheme();
   const reduce = useReduceMotion();
@@ -56,7 +57,7 @@ function SnackbarBar({ message, action, onDismiss }: { message: string; action?:
       enter.setValue(1);
       return;
     }
-    Animated.spring(enter, { toValue: 1, ...motion.spring.push, useNativeDriver: true }).start();
+    animatedSpring(enter, 1, "smooth").start();
   }, [enter, reduce]);
 
   return (
@@ -66,7 +67,7 @@ function SnackbarBar({ message, action, onDismiss }: { message: string; action?:
         styles.bar,
         {
           bottom: 100 + insets.bottom,
-          transform: [{ translateY: enter.interpolate({ inputRange: [0, 1], outputRange: [8, 0] }) }],
+          transform: [{ translateY: enter.interpolate({ inputRange: [0, 1], outputRange: [distance.snackbarEnterPx, 0] }) }],
         },
       ]}
     >
@@ -81,7 +82,7 @@ function SnackbarBar({ message, action, onDismiss }: { message: string; action?:
             }}
             style={({ pressed }) => [styles.action, pressed && styles.pressed]}
           >
-            <Text style={[styles.actionLabel, { color: theme.accent }]}>{action.label}</Text>
+            <Text style={[styles.actionLabel, { color: theme.accentText }]}>{action.label}</Text>
           </Pressable>
         ) : null}
       </Glass>
@@ -114,5 +115,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
   },
   actionLabel: { ...typeScale.button },
-  pressed: { transform: [{ scale: 0.96 }] },
+  pressed: { transform: [{ scale: press.button }] },
 });

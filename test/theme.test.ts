@@ -37,6 +37,28 @@ function luminance(hex: string): number {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
+type Rgba = { r: number; g: number; b: number; a: number };
+
+/** Hex (#rrggbb), or rgba() with 0-255 channels and alpha 0-1. */
+function parse(color: string): Rgba {
+  if (color.startsWith("#")) {
+    const [r, g, b] = [1, 3, 5].map((i) => parseInt(color.slice(i, i + 2), 16));
+    return { r, g, b, a: 1 };
+  }
+  const [r, g, b, a = 1] = (color.match(/[\d.]+/g) ?? []).map(Number);
+  return { r, g, b, a };
+}
+
+/** Composites a translucent color over an opaque one and returns hex. Opaque colors come back unchanged. */
+function flatten(color: string, over: string): string {
+  const top = parse(color);
+  if (top.a === 1) return color;
+  const base = parse(over);
+  const mix = (c: number, u: number) => Math.round(top.a * c + (1 - top.a) * u);
+  const hex = [mix(top.r, base.r), mix(top.g, base.g), mix(top.b, base.b)].map((v) => v.toString(16).padStart(2, "0"));
+  return `#${hex.join("")}`;
+}
+
 function contrast(a: string, b: string): number {
   const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
   return (hi + 0.05) / (lo + 0.05);
@@ -68,7 +90,7 @@ test("text on its surface is at least 4.5:1 in both palettes", () => {
   ];
   for (const p of [lightPalette, darkPalette]) {
     for (const [text, surface] of pairs) {
-      assert.ok(contrast(p[text], p[surface]) >= 4.5, `${text} on ${surface}`);
+      assert.ok(contrast(p[text], flatten(p[surface], p.card)) >= 4.5, `${text} on ${surface}`);
     }
   }
 });

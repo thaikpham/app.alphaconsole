@@ -1,7 +1,22 @@
 /** Mount wait: reads at once after a mass-storage attach, polls slowly, and ends on found, stop, or the time limit. */
 import { test, type TestContext } from "node:test";
 import assert from "node:assert/strict";
-import { createMountWait, MOUNT_POLL_MS, MOUNT_WAIT_MS } from "../src/card/mountWait.ts";
+import { registerHooks } from "node:module";
+
+// mountWait.ts and tokens.ts import their siblings without extensions. Resolve them to .ts, as theme.test.ts does.
+registerHooks({
+  resolve(specifier, context, nextResolve) {
+    const relative = specifier.startsWith("./") || specifier.startsWith("../");
+    if (relative && !/\.[cm]?[jt]sx?$/.test(specifier)) return nextResolve(`${specifier}.ts`, context);
+    return nextResolve(specifier, context);
+  },
+});
+
+// Dynamic imports run after registerHooks. Static imports are hoisted above it.
+const { createMountWait } = await import("../src/card/mountWait.ts");
+const { timing } = await import("../src/ui/tokens.ts");
+const MOUNT_POLL_MS = timing.mountPollMs;
+const MOUNT_WAIT_MS = timing.mountWaitMs;
 
 const flush = () => new Promise<void>((resolve) => setImmediate(resolve));
 

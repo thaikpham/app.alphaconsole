@@ -23,7 +23,7 @@ type Props = {
 export function PresetCard({ set, byline, selected, onPress, children }: Props) {
   const theme = useTheme();
   return (
-    <View style={[styles.ring, { borderColor: selected ? theme.accent : "transparent" }]}>
+    <View style={[styles.ring, { borderColor: selected ? theme.accentText : "transparent" }]}>
       <Card>
         <Pressable
           onPress={onPress}

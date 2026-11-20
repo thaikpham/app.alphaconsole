@@ -21,7 +21,7 @@ function stateOf(index: number, current: number): DotState {
 
 // Active is an accent ring on card, not an accent fill: the solid fill is the primary capsule's, and a dark accent fill would read as a button.
 function dotPaint(state: DotState, theme: Palette): ViewStyle {
-  if (state === "active") return { backgroundColor: theme.card, borderWidth: 2, borderColor: theme.accent };
+  if (state === "active") return { backgroundColor: theme.card, borderWidth: 2, borderColor: theme.accentText };
   if (state === "done") return { backgroundColor: theme.separator };
   return { backgroundColor: theme.card, borderWidth: 1, borderColor: theme.separator };
 }

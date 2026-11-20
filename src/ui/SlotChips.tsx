@@ -3,8 +3,9 @@ import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
 import { content } from "@/content";
 import { Glass } from "./Glass";
 import { ModifiedDot } from "./ModifiedDot";
+import { animatedSpring } from "./motion";
 import { typeScale } from "./tokens";
-import { motion, radii, spacing, useTheme } from "./theme";
+import { radii, spacing, useTheme } from "./theme";
 import { useReduceMotion } from "./useReduceMotion";
 
 /** `name` is optional and only the iOS picker shows it, on the selected pill. */
@@ -50,7 +51,7 @@ function SlotChip({ slot, selected, onPress }: { slot: SlotItem; selected: boole
       grow.setValue(toValue);
       return;
     }
-    Animated.spring(grow, { toValue, ...motion.spring.seg, useNativeDriver: false }).start(); // flexGrow is layout
+    animatedSpring(grow, toValue, "smooth", false).start(); // flexGrow is layout
   }, [selected, reduce, grow]);
 
   const label = selected && slot.name ? `${slot.label} · ${slot.name}` : slot.label;

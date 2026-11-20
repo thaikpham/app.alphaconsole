@@ -231,7 +231,7 @@ function HeldRow({
       <View
         style={[
           styles.box,
-          { borderColor: held ? theme.accent : theme.outline, backgroundColor: held ? theme.accent : theme.card },
+          { borderColor: held ? theme.accentText : theme.outline, backgroundColor: held ? theme.accent : theme.card },
         ]}
       >
         {held ? <Text style={[styles.tick, { color: theme.onAccent }]}>✓</Text> : null}

@@ -8,7 +8,7 @@ export function Loading({ label }: { label: string }) {
   const theme = useTheme();
   return (
     <View style={styles.wrap}>
-      <ActivityIndicator color={theme.accent} />
+      <ActivityIndicator color={theme.accentText} />
       <Text style={[styles.label, { color: theme.secondary }]}>{label}</Text>
     </View>
   );

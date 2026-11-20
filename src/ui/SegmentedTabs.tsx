@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
-import { typeScale } from "./tokens";
-import { controlHeight, glass, motion, radii, spacing, useTheme } from "./theme";
+import { animatedSpring } from "./motion";
+import { glass, press, typeScale } from "./tokens";
+import { controlHeight, radii, spacing, useTheme } from "./theme";
 import { useReduceMotion } from "./useReduceMotion";
 
 type Option<T extends string> = { value: T; label: string };
@@ -16,7 +17,7 @@ type Props<T extends string> = {
 const PAD = 3;
 
 /**
- * Tabs for the home preset list (SPEC-IOS §2, `.seg`). Same props as SegmentedTabs.tsx. The thumb slides on the seg
+ * Tabs for the home preset list (SPEC-IOS §2, `.seg`). Same props as SegmentedTabs.tsx. The thumb slides on the bouncy
  * spring and Reduce Motion sets it in place. The selected label is fieldLabel. Press feedback is scale, never opacity.
  */
 export function SegmentedTabs<T extends string>({ options, value, onChange }: Props<T>) {
@@ -32,7 +33,7 @@ export function SegmentedTabs<T extends string>({ options, value, onChange }: Pr
       slide.setValue(index);
       return;
     }
-    const run = Animated.spring(slide, { toValue: index, ...motion.spring.seg, useNativeDriver: true });
+    const run = animatedSpring(slide, index, "bouncy");
     run.start();
     return () => run.stop();
   }, [index, reduce, slide]);
@@ -99,7 +100,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: spacing.sm,
   },
-  pressed: { transform: [{ scale: 0.96 }] },
+  pressed: { transform: [{ scale: press.button }] },
   label: { ...typeScale.subhead },
   labelOn: { ...typeScale.fieldLabel },
 });

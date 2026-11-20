@@ -1,7 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import {
   Animated,
-  Easing,
   KeyboardAvoidingView,
   Modal,
   Pressable,
@@ -15,15 +14,14 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { content } from "@/content";
 import { detentHeight, type Detent } from "./detent";
 import { Glass, ModalScope } from "./Glass";
-import { radii, typeScale } from "./tokens";
-import { motion, spacing, useTheme } from "./theme";
+import { durations, radii, typeScale } from "./tokens";
+import { animatedSpring, exitEasing } from "./motion";
+import { spacing, useTheme } from "./theme";
 import { useReduceMotion } from "./useReduceMotion";
 
-// Sheet exit is 240 ms ease-in (SPEC-IOS §1.5). Enter is the sheet spring.
-const EXIT_MS = 240;
-const EXIT_EASING = Easing.bezier(0.4, 0, 1, 1);
+// Sheet exit is ease-in over durations.short (SPEC-IOS §1.5). Enter is the sheet spring.
 // Design sheet radii (AlphaIOS.dc.html): top 38 on every sheet. A floating medium sheet also rounds its bottom at 47.
-// The theme's radii.sheet (24) is not used, so the sheet matches the design.
+// The token radii.sheet (32) is not used, so the sheet matches the design.
 const SHEET_RADIUS = 38;
 const FLOAT_RADIUS = 47;
 const FLOAT_INSET = 8;
@@ -42,7 +40,7 @@ type Props = {
 };
 
 /**
- * Solid sheet in a Modal with a grabber, spring enter and 240 ms exit (SPEC-IOS §4, §6, O3, O6, O8).
+ * Solid sheet in a Modal with a grabber, spring enter and 200 ms exit (SPEC-IOS §4, §6, O3, O6, O8).
  * Scrim tap, the close button and Android back call onClose. The parent sets visible to false,
  * then the sheet slides out and unmounts, so its children start fresh on every open.
  */
@@ -67,8 +65,8 @@ export function BottomSheet({ visible, title, onClose, children, detent = "mediu
     if (visible || !shown) return;
     const exit = Animated.timing(enter, {
       toValue: 0,
-      duration: reduce ? 0 : EXIT_MS,
-      easing: EXIT_EASING,
+      duration: reduce ? 0 : durations.short,
+      easing: exitEasing,
       useNativeDriver: true,
     });
     exit.start(({ finished }) => {
@@ -83,7 +81,7 @@ export function BottomSheet({ visible, title, onClose, children, detent = "mediu
       enter.setValue(1);
       return;
     }
-    const open = Animated.spring(enter, { toValue: 1, ...motion.spring.sheet, useNativeDriver: true });
+    const open = animatedSpring(enter, 1, "sheet");
     open.start();
     return () => open.stop();
   }, [visible, shown, enter, reduce]);
@@ -162,7 +160,7 @@ export function HeaderAction({ label, onPress, primary = false, disabled = false
       onPress={onPress}
       style={({ pressed }) => [styles.textHit, pressed && styles.pressed]}
     >
-      <Text style={[typeScale.button, { color: disabled ? theme.disabled : theme.accent }]}>{label}</Text>
+      <Text style={[typeScale.button, { color: disabled ? theme.disabled : theme.accentText }]}>{label}</Text>
     </Pressable>
   );
 }
@@ -171,7 +169,7 @@ function CloseButton({ onPress }: { onPress: () => void }) {
   const theme = useTheme();
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={content.common.close} onPress={onPress} style={styles.closeHit}>
-      <Glass onSheet interactive style={styles.closeGlass}>
+      <Glass interactive style={styles.closeGlass}>
         <Text style={[styles.closeIcon, { color: theme.label }]}>×</Text>
       </Glass>
     </Pressable>

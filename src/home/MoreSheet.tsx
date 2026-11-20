@@ -10,7 +10,7 @@ import { DEFAULT_MODEL, modelById } from "@/core/web/lib/app-core/models";
 import { loadCameraSelection } from "@/storage/cameraFile";
 import { setStore } from "@/storage/userSetsFile";
 import { BottomSheet } from "@/ui/BottomSheet";
-import { typeScale } from "@/ui/tokens";
+import { timing, typeScale } from "@/ui/tokens";
 import { radii, rowMinHeight, spacing, useTheme } from "@/ui/theme";
 
 // Screen links from the base MoreSheet. Labels and hrefs match it.
@@ -21,9 +21,6 @@ const LINKS = [
   { label: content.guide.logsLink, href: "/logs" },
   { label: content.more.intro, href: "/onboarding/intro" },
 ] as const;
-
-// BottomSheet exit is 240 ms; a small margin lets its Modal finish unmounting.
-const SHEET_EXIT_MS = 280;
 
 type Props = {
   visible: boolean;
@@ -83,8 +80,8 @@ export function MoreSheet({ visible, onClose, onChooseCamera, onCreateSet }: Pro
             first={i === 0}
             onPress={() => {
               onClose();
-              // iOS cannot present a Modal while another is still dismissing: wait out the 240 ms sheet exit.
-              setTimeout(action.run, SHEET_EXIT_MS);
+              // iOS cannot present a Modal while another is still dismissing: wait out the 200 ms sheet exit, plus a margin.
+              setTimeout(action.run, timing.sheetCloseHoldMs);
             }}
           />
         ))}

@@ -98,12 +98,12 @@ function CameraRow({ model, selected, locked, first, onPress }: CameraRowProps) 
         { backgroundColor: pressed && !locked ? theme.press : theme.cell },
       ]}
     >
-      {locked ? <LockIcon color={theme.accent} /> : null}
+      {locked ? <LockIcon color={theme.accentText} /> : null}
       <View style={styles.rowText}>
         <Text style={[typeScale.body, { color: locked ? theme.secondary : theme.label }]}>{model.name}</Text>
         <Text style={[typeScale.subhead, { color: theme.secondary }]}>{model.sonyModel}</Text>
       </View>
-      {selected ? <Text style={[typeScale.headline, { color: theme.accent }]}>✓</Text> : null}
+      {selected ? <Text style={[typeScale.headline, { color: theme.accentText }]}>✓</Text> : null}
     </Pressable>
   );
 }
