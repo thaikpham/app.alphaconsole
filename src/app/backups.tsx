@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import { useFocusEffect } from "expo-router";
 
@@ -15,7 +15,8 @@ import { confirmDestructive } from "@/ui/confirm";
 import { Loading } from "@/ui/Loading";
 import { Screen } from "@/ui/Screen";
 import { ScreenHeader } from "@/ui/ScreenHeader";
-import { colors, spacing, typeScale } from "@/ui/tokens";
+import { spacing, typeScale } from "@/ui/tokens";
+import { useTheme, type Palette } from "@/ui/theme";
 import { listBackups, readBackup, type BackupInfo } from "../../modules/usb-volume";
 import { fontFamily } from "@/ui/v21";
 
@@ -42,6 +43,8 @@ function slotLine(slot: CardView["slots"][number]): string {
 }
 
 export default function Backups() {
+  const theme = useTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const [rows, setRows] = useState<Row[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -153,11 +156,13 @@ export default function Backups() {
   );
 }
 
-const styles = StyleSheet.create({
-  cardTitle: { ...typeScale.title3, color: colors.label },
-  note: { ...typeScale.footnote, color: colors.secondary },
-  danger: { ...typeScale.footnote, fontFamily: fontFamily.medium, color: colors.danger },
-  line: { ...typeScale.footnote, color: colors.label, paddingTop: spacing.xs },
-  row: { gap: spacing.md },
-  separated: { borderTopWidth: 1, borderTopColor: colors.separator, paddingTop: spacing.md },
-});
+function makeStyles(theme: Palette) {
+  return StyleSheet.create({
+    cardTitle: { ...typeScale.title3, color: theme.label },
+    note: { ...typeScale.footnote, color: theme.secondary },
+    danger: { ...typeScale.footnote, fontFamily: fontFamily.medium, color: theme.danger },
+    line: { ...typeScale.footnote, color: theme.label, paddingTop: spacing.xs },
+    row: { gap: spacing.md },
+    separated: { borderTopWidth: 1, borderTopColor: theme.separator, paddingTop: spacing.md },
+  });
+}

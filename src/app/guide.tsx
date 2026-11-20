@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 
@@ -7,7 +8,8 @@ import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
 import { Screen } from "@/ui/Screen";
 import { ScreenHeader } from "@/ui/ScreenHeader";
-import { colors, radii, spacing, typeScale } from "@/ui/tokens";
+import { radii, spacing, typeScale } from "@/ui/tokens";
+import { useTheme, type Palette } from "@/ui/theme";
 import { fontFamily } from "@/ui/v21";
 
 type GuideSection = { title: string; lines: readonly string[]; showRecallWarning?: boolean };
@@ -16,6 +18,8 @@ const sections: readonly GuideSection[] = content.guide.sections;
 
 export default function Guide() {
   const router = useRouter();
+  const theme = useTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
 
   return (
     <Screen scrollEdge>
@@ -47,12 +51,14 @@ export default function Guide() {
   );
 }
 
-const styles = StyleSheet.create({
-  section: { gap: spacing.md },
-  separated: { borderTopWidth: 1, borderTopColor: colors.separator, paddingTop: spacing.md },
-  cardTitle: { ...typeScale.title3, color: colors.label },
-  line: { ...typeScale.body, color: colors.label },
-  note: { ...typeScale.footnote, color: colors.secondary },
-  stepTitle: { ...typeScale.subhead, fontFamily: fontFamily.semibold, color: colors.label },
-  warning: { backgroundColor: colors.warningTint, borderRadius: radii.control, padding: spacing.md, gap: spacing.xs },
-});
+function makeStyles(theme: Palette) {
+  return StyleSheet.create({
+    section: { gap: spacing.md },
+    separated: { borderTopWidth: 1, borderTopColor: theme.separator, paddingTop: spacing.md },
+    cardTitle: { ...typeScale.title3, color: theme.label },
+    line: { ...typeScale.body, color: theme.label },
+    note: { ...typeScale.footnote, color: theme.secondary },
+    stepTitle: { ...typeScale.subhead, fontFamily: fontFamily.semibold, color: theme.label },
+    warning: { backgroundColor: theme.warningTint, borderRadius: radii.control, padding: spacing.md, gap: spacing.xs },
+  });
+}

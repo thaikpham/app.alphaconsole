@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Platform, Pressable, Share, StyleSheet, Text } from "react-native";
 import { usePreventRemove } from "expo-router";
 
@@ -10,7 +10,8 @@ import { downloadFile } from "@/ui/download";
 import { Card } from "@/ui/Card";
 import { Screen } from "@/ui/Screen";
 import { ScreenHeader } from "@/ui/ScreenHeader";
-import { colors, press, spacing, typeScale } from "@/ui/tokens";
+import { press, spacing, typeScale } from "@/ui/tokens";
+import { useTheme, type Palette } from "@/ui/theme";
 import { fontFamily } from "@/ui/v21";
 
 /** Local time for a list row. Shows the stored text when it is not a date. */
@@ -20,6 +21,8 @@ function rowTime(time: string): string {
 }
 
 export default function Logs() {
+  const theme = useTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const [crashes, setCrashes] = useState<StoredCrash[]>(() => listCrashEntries());
   const [selected, setSelected] = useState<StoredCrash | null>(null);
 
@@ -91,11 +94,13 @@ export default function Logs() {
   );
 }
 
-const styles = StyleSheet.create({
-  note: { ...typeScale.footnote, color: colors.secondary },
-  detail: { ...typeScale.footnote, fontFamily: fontFamily.regular, color: colors.label },
-  row: { gap: spacing.xs, paddingTop: spacing.sm, borderTopWidth: 1, borderTopColor: colors.separator },
-  pressed: { transform: [{ scale: press.card }] },
-  rowTime: { ...typeScale.footnote, fontFamily: fontFamily.medium, color: colors.secondary },
-  rowMessage: { ...typeScale.subhead, color: colors.label },
-});
+function makeStyles(theme: Palette) {
+  return StyleSheet.create({
+    note: { ...typeScale.footnote, color: theme.secondary },
+    detail: { ...typeScale.footnote, fontFamily: fontFamily.regular, color: theme.label },
+    row: { gap: spacing.xs, paddingTop: spacing.sm, borderTopWidth: 1, borderTopColor: theme.separator },
+    pressed: { transform: [{ scale: press.card }] },
+    rowTime: { ...typeScale.footnote, fontFamily: fontFamily.medium, color: theme.secondary },
+    rowMessage: { ...typeScale.subhead, color: theme.label },
+  });
+}
