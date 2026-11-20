@@ -12,8 +12,7 @@ import { Button } from "@/ui/Button";
 import { LockGlyph, SearchIcon } from "@/ui/Glyphs";
 import { PinnedBar } from "@/ui/PinnedBar";
 import { Screen } from "@/ui/Screen";
-import { Snackbar, useSnackbar } from "@/ui/Snackbar";
-import { CheckIcon, CrossIcon } from "@/ui/StatusIcons";
+import { CrossIcon } from "@/ui/StatusIcons";
 import { navHeader } from "@/ui/navHeader";
 import { controlHeight, radii, spacing, useTheme } from "@/ui/theme";
 import { typeScale } from "@/ui/tokens";
@@ -21,10 +20,8 @@ import { typeScale } from "@/ui/tokens";
 export default function DevicePick() {
   const router = useRouter();
   const theme = useTheme();
-  const snack = useSnackbar();
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<ModelId | null>(null);
-  const [notified, setNotified] = useState<ModelId[]>([]);
   const [failed, setFailed] = useState(false);
   const model = selected ? modelById(selected) : null;
   const groups = useMemo(() => groupCameras(CAMERAS, query), [query]);
@@ -56,30 +53,12 @@ export default function DevicePick() {
     else router.replace("/onboarding/intro");
   };
 
-  // Local only: src/core has no notify feature yet, so this records the choice on screen and confirms it in a toast.
-  const askNotify = (cam: CameraModel) => {
-    if (notified.includes(cam.id)) return;
-    setNotified((list) => [...list, cam.id]);
-    snack.show(content.device.notifyToast(cam.name));
-  };
-
   const footer = (
     <PinnedBar>
       {model && model.capabilities.write ? (
         <Button label={content.device.continue(model.name)} onPress={() => void choose("continue")} />
       ) : model ? (
-        <View style={styles.pair}>
-          <View style={styles.half}>
-            <Button label={content.device.preview} onPress={() => void choose("preview")} variant="secondary" />
-          </View>
-          <View style={styles.half}>
-            {notified.includes(model.id) ? (
-              <StatusPill label={content.device.notified} leading={<CheckIcon color={theme.secondary} size={16} />} />
-            ) : (
-              <Button label={content.device.notify} onPress={() => askNotify(model)} />
-            )}
-          </View>
-        </View>
+        <Button label={content.device.preview} onPress={() => void choose("preview")} variant="secondary" />
       ) : (
         <StatusPill label={content.device.pick} />
       )}
@@ -87,7 +66,7 @@ export default function DevicePick() {
   );
 
   return (
-    <Screen footer={footer} overlay={<Snackbar state={snack.state} onDismiss={snack.hide} />}>
+    <Screen footer={footer}>
       <Stack.Screen options={navHeader({ title: "" })} />
       <Text accessibilityRole="header" style={[typeScale.h1, styles.heading, { color: theme.label }]}>
         {content.device.title}
@@ -204,12 +183,11 @@ function SoonChip() {
   );
 }
 
-/** Grey pill for footer states that cannot act yet, and for the confirmed notify request. */
-function StatusPill({ label, leading }: { label: string; leading?: ReactNode }) {
+/** Grey pill for the footer state that cannot act yet (no camera picked). */
+function StatusPill({ label }: { label: string }) {
   const theme = useTheme();
   return (
     <View accessibilityLiveRegion="polite" style={[styles.pill, { backgroundColor: theme.separator }]}>
-      {leading}
       <Text style={[typeScale.button, { color: theme.secondary }]}>{label}</Text>
     </View>
   );
@@ -262,8 +240,6 @@ const styles = StyleSheet.create({
   },
   notice: { marginTop: -spacing.xs, paddingHorizontal: spacing.xs },
   empty: { paddingVertical: 32, paddingHorizontal: spacing.lg, alignItems: "center" },
-  pair: { flexDirection: "row", gap: spacing.md },
-  half: { flex: 1 },
   pill: {
     height: controlHeight,
     borderRadius: radii.pill,

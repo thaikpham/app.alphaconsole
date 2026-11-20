@@ -1,5 +1,5 @@
 // Account popover under the header avatar (SPEC §2.5(a), AlphaApp account menu). Replaces the iOS "Thêm" sheet.
-// Neutral local profile; no sign-in or sign-out (owner decision A/B). Same base props as before, plus two optional openers.
+// Neutral local profile; no sign-in or sign-out (owner decision A/B). Same base props as before, plus an optional camera opener.
 import { useEffect, useState, type ReactNode } from "react";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
@@ -10,8 +10,7 @@ import { appVersion } from "@/crash/appInfo";
 import { DEFAULT_MODEL, modelById } from "@/core/web/lib/app-core/models";
 import { LocalAvatar } from "@/home/LocalAvatar";
 import { loadCameraSelection } from "@/storage/cameraFile";
-import { setStore } from "@/storage/userSetsFile";
-import { BookmarkIcon, CameraIcon, ChevronDownIcon, HelpIcon, PlusIcon } from "@/ui/Glyphs";
+import { CameraIcon, ChevronDownIcon, HelpIcon } from "@/ui/Glyphs";
 import { timing, typeScale } from "@/ui/tokens";
 import { radii, rowMinHeight, spacing, useTheme } from "@/ui/theme";
 
@@ -23,32 +22,23 @@ type Props = {
   onClose: () => void;
   /** Opens the camera sheet. The row is hidden when this is not given. Called after this popover closes. */
   onChooseCamera?: () => void;
-  /** Opens the create set sheet. The row is hidden when this is not given. Called after this popover closes. */
-  onCreateSet?: () => void;
 };
 
 type Action = { key: string; label: string; value?: string; icon: ReactNode; run: () => void };
 
-export function MoreSheet({ visible, onClose, onChooseCamera, onCreateSet }: Props) {
+export function MoreSheet({ visible, onClose, onChooseCamera }: Props) {
   const router = useRouter();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const [cameraName, setCameraName] = useState<string>(DEFAULT_MODEL.name);
-  const [mineN, setMineN] = useState<number | null>(null);
 
-  // The popover stays mounted between opens, so read the current camera and set count each time it opens.
+  // The popover stays mounted between opens, so read the current camera each time it opens.
   useEffect(() => {
     if (!visible) return;
     let live = true;
     loadCameraSelection()
       .then((id) => {
         if (live) setCameraName(id ? (modelById(id)?.name ?? DEFAULT_MODEL.name) : DEFAULT_MODEL.name);
-      })
-      .catch(() => undefined);
-    setStore
-      .load()
-      .then(({ user }) => {
-        if (live) setMineN(user.length);
       })
       .catch(() => undefined);
     return () => {
@@ -60,14 +50,6 @@ export function MoreSheet({ visible, onClose, onChooseCamera, onCreateSet }: Pro
     onChooseCamera
       ? { key: "camera", label: content.more.camera, value: cameraName, icon: <CameraIcon color={theme.label} size={22} />, run: onChooseCamera }
       : null,
-    {
-      key: "mine",
-      label: content.sets.mineTitle,
-      value: mineN === null ? undefined : content.more.setCount(mineN),
-      icon: <BookmarkIcon color={theme.label} size={22} />,
-      run: () => router.setParams({ tab: "mine" }),
-    },
-    onCreateSet ? { key: "create", label: content.presets.create, icon: <PlusIcon color={theme.label} size={22} />, run: onCreateSet } : null,
     {
       key: "intro",
       label: content.more.intro,
