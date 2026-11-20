@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Animated, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
 import { beginWrite, endWrite, readCard, userMessage, type CardReading } from "@/card/session";
@@ -7,37 +7,44 @@ import { restoreCardBackup } from "@/card/restore";
 import { useCardDriver } from "@/card/useCardDriver";
 import { canPickCardFolder } from "@/card/webAccess";
 import { content } from "@/content";
+import { DEFAULT_MODEL } from "@/core/web/lib/app-core/models";
 import { bytesToBase64 } from "@/core/web/lib/app-core/bases";
-import { CARD_SETTING_DIR, compare, explicitPp, planWriteFor, slotFileName, type Family } from "@/core/web/lib/app-core/transfer/plan";
+import { explicitPp, planWriteFor, type Family } from "@/core/web/lib/app-core/transfer/plan";
 import { chooseFamily, newBackupId, recordFor } from "@/core/web/lib/app-core/transfer/state";
-import type { PresetSet, SlotDraft } from "@/core/web/lib/presetSets";
+import type { PresetSet } from "@/core/web/lib/presetSets";
 import { setStore } from "@/storage/userSetsFile";
 import { dropPending, updateWriteState } from "@/storage/writeState";
 import { Button } from "@/ui/Button";
-import { Card } from "@/ui/Card";
-import { CardStatusPanel } from "@/ui/CardStatusPanel";
-import { confirmDestructive } from "@/ui/confirm";
-import { GlassToolbar, GlassToolbarButton, GlassToolbarGroup, ToolbarSpacer } from "@/ui/GlassToolbar";
 import { haptic } from "@/ui/haptics";
-import { Loading } from "@/ui/Loading";
-import { animatedSpring } from "@/ui/motion";
 import { PinnedBar } from "@/ui/PinnedBar";
 import { ProgressRing } from "@/ui/ProgressRing";
 import { Screen } from "@/ui/Screen";
 import { ScreenHeader } from "@/ui/ScreenHeader";
+import {
+  ConnectHero,
+  DrivePickerArt,
+  MassStorageArt,
+  ModePicture,
+  PowerPicture,
+  RecallItem,
+  RecallWarning,
+  RestoreSheet,
+  ResultDisc,
+  SlotPhotos,
+  StepCard,
+  UnplugPicture,
+  WaitingLine,
+  WarnGlyph,
+  WarnPill,
+} from "@/write/V21Parts";
 import { Segmented } from "@/ui/Segmented";
-import { StageStepper } from "@/ui/StageStepper";
-import { StatusChip, type ChipTone } from "@/ui/StatusChip";
-import { CheckIcon } from "@/ui/StatusIcons";
-import { useReduceMotion } from "@/ui/useReduceMotion";
-import { ValueRow } from "@/ui/ValueRow";
 import { radii, spacing, useTheme } from "@/ui/theme";
-import { durations, press, typeScale } from "@/ui/tokens";
-import { ringCount, stageOf, stepIndex, type WritePhase } from "@/write/progress";
+import { typeScale } from "@/ui/tokens";
+import { ringCount, stageOf, type WritePhase } from "@/write/progress";
 import { usbHint } from "@/write/usbHint";
 import { WebWritePanel } from "@/write/WebWritePanel";
 import { subscribeWriteProgress, writeFilesVerified, type WriteReport, type WriteStatus } from "../../modules/usb-volume";
-import { fontFamily } from "@/ui/v21";
+import { fontFamily, roles } from "@/ui/v21";
 
 type Loaded = { reading: CardReading; set: PresetSet | null };
 
@@ -48,50 +55,6 @@ const familyOptions: { value: Family; label: string }[] = [
   { value: "N", label: content.home.family.N },
 ];
 
-const kept = content.edit.keep;
-
-function settingRows(s: SlotDraft): { label: string; value: string }[] {
-  return [
-    { label: content.field.mode, value: s.mode && s.mode !== "keep" ? content.labels.mode[s.mode] : kept },
-    { label: content.field.aperture, value: s.aperture === undefined || s.aperture === "keep" ? kept : String(s.aperture) },
-    { label: content.field.shutter, value: s.shutter === undefined || s.shutter === "keep" ? kept : s.shutter },
-    { label: content.field.iso, value: s.iso === undefined || s.iso === "keep" ? kept : String(s.iso) },
-    {
-      label: content.field.wb,
-      value:
-        !s.wb || s.wb === "keep"
-          ? kept
-          : s.wb.mode === "ctemp" && s.wb.kelvin !== undefined
-            ? `${s.wb.kelvin}K`
-            : content.labels.wbMode[s.wb.mode],
-    },
-    { label: content.field.ppOn, value: s.ppOn === undefined ? kept : s.ppOn ? content.edit.on : content.edit.off },
-    { label: content.field.focus, value: !s.focus || s.focus === "keep" ? kept : content.labels.focus[s.focus] },
-  ];
-}
-
-function statusTone(status: WriteStatus): ChipTone {
-  if (status === "ok" || status === "restored") return "success";
-  if (status === "error" || status === "restore-failed") return "danger";
-  return "neutral";
-}
-
-/** Morphs a result in from press depth on the morph spring. Reduce Motion fades it only. */
-function ResultMorph({ children }: { children: ReactNode }) {
-  const reduce = useReduceMotion();
-  const [enter] = useState(() => new Animated.Value(0));
-
-  useEffect(() => {
-    const run = reduce
-      ? Animated.timing(enter, { toValue: 1, duration: durations.short, useNativeDriver: true })
-      : animatedSpring(enter, 1, "morph");
-    run.start();
-    return () => run.stop();
-  }, [enter, reduce]);
-
-  const scale = enter.interpolate({ inputRange: [0, 1], outputRange: [press.button, 1] });
-  return <Animated.View style={{ opacity: enter, transform: [{ scale: reduce ? 1 : scale }] }}>{children}</Animated.View>;
-}
 
 export default function Write() {
   const router = useRouter();
@@ -106,7 +69,6 @@ export default function Write() {
   const [message, setMessage] = useState<string | null>(null);
   const [backupId, setBackupId] = useState<string | null>(null);
   const [nonce, setNonce] = useState(0);
-  const [detailsOpen, setDetailsOpen] = useState(false);
   const [recallOpen, setRecallOpen] = useState(false);
   const [restoring, setRestoring] = useState(false);
   const [checked, setChecked] = useState<boolean[]>(() => content.write.recallChecklist.map(() => false));
@@ -184,14 +146,13 @@ export default function Write() {
   const plan = useMemo(() => {
     if (!card || !set || blocked) return null;
     try {
-      return { files: planWriteFor(card.model, card.state, explicitPp(set), family), diff: compare(card.state, set, family) };
+      return { files: planWriteFor(card.model, card.state, explicitPp(set), family) };
     } catch (e) {
       return { error: userMessage(e, content.write.planFailed) };
     }
   }, [card, set, family, blocked]);
 
   const files = plan && "files" in plan ? plan.files : null;
-  const diff = plan && "diff" in plan ? plan.diff : null;
   // iOS cannot write yet (O1): canWrite stays false and the write button names the camera as not supported. A browser
   // without the card folder saves the files through WebWritePanel instead.
   const webShare = Platform.OS === "web" && !canPickCardFolder();
@@ -221,29 +182,21 @@ export default function Write() {
   // Recall "Khôi phục": puts back the backup this write made, after the user confirms.
   const restoreNow = () => {
     if (!backupId) return;
-    const id = backupId;
-    confirmDestructive({
-      title: content.write.restoreTitle,
-      message: content.write.restoreBody,
-      cancel: content.sets.cancel,
-      action: content.write.restore,
-      onConfirm: () => {
-        setRestoring(true);
-        setMessage(null);
-        void restoreCardBackup(id)
-          .then((outcome) =>
-            setMessage(
-              outcome === "restored"
-                ? content.backups.restored
-                : outcome === "noCard"
-                  ? content.backups.noCard
-                  : content.backups.restoreFailed,
-            ),
-          )
-          .finally(() => setRestoring(false));
-      },
-    });
+    setRestoring(true);
+    setMessage(null);
+    void restoreCardBackup(backupId)
+      .then((outcome) =>
+        setMessage(
+          outcome === "restored"
+            ? content.write.restored
+            : outcome === "noCard"
+              ? content.backups.noCard
+              : content.backups.restoreFailed,
+        ),
+      )
+      .finally(() => setRestoring(false));
   };
+
 
   const checkCable = () => {
     setStatuses({});
@@ -310,7 +263,11 @@ export default function Write() {
     }
   };
 
-  let actions: ReactNode;
+  const [restoreOpen, setRestoreOpen] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
+
+  // Footer per stage (AlphaApp screens 3–5). One primary action; the writing stage has no footer.
+  let actions: ReactNode = null;
   if (stage === "connect") {
     actions = needAccess ? (
       <Button label={content.home.onboarding.grant} onPress={grantNow} />
@@ -319,14 +276,8 @@ export default function Write() {
     ) : issue || webShare ? (
       <Button label={content.common.recheck} onPress={recheck} />
     ) : (
-      <>
-        <Button label={writeLabel} onPress={write} disabled={!canWrite} />
-        <Button label={content.common.recheck} onPress={recheck} variant="secondary" />
-      </>
+      <Button label={writeLabel} onPress={write} disabled={!canWrite} />
     );
-  } else if (stage === "writing") {
-    // The footer is hidden while the write runs; the body caption asks the user to keep the cable in.
-    actions = null;
   } else if (stage === "done") {
     actions = <Button label={content.write.titles.recall} onPress={() => setRecallOpen(true)} />;
   } else if (stage === "failed") {
@@ -334,267 +285,218 @@ export default function Write() {
       phase === "kept" ? (
         <Button label={content.write.blocked.toHome} onPress={() => router.navigate("/")} />
       ) : (
-        <>
-          <Button label={content.write.checkCable} onPress={checkCable} variant="secondary" />
-          <Button label={content.common.retry} onPress={write} disabled={!canWrite} />
-        </>
+        <View style={styles.row}>
+          <View style={styles.grow}>
+            <Button label={content.write.checkCable} onPress={checkCable} variant="secondary" />
+          </View>
+          <View style={styles.grow}>
+            <Button label={content.common.retry} onPress={write} disabled={!canWrite} />
+          </View>
+        </View>
       );
-  } else {
+  } else if (stage === "recall") {
     actions = (
-      <>
-        <Button
-          label={content.write.restore}
-          onPress={restoreNow}
-          variant="secondary"
-          disabled={restoring || !backupId}
-        />
-        <Button label={content.write.preview} onPress={() => router.push("/preview")} />
-        <Text style={[styles.note, { color: theme.secondary }]}>{content.write.previewHint}</Text>
-      </>
+      <View style={styles.row}>
+        <View style={styles.grow}>
+          <Button
+            label={content.write.restore}
+            onPress={() => setRestoreOpen(true)}
+            variant="secondary"
+            disabled={restoring || !backupId}
+          />
+        </View>
+        <View style={styles.grow}>
+          <Button label={content.write.preview} onPress={() => router.push("/preview")} />
+        </View>
+      </View>
     );
   }
 
-  const slotCard =
-    card && set ? (
-      <Card>
-        {set.slots.map((slot, i) => {
-          const n = i + 1;
-          const status = statuses[CARD_SETTING_DIR + slotFileName(n, family)];
-          const changed = diff?.includes(n) ?? false;
-          return (
-            <View key={n} style={styles.slotRow}>
-              <Text style={[styles.strong, { color: theme.label }]}>{`M${n} · ${slot.label}`}</Text>
-              {status ? (
-                <StatusChip label={content.write.status[status]} tone={statusTone(status)} />
-              ) : diff ? (
-                <StatusChip
-                  label={changed ? content.write.diffChange : content.write.diffSame}
-                  tone={changed ? "warning" : "success"}
-                />
-              ) : null}
-            </View>
-          );
-        })}
-      </Card>
-    ) : null;
+  // Only ZV-E10 writes today, so the drive in the guide is the default camera until a card is read.
+  const driveName = card?.model.name ?? DEFAULT_MODEL.name;
+  const slotLabels = set ? set.slots.map((slot) => slot.label) : [];
+  const artLabel = waiting ? "Máy ảnh ZV-E10 chưa nối cáp với điện thoại" : issue ? "Máy ảnh báo lỗi thẻ" : "Máy ảnh đã nối với điện thoại";
+  const centered = stage === "writing" || stage === "done" || stage === "failed";
 
   return (
-    <Screen footer={stage === "writing" ? undefined : <PinnedBar>{actions}</PinnedBar>}>
+    <Screen center={centered} footer={actions ? <PinnedBar>{actions}</PinnedBar> : undefined}>
       <ScreenHeader title={content.write.titles[stage]} />
-      <StageStepper stages={content.home.steps} current={stepIndex(stage)} />
 
-      {stage === "connect" ? <CardStatusPanel /> : null}
-
-      {stage === "connect" && needAccess ? (
-        <Card>
-          <Text style={[typeScale.body, { color: theme.label }]}>{content.home.onboarding.text}</Text>
-          {accessNotice ? <Text style={[styles.danger, { color: theme.danger }]}>{accessNotice}</Text> : null}
-        </Card>
-      ) : null}
-
-      {stage === "connect" && waiting && !needAccess ? (
-        <Card>
-          {Platform.OS === "web" ? (
-            <Text style={[styles.title, { color: theme.label }]}>{content.write.web.waiting}</Text>
-          ) : hint === "ptpOff" ? (
+      {stage === "connect" ? (
+        <ConnectHero state={waiting || needAccess ? "waiting" : issue ? "error" : "ok"} label={artLabel}>
+          {needAccess ? (
+            <Text style={[roles.body, styles.center, { color: theme.label }]}>{content.home.onboarding.text}</Text>
+          ) : waiting ? (
+            hint === "ptpOff" ? (
+              <>
+                <Text style={[roles.h3, styles.center, { color: theme.label }]}>{content.write.camera.ptpLines[0]}</Text>
+                <Text style={[roles.body, styles.center, { color: theme.label }]}>{content.write.camera.ptpLines[1]}</Text>
+              </>
+            ) : hint === "replug" ? (
+              <Text style={[roles.h3, { color: theme.label }]}>{content.write.camera.replug}</Text>
+            ) : (
+              <WaitingLine text={content.write.camera.waiting} />
+            )
+          ) : reading?.kind === "noSony" ? (
             <>
-              <Text style={[styles.title, { color: theme.label }]}>{content.write.camera.ptpLines[0]}</Text>
-              <Text style={[typeScale.callout, { color: theme.label }]}>{content.write.camera.ptpLines[1]}</Text>
+              <Text style={[roles.h3, styles.center, { color: theme.label }]}>{content.write.camera.unformatted[0]}</Text>
+              <View style={[styles.path, { backgroundColor: theme.fill }]}>
+                <Text style={[roles.label, { color: theme.label }]}>{content.write.camera.unformatted[1]}</Text>
+              </View>
+              <View style={styles.warnLine}>
+                <WarnGlyph color={theme.danger} size={22} />
+                <Text style={[roles.label, { color: theme.danger }]}>{content.write.camera.unformatted[2]}</Text>
+              </View>
             </>
-          ) : (
+          ) : issue ? (
             <>
-              {hint === "replug" ? (
-                <Text style={[styles.title, { color: theme.label }]}>{content.write.camera.replug}</Text>
-              ) : (
-                <Loading label={content.write.camera.waiting} />
-              )}
-              {content.write.camera.guide.map((item) => (
-                <View key={item.step} style={[styles.step, { borderTopColor: theme.separator }]}>
-                  <Text style={[styles.strong, { color: theme.label }]}>{item.step}</Text>
-                  {"note" in item && item.note ? <Text style={[styles.note, { color: theme.secondary }]}>{item.note}</Text> : null}
-                </View>
+              <Text style={[roles.h3, styles.center, { color: theme.label }]}>{issue[0]}</Text>
+              {issue.slice(1).map((line) => (
+                <Text key={line} style={[roles.body, styles.center, { color: theme.secondary }]}>
+                  {line}
+                </Text>
               ))}
             </>
-          )}
-        </Card>
-      ) : null}
-
-      {stage === "connect" && issue ? (
-        <Card>
-          {issue.map((line, i) =>
-            i === 0 ? (
-              <Text key={line} style={[styles.strong, { color: theme.danger }]}>
-                {line}
-              </Text>
-            ) : reading?.kind === "noSony" ? null : (
-              <Text key={line} style={[styles.note, { color: theme.secondary }]}>
-                {line}
-              </Text>
-            ),
-          )}
-          {reading?.kind === "noSony" ? (
+          ) : card ? (
             <>
+              <Text style={[roles.h2, { color: theme.label }]}>{card.model.name}</Text>
               <Pressable
                 accessibilityRole="button"
-                accessibilityState={{ expanded: detailsOpen }}
-                onPress={() => setDetailsOpen((open) => !open)}
-                style={styles.disclosure}
+                accessibilityState={{ expanded: infoOpen }}
+                onPress={() => setInfoOpen((o) => !o)}
+                style={({ pressed }) => [styles.detailPill, { borderColor: theme.outline }, pressed && { backgroundColor: theme.fill }]}
               >
-                <Text style={[styles.strong, { color: theme.label }]}>{content.write.details}</Text>
+                <Text style={[roles.labelSm, { color: theme.label }]}>{content.write.details}</Text>
+                <View style={[styles.chev, { borderColor: theme.label }, infoOpen && styles.chevUp]} />
               </Pressable>
-              {detailsOpen
-                ? issue.slice(1).map((line) => (
-                    <Text key={line} style={[styles.note, { color: theme.secondary }]}>
-                      {line}
-                    </Text>
-                  ))
-                : null}
+              {infoOpen ? (
+                <View style={styles.info}>
+                  {[
+                    { l: content.write.familyLine(family).split(" ")[0], v: family },
+                    { l: content.write.formatted.replace(/ Đã format$/, ""), v: "Đã format" },
+                    ...(backupId ? [{ l: content.write.backupId, v: backupId }] : []),
+                  ].map((row) => (
+                    <View key={row.l} style={[styles.infoRow, { borderTopColor: theme.separator }]}>
+                      <Text style={[roles.bodySm, { color: theme.secondary }]}>{row.l}</Text>
+                      <Text style={[roles.label, { color: theme.label }]}>{row.v}</Text>
+                    </View>
+                  ))}
+                </View>
+              ) : null}
             </>
           ) : null}
-        </Card>
+        </ConnectHero>
+      ) : null}
+
+      {stage === "connect" && (waiting || needAccess) ? (
+        <>
+          <StepCard n={1} title="Chọn Mass Storage">
+            <MassStorageArt left="Kết nối USB" right="Mass Storage" />
+          </StepCard>
+          <StepCard n={2} title="Cắm cáp USB-C" />
+          <StepCard n={3} title={`Chọn ổ ${driveName}`}>
+            <DrivePickerArt drive={driveName} cancel="Huỷ" allow="Cho phép" />
+            {Platform.OS === "web" ? (
+              <Button
+                label={canPickCardFolder() ? content.home.webGrantFolder : content.home.webGrantFiles}
+                onPress={grantNow}
+                variant="secondary"
+              />
+            ) : null}
+            {accessNotice ? <Text style={[styles.danger, { color: theme.danger }]}>{accessNotice}</Text> : null}
+          </StepCard>
+        </>
       ) : null}
 
       {stage === "connect" && !waiting && !blocked && card && set ? (
         <>
-          <Card>
-            <ValueRow label={content.presets.cameraRow} value={card.model.name} />
-            <ValueRow label={content.write.setName} value={set.name} />
-            {choice?.ask ? (
-              <>
-                <Text style={[styles.note, { color: theme.secondary }]}>{content.write.familyAsk}</Text>
-                <Segmented<Family> options={familyOptions} value={family} onChange={chooseFamilyNow} />
-              </>
-            ) : null}
-            {card.view.family !== null && card.matched === null ? (
-              <Text style={[styles.note, { color: theme.secondary }]}>{content.write.mismatch}</Text>
-            ) : null}
-            {plan && "error" in plan ? <Text style={[styles.danger, { color: theme.danger }]}>{plan.error}</Text> : null}
-          </Card>
-
-          {webShare && files ? <WebWritePanel files={files} family={family} setId={set.id} uuid={card.uuid} /> : null}
-
-          {slotCard}
-
-          <Pressable
-            accessibilityRole="button"
-            accessibilityState={{ expanded: detailsOpen }}
-            onPress={() => setDetailsOpen((open) => !open)}
-            style={styles.disclosure}
-          >
-            <Text style={[styles.strong, { color: theme.label }]}>{content.write.details}</Text>
-          </Pressable>
-          {detailsOpen ? (
-            <Card>
-              <Text style={[styles.strong, { color: theme.label }]}>{content.write.familyLine(family)}</Text>
-              <Text style={[styles.strong, { color: theme.label }]}>{content.write.formatted}</Text>
-              {set.slots.map((slot, i) => (
-                <View key={i} style={styles.detail}>
-                  <Text style={[styles.strong, { color: theme.label }]}>{`M${i + 1} · ${slot.label}`}</Text>
-                  {settingRows(slot.settings).map((row) => (
-                    <ValueRow key={row.label} label={row.label} value={row.value} />
-                  ))}
-                </View>
-              ))}
-            </Card>
+          <View style={[styles.setCard, { backgroundColor: theme.card }]}>
+            <Text style={[roles.title, styles.setName, { color: theme.label }]}>{set.name}</Text>
+            <SlotPhotos labels={slotLabels} />
+          </View>
+          {choice?.ask ? (
+            <View style={[styles.setCard, { backgroundColor: theme.card }]}>
+              <Text style={[styles.note, { color: theme.secondary }]}>{content.write.familyAsk}</Text>
+              <Segmented<Family> options={familyOptions} value={family} onChange={chooseFamilyNow} />
+            </View>
           ) : null}
-
+          {card.view.family !== null && card.matched === null ? (
+            <Text style={[styles.note, { color: theme.secondary }]}>{content.write.mismatch}</Text>
+          ) : null}
+          {plan && "error" in plan ? <Text style={[styles.danger, { color: theme.danger }]}>{plan.error}</Text> : null}
+          {webShare && files ? <WebWritePanel files={files} family={family} setId={set.id} uuid={card.uuid} /> : null}
           {message ? <Text style={[styles.danger, { color: theme.danger }]}>{message}</Text> : null}
         </>
       ) : null}
 
-      {stage === "writing" || stage === "done" || stage === "failed" ? (
-        <View style={styles.ring}>
+      {stage === "writing" ? (
+        <>
+          <WarnPill text={content.write.doNotUnplug} />
           <ProgressRing filled={ringCount(phase, okFiles)} />
-        </View>
+        </>
       ) : null}
 
-      {stage === "writing" ? <Text style={[styles.caption, { color: theme.label }]}>{content.write.doNotUnplug}</Text> : null}
-
       {stage === "done" ? (
-        <ResultMorph>
-          <Card>
-            <Text style={[styles.title, { color: theme.label }]}>{content.write.written}</Text>
-            {backupId ? <ValueRow label={content.write.backupId} value={backupId} /> : null}
-          </Card>
-          <GlassToolbar>
-            <ToolbarSpacer />
-            <GlassToolbarGroup>
-              <GlassToolbarButton accessibilityLabel={content.common.done} onPress={() => router.navigate("/")}>
-                <Text style={[typeScale.button, { color: theme.accentText }]}>{content.common.done}</Text>
-              </GlassToolbarButton>
-            </GlassToolbarGroup>
-          </GlassToolbar>
-        </ResultMorph>
+        <>
+          <ResultDisc ok />
+          <Text style={[roles.h2, { color: theme.label }]}>{content.write.written}</Text>
+          <View style={styles.doneGrid}>
+            <SlotPhotos labels={slotLabels} names={false} />
+          </View>
+        </>
       ) : null}
 
       {stage === "failed" ? (
-        <Card>
-          {phase === "kept" ? (
-            <Text style={[styles.strong, { color: theme.danger }]}>{content.write.kept}</Text>
-          ) : (
-            <>
-              <Text style={[styles.title, { color: theme.label }]}>{content.write.keepOld}</Text>
-              <Text style={[styles.note, { color: theme.secondary }]}>{content.write.rolledBack}</Text>
-            </>
-          )}
-          {backupId ? <ValueRow label={content.write.backupId} value={backupId} /> : null}
-        </Card>
+        <>
+          <ResultDisc ok={false} />
+          <Text style={[roles.h3, styles.center, { color: theme.label }]}>
+            {phase === "kept" ? content.write.kept : content.write.keepOld}
+          </Text>
+          {message ? <Text style={[styles.danger, { color: theme.danger }]}>{message}</Text> : null}
+        </>
       ) : null}
-
-      {stage === "writing" || stage === "done" || stage === "failed" ? slotCard : null}
 
       {stage === "recall" ? (
-        <Card>
-          {content.write.recallChecklist.map((item, i) => (
-            <Pressable
-              key={item}
-              accessibilityRole="checkbox"
-              accessibilityState={{ checked: checked[i] }}
-              onPress={() => toggleCheck(i)}
-              style={styles.check}
-            >
-              <View
-                style={[
-                  styles.box,
-                  { borderColor: theme.secondary, backgroundColor: checked[i] ? theme.fill : theme.card },
-                ]}
-              >
-                {checked[i] ? <CheckIcon color={theme.label} size={14} /> : null}
-              </View>
-              <Text style={[typeScale.body, { color: theme.label }]}>{item}</Text>
-            </Pressable>
-          ))}
-          <Text style={[styles.note, { color: theme.secondary }]}>{content.write.recallCaption}</Text>
-        </Card>
+        <View style={styles.recallList}>
+          <RecallItem picture={<UnplugPicture />} text={content.write.recallChecklist[0]} checked={checked[0]} onToggle={() => toggleCheck(0)} />
+          <RecallItem picture={<PowerPicture />} text={content.write.recallChecklist[1]} checked={checked[1]} onToggle={() => toggleCheck(1)} />
+          <RecallWarning text={content.write.recallChecklist[2]} />
+          <RecallItem picture={<ModePicture />} text={content.write.recallCaption} checked={checked[2]} onToggle={() => toggleCheck(2)} />
+          {message ? <Text style={[styles.note, { color: theme.secondary }]}>{message}</Text> : null}
+        </View>
       ) : null}
+
+      <RestoreSheet
+        visible={restoreOpen}
+        title={content.write.restoreTitle}
+        body={content.write.restoreBody}
+        cancel="Huỷ"
+        action={content.write.restore}
+        onCancel={() => setRestoreOpen(false)}
+        onConfirm={() => {
+          setRestoreOpen(false);
+          restoreNow();
+        }}
+      />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  title: { ...typeScale.title3 },
   note: { ...typeScale.subhead },
-  strong: { ...typeScale.subhead, fontFamily: fontFamily.semibold },
   danger: { ...typeScale.subhead, fontFamily: fontFamily.medium },
-  ring: { alignItems: "center", paddingVertical: spacing.md },
-  caption: { ...typeScale.subhead, textAlign: "center" },
-  step:{ gap: spacing.xs, paddingTop: spacing.sm, borderTopWidth: StyleSheet.hairlineWidth },
-  slotRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: spacing.sm,
-  },
-  disclosure: { paddingVertical: spacing.sm },
-  detail: { gap: spacing.xs, paddingTop: spacing.sm },
-  check: { flexDirection: "row", alignItems: "center", gap: spacing.md, paddingVertical: spacing.sm },
-  box: {
-    width: 24,
-    height: 24,
-    borderRadius: radii.control,
-    borderWidth: 2,
-    alignItems: "center",
-    justifyContent: "center",
-  },
+  center: { textAlign: "center" },
+  row: { flexDirection: "row", gap: spacing.md },
+  grow: { flex: 1 },
+  path: { paddingVertical: 10, paddingHorizontal: spacing.lg, borderRadius: radii.field },
+  warnLine: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
+  detailPill: { flexDirection: "row", alignItems: "center", gap: spacing.s6, height: 48, paddingHorizontal: spacing.lg, borderRadius: radii.pill, borderWidth: 1 },
+  chev: { width: 8, height: 8, marginTop: -4, borderRightWidth: 2.2, borderBottomWidth: 2.2, transform: [{ rotate: "45deg" }] },
+  chevUp: { marginTop: 4, transform: [{ rotate: "-135deg" }] },
+  info: { alignSelf: "stretch" },
+  infoRow: { flexDirection: "row", justifyContent: "space-between", gap: spacing.md, paddingVertical: spacing.md, paddingHorizontal: spacing.xs, borderTopWidth: 1 },
+  setCard: { borderRadius: 24, padding: spacing.lg, gap: spacing.md },
+  setName: { lineHeight: 26 },
+  doneGrid: { width: "100%", maxWidth: 320 },
+  recallList: { gap: spacing.md },
 });
