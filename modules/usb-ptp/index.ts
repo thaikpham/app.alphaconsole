@@ -1,13 +1,9 @@
 // Typed JS side of the local UsbPtp Expo module. The Kotlin code lives in android/. Live-view frames never reach JS:
 // LiveView draws them natively and sends only fps.
 import { requireNativeModule, requireNativeView, type EventEmitter, type EventSubscription } from "expo";
-import type { StyleProp, ViewStyle } from "react-native";
+import type { LiveFps, LiveViewProps, PtpConnectInfo, PtpPropRow, PtpState } from "./types";
 
-export type PtpConnectInfo = { model: string; version: string; extVersion: number | null };
-/** One GetAllExtDevicePropInfo row. [current] is null for strings, arrays and 128-bit values. */
-export type PtpPropRow = { code: number; dataType: number; getSet: number; isEnabled: number; current: number | null };
-export type PtpState = { status: "connected" | "disconnected" | "error"; message: string | null };
-export type LiveFps = { fps: number };
+export type { LiveFps, LiveViewProps, PtpConnectInfo, PtpPropRow, PtpState } from "./types";
 
 type UsbPtpEvents = {
   state: (s: PtpState) => void;
@@ -26,11 +22,6 @@ type Native = {
 
 // expo-modules-core 58 types NativeModule<T> as a constructor type, so the instance type comes from EventEmitter.
 const native = requireNativeModule<EventEmitter<UsbPtpEvents> & Native>("UsbPtp");
-
-export type LiveViewProps = {
-  style?: StyleProp<ViewStyle>;
-  onFps?: (e: { nativeEvent: LiveFps }) => void;
-};
 
 /** Native view that draws live-view frames. */
 export const LiveView = requireNativeView<LiveViewProps>("UsbPtp", "LiveView");

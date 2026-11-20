@@ -5,9 +5,9 @@ import { StyleSheet, Text, View } from "react-native";
 import { content } from "@/content";
 import { spacing, useTheme } from "@/ui/theme";
 import { typeScale } from "@/ui/tokens";
-import type { LiveViewProps, PtpConnectInfo, PtpPropRow, PtpState } from "./index";
+import type { LiveViewProps, PtpConnectInfo, PtpPropRow, PtpState } from "./types";
 
-export type { LiveFps, LiveViewProps, PtpConnectInfo, PtpPropRow, PtpState } from "./index";
+export type { LiveFps, LiveViewProps, PtpConnectInfo, PtpPropRow, PtpState } from "./types";
 
 function unsupported(): Promise<never> {
   return Promise.reject(new Error(content.preview.androidOnly));
