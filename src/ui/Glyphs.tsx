@@ -130,6 +130,49 @@ export function PersonIcon({ color, size = 22 }: GlyphProps) {
   );
 }
 
+/** Magnifier: a ring and a short handle to the lower right. */
+export function SearchIcon({ color, size = 22 }: GlyphProps) {
+  return (
+    <View style={[styles.box, { width: size, height: size }]} importantForAccessibility="no" accessibilityElementsHidden>
+      <View
+        style={[styles.abs, outline(size, color), { left: u(size, 2.9), top: u(size, 2.9), width: u(size, 16.2), height: u(size, 16.2), borderRadius: u(size, 8.1) }]}
+      />
+      <View
+        style={[
+          styles.abs,
+          { left: u(size, 15.45), top: u(size, 17.1), width: u(size, 5.5), height: u(size, 2.2), borderRadius: u(size, 1.1), backgroundColor: color, transform: [{ rotate: "45deg" }] },
+        ]}
+      />
+    </View>
+  );
+}
+
+/** Padlock outline: a body and a shackle arch, open at the bottom. */
+export function LockGlyph({ color, size = 16 }: GlyphProps) {
+  return (
+    <View style={[styles.box, { width: size, height: size }]} importantForAccessibility="no" accessibilityElementsHidden>
+      <View
+        style={[styles.abs, outline(size, color), { left: u(size, 5), top: u(size, 11), width: u(size, 14), height: u(size, 10), borderRadius: u(size, 2) }]}
+      />
+      <View
+        style={[
+          styles.abs,
+          outline(size, color),
+          {
+            borderBottomWidth: 0,
+            left: u(size, 8),
+            top: u(size, 3),
+            width: u(size, 8),
+            height: u(size, 8),
+            borderTopLeftRadius: u(size, 4),
+            borderTopRightRadius: u(size, 4),
+          },
+        ]}
+      />
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   box: { position: "relative", alignItems: "center", justifyContent: "center" },
   abs: { position: "absolute" },

@@ -395,8 +395,12 @@ export const content = {
   device: {
     title: "Bạn đang dùng máy nào?",
     searchPlaceholder: "Nhập tên máy, vd. ZV-E10",
+    searchClear: "Xoá",
     notWritable: (cam: string) => `${cam} chưa ghi được M1–M4. Bạn vẫn xem được các bộ màu và chỉnh slot.`,
     preview: "Xem trước",
+    notify: "Báo khi hỗ trợ",
+    notified: "Sẽ báo bạn",
+    notifyToast: (cam: string) => `Sẽ báo khi ${cam} được hỗ trợ`,
     continue: (cam: string) => `Tiếp tục với ${cam}`,
     pick: "Chọn máy để tiếp tục",
   },
