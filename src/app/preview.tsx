@@ -58,6 +58,8 @@ import { subscribeUsb } from "../../modules/usb-volume";
 import { fontFamily } from "@/ui/v21";
 
 type Link = "connecting" | "connected" | "off";
+/** SPEC 2.4.7: none = guide, checking = spinner in the hero frame, ok = live picture. */
+type LiveState = "none" | "checking" | "ok";
 
 const SLOTS = [1, 2, 3, 4] as const;
 const labels: PreviewLabels = {
@@ -306,10 +308,12 @@ export default function Preview() {
   }
 
   const shown = viewer ?? 1;
-  // The live picture is the hero: full width, from the top of the screen under the status bar. The toolbar floats over it.
-  // Without a picture, the toolbar floats over the content and the content starts below it.
-  const onPhoto = link === "connected";
-  const labelColor = onPhoto ? photoLabel : theme.label;
+  // The hero frame is full width, from the top of the screen under the status bar. The toolbar floats over it.
+  // With live state none, the toolbar floats over the content and the content starts below it.
+  const liveState: LiveState = liveOn ? "ok" : link === "connected" && !liveError ? "checking" : "none";
+  const onPhoto = liveState === "ok";
+  const overHero = liveState !== "none";
+  const labelColor = overHero ? photoLabel : theme.label;
   const toolbarTop = insets.top + spacing.sm;
   const toolbarRoom = toolbarTop + (Platform.OS === "android" ? 48 : 44) + spacing.md;
   const heroHeight = (width * 9) / 16;
@@ -332,7 +336,7 @@ export default function Preview() {
       overlay={
         <>
           <GlassToolbar style={[styles.toolbar, { top: toolbarTop }]}>
-            <GlassToolbarGroup overPhoto={onPhoto}>
+            <GlassToolbarGroup overPhoto={overHero}>
               <GlassToolbarButton
                 accessibilityLabel={content.common.back}
                 onPress={() => (router.canGoBack() ? router.back() : router.navigate("/"))}
@@ -341,7 +345,7 @@ export default function Preview() {
               </GlassToolbarButton>
             </GlassToolbarGroup>
             <ToolbarSpacer />
-            <GlassToolbarGroup overPhoto={onPhoto}>
+            <GlassToolbarGroup overPhoto={overHero}>
               <GlassToolbarButton
                 accessibilityLabel={content.preview.shoot(pv)}
                 disabled={!liveOn || saving !== null}
@@ -362,20 +366,22 @@ export default function Preview() {
         </>
       }
     >
-      {onPhoto ? (
+      {overHero ? (
         <View style={[styles.hero, { height: heroHeight }]}>
           <LiveView style={StyleSheet.absoluteFill} />
-          {!liveOn && !liveError ? (
+          {liveState === "checking" ? (
             <View style={styles.cover}>
               <Loading label={content.preview.startingLive} />
             </View>
           ) : null}
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={content.preview.enlarge}
-            onPress={() => setFullscreen(true)}
-            style={StyleSheet.absoluteFill}
-          />
+          {onPhoto ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={content.preview.enlarge}
+              onPress={() => setFullscreen(true)}
+              style={StyleSheet.absoluteFill}
+            />
+          ) : null}
           <ReadabilityScrim style={styles.scrim} />
           <View pointerEvents="none" style={styles.liveLabel}>
             <Text style={[typeScale.subhead, { color: photoLabel }]}>{content.preview.liveAria}</Text>
@@ -391,7 +397,7 @@ export default function Preview() {
 
       <SlotChips slots={slotItems} value={String(pv)} onChange={(id) => setPicked(Number(id))} />
 
-      {onPhoto ? null : (
+      {liveState === "none" ? (
         <Card>
           <Text style={[typeScale.title3, { color: theme.label }]}>{content.preview.guideTitle}</Text>
           <View style={styles.row}>
@@ -401,6 +407,7 @@ export default function Preview() {
           </View>
           {hint === "pcRemoteOn" ? <Text style={[typeScale.callout, { color: theme.label }]}>{content.preview.usb.pcRemoteOn}</Text> : null}
           {notice ? <Text style={[typeScale.subhead, { color: theme.danger }]}>{notice}</Text> : null}
+          {liveError ? <Text style={[typeScale.subhead, { color: theme.danger }]}>{liveError}</Text> : null}
           {fallback ? <Text style={[typeScale.subhead, { color: theme.secondary }]}>{content.preview.usb.replugFallback}</Text> : null}
           {link === "connecting" ? (
             <Loading label={content.preview.connecting} />
@@ -408,9 +415,7 @@ export default function Preview() {
             <Button label={content.common.recheck} onPress={attempt} variant="secondary" />
           )}
         </Card>
-      )}
-
-      {liveError ? <Text style={[typeScale.subhead, { color: theme.danger }]}>{liveError}</Text> : null}
+      ) : null}
 
       {link === "connected" ? (
         <Card>
