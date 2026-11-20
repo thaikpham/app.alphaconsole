@@ -91,7 +91,16 @@ export default function RootLayout() {
         <CardDriverProvider>
           <OnboardingGuard>
             <StatusBar style="auto" />
-            <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: theme.edge } }} />
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: theme.edge },
+                // v21 top bar sits on the page background with no hairline or shadow (AlphaApp top bar).
+                headerStyle: { backgroundColor: theme.bg },
+                headerShadowVisible: false,
+                headerTintColor: theme.label,
+              }}
+            />
           </OnboardingGuard>
         </CardDriverProvider>
       </OnboardingProvider>

@@ -1,6 +1,6 @@
 // Preset home (SPEC §2.4.2, 9.3): pick a recommended set, see the camera it is written to, and write or edit it.
 import { useCallback, useState } from "react";
-import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Stack, useFocusEffect, useRouter } from "expo-router";
 
 import { content } from "@/content";
@@ -15,7 +15,6 @@ import { loadCameraSelection } from "@/storage/cameraFile";
 import { setStore } from "@/storage/userSetsFile";
 import { Button } from "@/ui/Button";
 import { CameraIcon, ChevronDownIcon } from "@/ui/Glyphs";
-import { InstallHint } from "@/ui/InstallHint";
 import { PinnedBar } from "@/ui/PinnedBar";
 import { Screen } from "@/ui/Screen";
 import { navHeader } from "@/ui/navHeader";
@@ -37,7 +36,8 @@ export default function Home() {
 
   const model = (cameraId ? modelById(cameraId) : null) ?? DEFAULT_MODEL;
   const sets = recommendedSets(bundled);
-  const selected = sets.find((set) => set.id === selectedId) ?? null;
+  // The design opens with the first set picked (AlphaApp S.preset), so Ghi bộ này is ready at once.
+  const selected = sets.find((set) => set.id === selectedId) ?? sets[0] ?? null;
 
   const reload = useCallback(async () => {
     setCameraId(await loadCameraSelection().catch(() => null));
@@ -100,8 +100,6 @@ export default function Home() {
         }}
       />
       <Screen footer={footer} scrollEdge>
-        {Platform.OS === "web" ? <InstallHint /> : null}
-
         <Pressable
           onPress={() => setCameraOpen(true)}
           accessibilityRole="button"

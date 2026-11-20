@@ -71,5 +71,6 @@ export function Screen({
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   area: { flex: 1 },
-  content: { padding: spacing.lg, gap: spacing.lg },
+  // v21 scroll area (AlphaApp `.acl-sc`): 4 px under the top bar, 16 px sides, 24 px at the end, 16 px between blocks.
+  content: { paddingTop: spacing.xs, paddingHorizontal: spacing.lg, paddingBottom: spacing.xxl, gap: spacing.lg },
 });
