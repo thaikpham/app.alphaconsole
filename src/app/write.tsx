@@ -17,6 +17,7 @@ import { Card } from "@/ui/Card";
 import { CardStatusPanel } from "@/ui/CardStatusPanel";
 import { GlassToolbar, GlassToolbarButton, GlassToolbarGroup, ToolbarSpacer } from "@/ui/GlassToolbar";
 import { haptic } from "@/ui/haptics";
+import { Loading } from "@/ui/Loading";
 import { animatedSpring } from "@/ui/motion";
 import { PinnedBar } from "@/ui/PinnedBar";
 import { ProgressRing } from "@/ui/ProgressRing";
@@ -350,9 +351,11 @@ export default function Write() {
             </>
           ) : (
             <>
-              <Text style={[styles.title, { color: theme.label }]}>
-                {hint === "replug" ? content.write.camera.replug : content.write.camera.waiting}
-              </Text>
+              {hint === "replug" ? (
+                <Text style={[styles.title, { color: theme.label }]}>{content.write.camera.replug}</Text>
+              ) : (
+                <Loading label={content.write.camera.waiting} />
+              )}
               {content.write.camera.guide.map((item) => (
                 <View key={item.step} style={[styles.step, { borderTopColor: theme.separator }]}>
                   <Text style={[styles.strong, { color: theme.label }]}>{item.step}</Text>
@@ -371,12 +374,31 @@ export default function Write() {
               <Text key={line} style={[styles.strong, { color: theme.danger }]}>
                 {line}
               </Text>
-            ) : (
+            ) : reading?.kind === "noSony" ? null : (
               <Text key={line} style={[styles.note, { color: theme.secondary }]}>
                 {line}
               </Text>
             ),
           )}
+          {reading?.kind === "noSony" ? (
+            <>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityState={{ expanded: detailsOpen }}
+                onPress={() => setDetailsOpen((open) => !open)}
+                style={styles.disclosure}
+              >
+                <Text style={[styles.strong, { color: theme.label }]}>{content.write.details}</Text>
+              </Pressable>
+              {detailsOpen
+                ? issue.slice(1).map((line) => (
+                    <Text key={line} style={[styles.note, { color: theme.secondary }]}>
+                      {line}
+                    </Text>
+                  ))
+                : null}
+            </>
+          ) : null}
         </Card>
       ) : null}
 
