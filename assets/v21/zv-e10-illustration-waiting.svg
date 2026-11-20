@@ -1,0 +1,26 @@
+<svg role="img" aria-label="Máy ảnh ZV-E10 chưa nối cáp với điện thoại" viewBox="0 0 340 162" style="display:block;width:100%;height:auto">
+              <g style="fill:none;stroke:var(--tx);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round">
+                <path d="M34 48H166a12 12 0 0 1 12 12V118a12 12 0 0 1-12 12H34a12 12 0 0 1-12-12V60a12 12 0 0 1 12-12Z" style="fill:var(--sf)"></path>
+                <rect x="27" y="55" width="25" height="68" rx="11"></rect>
+                <path d="M33 72h13M33 80h13M33 88h13M33 96h13M33 104h13" style="stroke:var(--tx2);stroke-width:1.1"></path>
+                <rect x="29" y="40" width="22" height="8" rx="4" style="fill:var(--sf)"></rect>
+                <rect x="35" y="35" width="10" height="5" rx="2.5" style="fill:var(--sf)"></rect>
+                <rect x="86" y="40" width="46" height="8" rx="4" style="fill:var(--sf)"></rect>
+                <path d="M99 44h.01M109 44h.01M119 44h.01" style="stroke-width:2.6"></path>
+                <rect x="142" y="42" width="26" height="6" rx="1.5"></rect>
+                <circle cx="112" cy="90" r="37" style="fill:var(--sf)"></circle>
+                <circle cx="112" cy="90" r="29"></circle>
+                <circle cx="112" cy="90" r="18" style="fill:var(--ln)"></circle>
+                <path d="M102 83a12 12 0 0 1 8-6" style="stroke:var(--tx2)"></path>
+                <rect x="262" y="14" width="56" height="114" rx="10" style="fill:var(--sf)"></rect>
+                <rect x="266.5" y="18.5" width="47" height="105" rx="6" style="fill:var(--sf2);stroke:none"></rect>
+                <circle cx="290" cy="26" r="3" style="fill:var(--tx);stroke:none"></circle>
+                <path d="M319.6 38v10M319.6 54v16"></path>
+              </g>
+              <circle cx="163" cy="60" r="3.2" style="fill:var(--aci)"></circle>
+              <path d="M194 100C232 100 236 157 262 157C282 157 290 157 290 152" style="fill:none;stroke:var(--aci);stroke-width:3;stroke-linecap:round"></path>
+              <rect x="178" y="93" width="16" height="14" rx="3.5" style="fill:var(--aci)"></rect>
+              <rect x="284" y="138" width="12" height="14" rx="3.5" style="fill:var(--aci);animation:acl-pulse 1.4s ease-in-out infinite"></rect>
+              <g style="opacity:0"><circle cx="290" cy="71" r="17" style="fill:#127a3a"></circle><path d="m282.4 71.4 5 5 10-10.6" style="fill:none;stroke:#ffffff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round"></path></g>
+              <g style="opacity:0"><circle cx="290" cy="71" r="17" style="fill:#c8261b"></circle><path d="M290 63.5v9M290 78.6v.01" style="fill:none;stroke:#ffffff;stroke-width:3.2;stroke-linecap:round"></path></g>
+            </svg>
