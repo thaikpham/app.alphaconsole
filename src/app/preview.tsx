@@ -26,8 +26,10 @@ import { loadWriteState } from "@/storage/writeState";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
 import { Glass, ModalScope } from "@/ui/Glass";
+import { GlassToolbar, GlassToolbarButton, GlassToolbarGroup, ToolbarSpacer } from "@/ui/GlassToolbar";
 import { Loading } from "@/ui/Loading";
 import { PinnedBar } from "@/ui/PinnedBar";
+import { ReadabilityScrim } from "@/ui/ReadabilityScrim";
 import { Screen } from "@/ui/Screen";
 import { ScreenHeader } from "@/ui/ScreenHeader";
 import { SlotChips } from "@/ui/SlotChips";
@@ -299,6 +301,14 @@ export default function Preview() {
   }
 
   const shown = viewer ?? 1;
+  // The live picture is the hero: full width, from the top of the screen under the status bar. The toolbar floats over it.
+  // Without a picture, the toolbar floats over the content and the content starts below it.
+  const onPhoto = link === "connected";
+  const glassLuminance = onPhoto ? 1 : undefined;
+  const labelColor = onPhoto ? "#fff" : theme.label;
+  const toolbarTop = insets.top + spacing.sm;
+  const toolbarRoom = toolbarTop + (Platform.OS === "android" ? 48 : 44) + spacing.md;
+  const heroHeight = (width * 9) / 16;
 
   return (
     <Screen
@@ -315,14 +325,41 @@ export default function Preview() {
           <Button label={content.preview.done} onPress={() => router.navigate("/")} />
         </PinnedBar>
       }
-      overlay={<Snackbar state={snack.state} onDismiss={snack.hide} />}
+      overlay={
+        <>
+          <GlassToolbar style={[styles.toolbar, { top: toolbarTop }]}>
+            <GlassToolbarGroup luminance={glassLuminance}>
+              <GlassToolbarButton
+                accessibilityLabel={content.common.back}
+                onPress={() => (router.canGoBack() ? router.back() : router.navigate("/"))}
+              >
+                <Text style={[typeScale.subhead, { color: labelColor }]}>{content.common.back}</Text>
+              </GlassToolbarButton>
+            </GlassToolbarGroup>
+            <ToolbarSpacer />
+            <GlassToolbarGroup luminance={glassLuminance}>
+              <GlassToolbarButton
+                accessibilityLabel={content.preview.shoot(pv)}
+                disabled={!liveOn || saving !== null}
+                onPress={() => void save(pv)}
+              >
+                <Text style={[typeScale.subhead, { color: labelColor }]}>{content.preview.shoot(pv)}</Text>
+              </GlassToolbarButton>
+              <GlassToolbarButton
+                accessibilityLabel={content.preview.enlarge}
+                disabled={!onPhoto}
+                onPress={() => setFullscreen(true)}
+              >
+                <Text style={[typeScale.subhead, { color: labelColor }]}>{content.preview.enlarge}</Text>
+              </GlassToolbarButton>
+            </GlassToolbarGroup>
+          </GlassToolbar>
+          <Snackbar state={snack.state} onDismiss={snack.hide} />
+        </>
+      }
     >
-      <ScreenHeader title={content.preview.title} />
-
-      <SlotChips slots={slotItems} value={String(pv)} onChange={(id) => setPicked(Number(id))} />
-
-      {link === "connected" ? (
-        <View style={styles.frame}>
+      {onPhoto ? (
+        <View style={[styles.hero, { height: heroHeight }]}>
           <LiveView style={StyleSheet.absoluteFill} />
           {!liveOn && !liveError ? (
             <View style={styles.cover}>
@@ -335,13 +372,22 @@ export default function Preview() {
             onPress={() => setFullscreen(true)}
             style={StyleSheet.absoluteFill}
           />
+          <ReadabilityScrim style={styles.scrim} />
           <View pointerEvents="none" style={styles.liveLabel}>
-            <Glass luminance={1} style={styles.liveGlass}>
-              <Text style={[typeScale.subhead, { color: "#fff" }]}>{content.preview.liveAria}</Text>
-            </Glass>
+            <Text style={[typeScale.subhead, { color: "#fff" }]}>{content.preview.liveAria}</Text>
           </View>
         </View>
       ) : (
+        <View style={{ height: toolbarRoom }} />
+      )}
+
+      <Text accessibilityRole="header" style={[typeScale.title2, { color: theme.label }]}>
+        {content.preview.title}
+      </Text>
+
+      <SlotChips slots={slotItems} value={String(pv)} onChange={(id) => setPicked(Number(id))} />
+
+      {onPhoto ? null : (
         <Card>
           <Text style={[typeScale.title3, { color: theme.label }]}>{content.preview.guideTitle}</Text>
           <View style={styles.row}>
@@ -399,12 +445,6 @@ export default function Preview() {
 
       <Card>
         <Text style={[typeScale.title3, { color: theme.label }]}>{content.preview.snapshotsTitle}</Text>
-        <Button
-          label={content.preview.shoot(pv)}
-          variant="secondary"
-          disabled={!liveOn || saving !== null}
-          onPress={() => void save(pv)}
-        />
         <View style={styles.strip}>
           {SLOTS.map((n) => {
             const uri = shots[n];
@@ -508,18 +548,21 @@ export default function Preview() {
 }
 
 const styles = StyleSheet.create({
-  frame: {
-    width: "100%",
-    aspectRatio: 16 / 9,
-    borderRadius: radii.card,
-    overflow: "hidden",
-    backgroundColor: "#000",
-  },
+  // Full width, starts at y = 0 so the picture runs under the status bar and Dynamic Island.
+  hero: { marginTop: -spacing.lg, marginHorizontal: -spacing.lg, overflow: "hidden", backgroundColor: "#000" },
   cover: { ...StyleSheet.absoluteFill, alignItems: "center", justifyContent: "center" },
-  liveLabel: { position: "absolute", top: spacing.md, left: spacing.md },
-  liveGlass: { borderRadius: radii.pill, paddingHorizontal: spacing.md, paddingVertical: spacing.xs },
+  // Dark fade only over the lower half of the picture, under the label.
+  scrim: { top: "50%" },
+  liveLabel: { position: "absolute", left: spacing.md, right: spacing.md, bottom: spacing.md },
+  toolbar: { position: "absolute", left: spacing.lg, right: spacing.lg },
   closeAnchor: { position: "absolute", right: spacing.lg },
-  closeGlass: { borderRadius: radii.pill, paddingHorizontal: spacing.lg, paddingVertical: spacing.sm },
+  closeGlass: {
+    borderRadius: radii.pill,
+    minHeight: 48,
+    justifyContent: "center",
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+  },
   pressed: { transform: [{ scale: press.button }] },
   row: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
   center: { textAlign: "center" },

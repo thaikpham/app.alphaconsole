@@ -122,7 +122,7 @@ export default function Home() {
           ),
         }}
       />
-      <Screen footer={footer} overlay={<Snackbar state={snack.state} onDismiss={snack.hide} />}>
+      <Screen footer={footer} scrollEdge overlay={<Snackbar state={snack.state} onDismiss={snack.hide} />}>
         {Platform.OS === "web" ? <InstallHint /> : null}
 
         <Pressable onPress={() => setCameraOpen(true)} accessibilityRole="button" style={({ pressed }) => (pressed ? styles.pressedScale : undefined)}>

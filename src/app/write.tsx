@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Animated, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
 import { beginWrite, endWrite, readCard, userMessage, type CardReading } from "@/card/session";
@@ -15,6 +15,9 @@ import { dropPending, updateWriteState } from "@/storage/writeState";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
 import { CardStatusPanel } from "@/ui/CardStatusPanel";
+import { Glass } from "@/ui/Glass";
+import { haptic } from "@/ui/haptics";
+import { animatedSpring } from "@/ui/motion";
 import { PinnedBar } from "@/ui/PinnedBar";
 import { ProgressRing } from "@/ui/ProgressRing";
 import { Screen } from "@/ui/Screen";
@@ -22,9 +25,10 @@ import { ScreenHeader } from "@/ui/ScreenHeader";
 import { Segmented } from "@/ui/Segmented";
 import { StageStepper } from "@/ui/StageStepper";
 import { StatusChip, type ChipTone } from "@/ui/StatusChip";
+import { useReduceMotion } from "@/ui/useReduceMotion";
 import { ValueRow } from "@/ui/ValueRow";
 import { radii, spacing, useTheme } from "@/ui/theme";
-import { typeScale } from "@/ui/tokens";
+import { durations, press, typeScale } from "@/ui/tokens";
 import { ringCount, stageOf, stepIndex, type WritePhase } from "@/write/progress";
 import { usbHint } from "@/write/usbHint";
 import { WebWritePanel } from "@/write/WebWritePanel";
@@ -67,6 +71,23 @@ function statusTone(status: WriteStatus): ChipTone {
   return "neutral";
 }
 
+/** Morphs a result in from press depth on a smooth spring. Reduce Motion fades it only. */
+function ResultMorph({ children }: { children: ReactNode }) {
+  const reduce = useReduceMotion();
+  const [enter] = useState(() => new Animated.Value(0));
+
+  useEffect(() => {
+    const run = reduce
+      ? Animated.timing(enter, { toValue: 1, duration: durations.short, useNativeDriver: true })
+      : animatedSpring(enter, 1, "smooth");
+    run.start();
+    return () => run.stop();
+  }, [enter, reduce]);
+
+  const scale = enter.interpolate({ inputRange: [0, 1], outputRange: [press.button, 1] });
+  return <Animated.View style={{ opacity: enter, transform: [{ scale: reduce ? 1 : scale }] }}>{children}</Animated.View>;
+}
+
 export default function Write() {
   const router = useRouter();
   const theme = useTheme();
@@ -100,6 +121,12 @@ export default function Write() {
 
   useEffect(() => {
     phaseRef.current = phase;
+  }, [phase]);
+
+  // One result haptic per outcome: success when the write is confirmed, error when the card was rolled back or kept.
+  useEffect(() => {
+    if (phase === "ok") haptic("success");
+    else if (phase === "rolledBack" || phase === "kept") haptic("error");
   }, [phase]);
 
   // A new settled driver state while idle (a camera attached, a card readable) re-reads the card. Checking, reading and
@@ -406,10 +433,12 @@ export default function Write() {
       ) : null}
 
       {stage === "done" ? (
-        <Card>
-          <Text style={[styles.title, { color: theme.label }]}>{content.write.written}</Text>
-          {backupId ? <ValueRow label={content.write.backupId} value={backupId} /> : null}
-        </Card>
+        <ResultMorph>
+          <Glass style={styles.result}>
+            <Text style={[styles.title, { color: theme.label }]}>{content.write.written}</Text>
+            {backupId ? <ValueRow label={content.write.backupId} value={backupId} /> : null}
+          </Glass>
+        </ResultMorph>
       ) : null}
 
       {stage === "failed" ? (
@@ -462,6 +491,7 @@ const styles = StyleSheet.create({
   strong: { ...typeScale.subhead, fontWeight: "600" },
   danger: { ...typeScale.subhead, fontWeight: "500" },
   ring: { alignItems: "center", paddingVertical: spacing.md },
+  result: { borderRadius: radii.card, padding: spacing.xl, gap: spacing.md },
   step: { gap: spacing.xs, paddingTop: spacing.sm, borderTopWidth: StyleSheet.hairlineWidth },
   slotRow: {
     flexDirection: "row",

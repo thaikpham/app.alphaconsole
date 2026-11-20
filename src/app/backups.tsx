@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { Platform, StyleSheet, Text } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 import { useFocusEffect } from "expo-router";
 
 import { useCardDriver } from "@/card/useCardDriver";
@@ -138,7 +138,7 @@ export default function Backups() {
   };
 
   return (
-    <Screen>
+    <Screen scrollEdge>
       <ScreenHeader title={content.backups.title} />
 
       {loadError ? <Text style={styles.danger}>{loadError}</Text> : null}
@@ -155,26 +155,30 @@ export default function Backups() {
 
       {rows && rows.length === 0 ? <Text style={styles.note}>{content.backups.empty}</Text> : null}
 
-      {rows?.map(({ info, view }) => (
-        <Card key={info.id}>
-          <Text style={styles.cardTitle}>{formatDate(info.createdAt)}</Text>
-          <Text style={styles.note}>{content.backups.files(info.files)}</Text>
-          {view === null ? <Text style={styles.danger}>{content.backups.unreadable}</Text> : null}
-          {view?.error ? <Text style={styles.danger}>{view.error}</Text> : null}
-          {view && !view.error && view.slots.length === 0 ? <Text style={styles.note}>{content.home.noSlots}</Text> : null}
-          {view?.slots.map((slot) => (
-            <Text key={slot.slot} style={styles.line}>
-              {slotLine(slot)}
-            </Text>
+      {rows && rows.length > 0 ? (
+        <Card>
+          {rows.map(({ info, view }, i) => (
+            <View key={info.id} style={[styles.row, i > 0 && styles.separated]}>
+              <Text style={styles.cardTitle}>{formatDate(info.createdAt)}</Text>
+              <Text style={styles.note}>{content.backups.files(info.files)}</Text>
+              {view === null ? <Text style={styles.danger}>{content.backups.unreadable}</Text> : null}
+              {view?.error ? <Text style={styles.danger}>{view.error}</Text> : null}
+              {view && !view.error && view.slots.length === 0 ? <Text style={styles.note}>{content.home.noSlots}</Text> : null}
+              {view?.slots.map((slot) => (
+                <Text key={slot.slot} style={styles.line}>
+                  {slotLine(slot)}
+                </Text>
+              ))}
+              <Button
+                label={content.backups.restore}
+                onPress={() => confirmRestore(info)}
+                variant="secondary"
+                disabled={restoring}
+              />
+            </View>
           ))}
-          <Button
-            label={content.backups.restore}
-            onPress={() => confirmRestore(info)}
-            variant="secondary"
-            disabled={restoring}
-          />
         </Card>
-      ))}
+      ) : null}
     </Screen>
   );
 }
@@ -184,4 +188,6 @@ const styles = StyleSheet.create({
   note: { ...typeScale.footnote, color: colors.secondary },
   danger: { ...typeScale.footnote, fontWeight: "500", color: colors.danger },
   line: { ...typeScale.footnote, color: colors.label, paddingTop: spacing.xs },
+  row: { gap: spacing.md },
+  separated: { borderTopWidth: 1, borderTopColor: colors.separator, paddingTop: spacing.md },
 });

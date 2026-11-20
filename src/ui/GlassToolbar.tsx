@@ -12,9 +12,13 @@ export function GlassToolbar({ children, style }: ChildrenProps) {
   return <GlassContainer style={[styles.row, style]}>{children}</GlassContainer>;
 }
 
-/** One capsule of related buttons (L3, R2). Keep one kind of content per group: icons only, or text only. */
-export function GlassToolbarGroup({ children, style }: ChildrenProps) {
-  return <Glass style={[styles.group, style]}>{children}</Glass>;
+/** One capsule of related buttons (L3, R2). Keep one kind of content per group: icons only, or text only. `luminance` 1 over a photo. */
+export function GlassToolbarGroup({ children, style, luminance }: ChildrenProps & { luminance?: number }) {
+  return (
+    <Glass luminance={luminance} style={[styles.group, style]}>
+      {children}
+    </Glass>
+  );
 }
 
 export type GlassToolbarButtonProps = {

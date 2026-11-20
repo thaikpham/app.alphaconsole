@@ -69,9 +69,9 @@ const DISPLAY_STAGE = 3;
 const UNHELDABLE: ReadonlySet<RowId> = new Set<RowId>(["kelvin", "ab", "gm"]);
 /** Range rows. The Stepper edits them; the other rows use the wheel or segments. */
 const NUMERIC_ROWS: ReadonlySet<RowId> = new Set<RowId>(["kelvin", "ab", "gm"]);
-/** iOS header toolbar capsule (canvas v13): 36 pt tall, the touch area reaches 44 pt. */
+/** iOS header toolbar capsule (canvas v13): 36 pt tall. The hit slop brings the touch area to 48, which covers 44 pt (iOS) and 48 dp (Android). */
 const TOOLBAR_HEIGHT = 36;
-const TOOLBAR_HIT_SLOP = { top: 4, bottom: 4 };
+const TOOLBAR_HIT_SLOP = { top: 6, bottom: 6 };
 /** Height animation for the iOS disclosure. Reduce Motion skips it at the call site. */
 const DISCLOSURE_ANIMATION = {
   duration: durations.medium,
@@ -576,6 +576,7 @@ export default function EditSlot() {
     <Screen
       footer={keyboardVisible ? null : footer}
       scrollRef={scrollRef}
+      scrollEdge
       overlay={<Snackbar state={snack.state} onDismiss={snack.hide} />}
     >
       <Stack.Screen
@@ -664,7 +665,7 @@ const styles = StyleSheet.create({
   capsule: { height: TOOLBAR_HEIGHT, flexDirection: "row", alignItems: "center", borderRadius: radii.pill },
   capsuleButton: {
     height: TOOLBAR_HEIGHT,
-    minWidth: 44,
+    minWidth: 48,
     paddingHorizontal: spacing.md,
     alignItems: "center",
     justifyContent: "center",

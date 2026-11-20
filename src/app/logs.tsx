@@ -10,7 +10,7 @@ import { downloadFile } from "@/ui/download";
 import { Card } from "@/ui/Card";
 import { Screen } from "@/ui/Screen";
 import { ScreenHeader } from "@/ui/ScreenHeader";
-import { colors, spacing, typeScale } from "@/ui/tokens";
+import { colors, press, spacing, typeScale } from "@/ui/tokens";
 
 /** Local time for a list row. Shows the stored text when it is not a date. */
 function rowTime(time: string): string {
@@ -51,7 +51,7 @@ export default function Logs() {
   }
 
   return (
-    <Screen>
+    <Screen scrollEdge>
       <ScreenHeader title={content.logs.title} />
 
       {selected ? (
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   note: { ...typeScale.footnote, color: colors.secondary },
   detail: { ...typeScale.footnote, fontWeight: "400", color: colors.label },
   row: { gap: spacing.xs, paddingTop: spacing.sm, borderTopWidth: 1, borderTopColor: colors.separator },
-  pressed: { opacity: 0.85 },
+  pressed: { transform: [{ scale: press.card }] },
   rowTime: { ...typeScale.footnote, fontWeight: "500", color: colors.secondary },
   rowMessage: { ...typeScale.subhead, color: colors.label },
 });

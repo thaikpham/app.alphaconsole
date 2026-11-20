@@ -44,10 +44,13 @@ export function SegmentedControl<T extends string>({
   const grab = useSharedValue(0);
   // Segment the last drag settled on, written on the UI thread. The sync effect skips it, because the knob is already settling there.
   const settleTo = useSharedValue(index);
+  // Bumped on every drop or tap, so the knob re-syncs from `value` even when the parent rejects the change.
+  const [settles, setSettles] = useState(0);
 
   // Picks segment i. Silent when it is already selected, so a tap or drag onto the current segment does nothing.
   const choose = useCallback(
     (i: number) => {
+      setSettles((n) => n + 1);
       const option = options[i];
       if (!option || i === index) return;
       haptic("selection");
@@ -56,7 +59,8 @@ export function SegmentedControl<T extends string>({
     [index, onChange, options],
   );
 
-  // Moves the knob when the value changes from outside (a tap, or the parent). Under Reduce Motion it sits in place.
+  // Re-syncs the knob to `value` after each change and each settle. A rejected change leaves `value` as it was, so the
+  // knob springs back to the selected segment. Under Reduce Motion it sits in place.
   useEffect(() => {
     const settled = settleTo.get() === index;
     settleTo.set(index);
@@ -66,7 +70,7 @@ export function SegmentedControl<T extends string>({
       return;
     }
     position.set(withSpring(index, springs.bouncy));
-  }, [index, reduce, position, settleTo]);
+  }, [index, settles, reduce, position, settleTo]);
 
   const pan = useMemo(
     () =>

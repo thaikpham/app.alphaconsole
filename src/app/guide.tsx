@@ -1,4 +1,3 @@
-import { Fragment } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 
@@ -18,27 +17,27 @@ export default function Guide() {
   const router = useRouter();
 
   return (
-    <Screen>
+    <Screen scrollEdge>
       <ScreenHeader title={content.guide.title} />
 
-      {sections.map((section) => (
-        <Fragment key={section.title}>
-          <Card>
+      <Card>
+        {sections.map((section, s) => (
+          <View key={section.title} style={[styles.section, s > 0 && styles.separated]}>
             <Text style={styles.cardTitle}>{section.title}</Text>
             {section.lines.map((line, i) => (
               <Text key={line} style={styles.line}>
                 {`${i + 1}. ${line}`}
               </Text>
             ))}
-          </Card>
-          {section.showRecallWarning ? (
-            <View style={styles.warning}>
-              <Text style={styles.stepTitle}>{recallWarning.title}</Text>
-              <Text style={styles.note}>{recallWarning.text}</Text>
-            </View>
-          ) : null}
-        </Fragment>
-      ))}
+            {section.showRecallWarning ? (
+              <View style={styles.warning}>
+                <Text style={styles.stepTitle}>{recallWarning.title}</Text>
+                <Text style={styles.note}>{recallWarning.text}</Text>
+              </View>
+            ) : null}
+          </View>
+        ))}
+      </Card>
 
       <Text style={styles.note}>{content.guide.logsHint}</Text>
       <Button label={content.guide.logsLink} onPress={() => router.push("/logs")} variant="plain" />
@@ -48,6 +47,8 @@ export default function Guide() {
 }
 
 const styles = StyleSheet.create({
+  section: { gap: spacing.md },
+  separated: { borderTopWidth: 1, borderTopColor: colors.separator, paddingTop: spacing.md },
   cardTitle: { ...typeScale.title3, color: colors.label },
   line: { ...typeScale.body, color: colors.label },
   note: { ...typeScale.footnote, color: colors.secondary },
