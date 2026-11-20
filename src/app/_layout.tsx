@@ -1,6 +1,7 @@
 import { installTextDecoderShim } from "@/core/web/lib/app-core/shims/textDecoder";
 import { Stack, type ErrorBoundaryProps } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import { NavigationBar } from "expo-navigation-bar";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { useFonts } from "expo-font";
@@ -91,6 +92,8 @@ export default function RootLayout() {
         <CardDriverProvider>
           <OnboardingGuard>
             <StatusBar style="auto" />
+            {/* Android: ẩn thanh cử chỉ hệ thống (chủ dự án 2026-11-20); vuốt từ cạnh dưới để hiện tạm. Web và iOS bỏ qua. */}
+            <NavigationBar hidden />
             <Stack
               screenOptions={{
                 headerShown: false,
