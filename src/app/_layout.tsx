@@ -4,6 +4,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { StyleSheet, Text } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { CardDriverProvider } from "@/card/useCardDriver";
 import { installCrashLog, recordCrash } from "@/crash/install";
@@ -42,6 +43,7 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
 }
 
 const styles = StyleSheet.create({
+  root: { flex: 1 },
   title: { ...typeScale.title3 },
   message: { ...typeScale.subhead },
 });
@@ -55,13 +57,15 @@ export default function RootLayout() {
   const theme = useTheme();
 
   return (
-    <OnboardingProvider>
-      <CardDriverProvider>
-        <OnboardingGuard>
-          <StatusBar style="auto" />
-          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: theme.edge } }} />
-        </OnboardingGuard>
-      </CardDriverProvider>
-    </OnboardingProvider>
+    <GestureHandlerRootView style={styles.root}>
+      <OnboardingProvider>
+        <CardDriverProvider>
+          <OnboardingGuard>
+            <StatusBar style="auto" />
+            <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: theme.edge } }} />
+          </OnboardingGuard>
+        </CardDriverProvider>
+      </OnboardingProvider>
+    </GestureHandlerRootView>
   );
 }
