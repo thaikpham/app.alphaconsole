@@ -2,14 +2,14 @@
   "expo": {
     "name": "Alpha Console",
     "slug": "alpha-color-lab",
-    "version": "0.9.2",
+    "version": "0.9.3",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "alphacolorlab",
     "userInterfaceStyle": "automatic",
     "android": {
       "package": "com.alphacolorlab.app",
-      "versionCode": 10,
+      "versionCode": 11,
       "adaptiveIcon": {
         "backgroundColor": "#f3f4f6",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
