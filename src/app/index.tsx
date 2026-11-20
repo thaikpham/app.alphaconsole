@@ -7,6 +7,7 @@ import { content } from "@/content";
 import { DEFAULT_MODEL, modelById, type ModelId } from "@/core/web/lib/app-core/models";
 import { listedSets, type PresetSet } from "@/core/web/lib/presetSets";
 import { CameraSheet } from "@/home/CameraSheet";
+import { editedCopies } from "@/home/editedSets";
 import { recommendedSets } from "@/home/homeTabs";
 import { LocalAvatar } from "@/home/LocalAvatar";
 import { MoreSheet } from "@/home/MoreSheet";
@@ -31,11 +32,17 @@ export default function Home() {
   const [cameraId, setCameraId] = useState<ModelId | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [edited, setEdited] = useState<Map<string, string>>(new Map());
+  const [userSets, setUserSets] = useState<PresetSet[]>([]);
   const [moreOpen, setMoreOpen] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
 
   const model = (cameraId ? modelById(cameraId) : null) ?? DEFAULT_MODEL;
-  const sets = recommendedSets(bundled);
+  // A set edited through Chỉnh slot shows its edited slots under its own name and id.
+  const sets = recommendedSets(bundled).map((set) => {
+    const copy = userSets.find((u) => u.id === edited.get(set.id));
+    return copy ? { ...copy, id: set.id, name: set.name } : set;
+  });
   // The design opens with the first set picked (AlphaApp S.preset), so Ghi bộ này is ready at once.
   const selected = sets.find((set) => set.id === selectedId) ?? sets[0] ?? null;
 
@@ -44,11 +51,13 @@ export default function Home() {
     try {
       const data = await setStore.load();
       setBundled(listedSets(data.bundled));
+      setUserSets(data.user);
+      setEdited(await editedCopies().catch(() => new Map<string, string>()));
       setLoadError(null);
     } catch {
       setLoadError(content.sets.loadFailed);
     }
-  }, [setCameraId, setBundled, setLoadError]);
+  }, [setCameraId, setBundled, setUserSets, setEdited, setLoadError]);
 
   useFocusEffect(
     useCallback(() => {
@@ -75,7 +84,7 @@ export default function Home() {
           ) : !model.capabilities.write ? (
             <Button label={content.presets.unwritable(model.name)} onPress={noop} disabled />
           ) : (
-            <Button label={content.presets.write} onPress={() => router.push({ pathname: "/write", params: { id: selected.id } })} />
+            <Button label={content.presets.write} onPress={() => router.push({ pathname: "/write", params: { id: edited.get(selected.id) ?? selected.id } })} />
           )}
         </View>
       </View>

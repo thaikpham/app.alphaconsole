@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   LayoutAnimation,
+  Platform,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
   type ScrollViewInstance,
 } from "react-native";
@@ -13,7 +12,7 @@ import { Stack, useLocalSearchParams, usePreventRemove, useRouter } from "expo-r
 import Reanimated from "react-native-reanimated";
 
 import { content } from "@/content";
-import { canonical, changedStages, clearPp, setSetting, validateEdited } from "@/core/web/lib/app-core/sets/draft";
+import { canonical, clearPp, setSetting, validateEdited } from "@/core/web/lib/app-core/sets/draft";
 import { FIXED_DISPLAY } from "@/core/sets/fixedDisplay";
 import { popHistory, pushHistory } from "@/core/web/lib/app-core/sets/history";
 import {
@@ -38,11 +37,11 @@ import {
 } from "@/core/web/lib/app-core/sets/rows";
 import { nextPosition, positionOfStage, prevPosition, type StagePosition } from "@/core/web/lib/app-core/sets/stageNav";
 import { StoreError } from "@/core/web/lib/app-core/sets/store";
-import { PRESET_LIMITS, type PresetSet, type PresetSlot, type SlotDraft } from "@/core/web/lib/presetSets";
+import { type PresetSet, type SlotDraft } from "@/core/web/lib/presetSets";
 import { PP_FIELDS } from "@/core/web/lib/zve10/dat";
+import { editableCopyId } from "@/home/editedSets";
 import { setStore } from "@/storage/userSetsFile";
 import { Button } from "@/ui/Button";
-import { Card } from "@/ui/Card";
 import { confirmDestructive } from "@/ui/confirm";
 import { Glass } from "@/ui/Glass";
 import { Loading } from "@/ui/Loading";
@@ -52,7 +51,7 @@ import { Screen } from "@/ui/Screen";
 import { SettingRow } from "@/ui/SettingRow";
 import { SlotChips, type SlotItem } from "@/ui/SlotChips";
 import { Snackbar, useSnackbar } from "@/ui/Snackbar";
-import { StageStepper } from "@/ui/StageStepper";
+import { StageTabs } from "@/ui/StageTabs";
 import { Toggle } from "@/ui/Toggle";
 import { ValuePicker } from "@/ui/ValuePicker";
 import { ValueRow } from "@/ui/ValueRow";
@@ -131,10 +130,6 @@ function messageOf(e: unknown, fallback: string): string {
   return e instanceof StoreError ? e.message : fallback;
 }
 
-function mapSlot(set: PresetSet, index: number, fn: (slot: PresetSlot) => PresetSlot): PresetSet {
-  return { ...set, slots: set.slots.map((s, i) => (i === index ? fn(s) : s)) as PresetSet["slots"] };
-}
-
 function settingsOf(set: PresetSet): SlotDraft[] {
   return set.slots.map((s) => s.settings);
 }
@@ -170,18 +165,8 @@ function valueText(id: RowId, settings: SlotDraft): string {
   return optionLabel(id, value);
 }
 
-function Field({ label, children }: { label: string; children: ReactNode }) {
-  const theme = useTheme();
-  return (
-    <View style={styles.field}>
-      <Text style={[styles.label, { color: theme.secondary }]}>{label}</Text>
-      {children}
-    </View>
-  );
-}
-
-/** Collapsed group under a stage. Each stage mounts its own, so every stage starts collapsed. */
-function Disclosure({ label, children }: { label: string; children: ReactNode }) {
+/** Nâng cao row (AlphaApp): min 56, chevron turns up when open. Each stage mounts its own, so every stage starts collapsed. */
+function Disclosure({ label, divider = true, children }: { label: string; divider?: boolean; children: ReactNode }) {
   const theme = useTheme();
   const reduce = useReduceMotion();
   const [open, setOpen] = useState(false);
@@ -195,10 +180,16 @@ function Disclosure({ label, children }: { label: string; children: ReactNode })
         accessibilityRole="button"
         accessibilityState={{ expanded: open }}
         onPress={toggle}
-        style={({ pressed }) => [styles.disclosure, pressed && styles.pressed]}
+        style={({ pressed }) => [
+          styles.disclosure,
+          divider && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: theme.separator },
+          pressed && { backgroundColor: theme.press },
+        ]}
       >
         <Text style={[styles.disclosureLabel, { color: theme.label }]}>{label}</Text>
-        <Text style={[styles.disclosureMark, { color: theme.secondary }]}>{open ? "▴" : "▾"}</Text>
+        <View style={[styles.chevronBox, open && styles.chevronOpen]}>
+          <View style={[styles.chevronDown, { borderColor: theme.secondary }]} />
+        </View>
       </Pressable>
       {open ? children : null}
     </View>
@@ -281,7 +272,13 @@ type StageBodyProps = {
   onPpBank: (bank: number) => void;
 };
 
-/** Rows of one stage. Màu & da also holds the Picture Profile switch and the PP bank selector. */
+/** One group of rows on the card surface (AlphaApp: radius 24, rows flush, hairline between rows). */
+function Group({ children }: { children: ReactNode }) {
+  const theme = useTheme();
+  return <View style={[styles.group, { backgroundColor: theme.card }]}>{children}</View>;
+}
+
+/** Rows of one stage. Phơi sáng keeps Chế độ chụp in its own group, as the design does. Màu & da adds the Picture Profile group. */
 function StageBody({ stage, base, current, ppBank, onRow, onPp, onPpOn, onPpBank }: StageBodyProps) {
   const theme = useTheme();
   const { main, advanced } = STAGE_ROWS[stage];
@@ -298,48 +295,89 @@ function StageBody({ stage, base, current, ppBank, onRow, onPp, onPpOn, onPpBank
           onPress={() => onRow(id)}
         />
       ));
-  const ppItems: SlotItem[] = PP_BANKS.map((bank) => ({
-    id: String(bank),
-    label: content.edit.ppBank(bank),
-    modified: isBankModified(base, current, bank),
-  }));
+  const lead = main[0] === "mode" ? (["mode"] as const) : [];
+  const rest = main[0] === "mode" ? main.slice(1) : main;
   const ppOn = current.ppOn;
   return (
     <>
-      {rows(main)}
+      {lead.length > 0 ? <Group>{rows(lead)}</Group> : null}
+      <Group>
+        {rows(rest)}
+        {advanced.length > 0 ? <Disclosure label={content.edit.advanced}>{rows(advanced)}</Disclosure> : null}
+      </Group>
       {stage === COLOR_STAGE ? (
-        <>
-          <Toggle
-            label={content.field.ppOn}
-            value={ppOn === true}
-            onChange={(on) => onPpOn(on)}
-            detail={ppOn === undefined ? content.edit.held : undefined}
-            modified={canonical(base.ppOn) !== canonical(ppOn)}
-          />
-          {ppOn !== undefined ? (
-            <Button label={content.edit.held} variant="plain" onPress={() => onPpOn(undefined)} />
+        <Group>
+          <View style={styles.toggleRow}>
+            <Toggle
+              label={content.field.ppOn}
+              value={ppOn === true}
+              onChange={(on) => onPpOn(on)}
+              detail={ppOn === undefined ? content.edit.held : undefined}
+              modified={canonical(base.ppOn) !== canonical(ppOn)}
+            />
+          </View>
+          {ppOn === true ? (
+            <>
+              <View style={styles.ppGrid}>
+                {PP_BANKS.map((bank) => {
+                  const on = bank === ppBank;
+                  return (
+                    <Pressable
+                      key={bank}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: on }}
+                      accessibilityLabel={`${content.edit.ppBank(bank)}${isBankModified(base, current, bank) ? `, ${content.edit.modified}` : ""}`}
+                      onPress={() => onPpBank(bank)}
+                      style={[styles.ppChip, { backgroundColor: on ? theme.high : theme.fill }]}
+                    >
+                      <Text style={[styles.ppChipText, { color: on ? theme.onHigh : theme.label }]}>{content.edit.ppBank(bank)}</Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+              <Disclosure label={content.edit.advanced} divider>
+                {PP_FIELDS.map((field) => (
+                  <SettingRow
+                    key={field.key}
+                    label={field.label}
+                    value={readPp(current, ppBank, field.key) ?? content.edit.held}
+                    modified={readPp(base, ppBank, field.key) !== readPp(current, ppBank, field.key)}
+                    divider
+                    onPress={() => onPp(field)}
+                  />
+                ))}
+              </Disclosure>
+            </>
           ) : null}
-          <Text style={[styles.subhead, { color: theme.label }]}>{content.edit.ppTitle}</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <SlotChips slots={ppItems} value={String(ppBank)} onChange={(id) => onPpBank(Number(id))} />
-          </ScrollView>
-          <Disclosure label={content.edit.advanced}>
-            {PP_FIELDS.map((field, i) => (
-              <SettingRow
-                key={field.key}
-                label={field.label}
-                value={readPp(current, ppBank, field.key) ?? content.edit.held}
-                modified={readPp(base, ppBank, field.key) !== readPp(current, ppBank, field.key)}
-                divider={i > 0}
-                onPress={() => onPp(field)}
-              />
-            ))}
-          </Disclosure>
-        </>
+          {ppOn !== undefined ? (
+            <View style={styles.heldRow}>
+              <Button label={content.edit.held} variant="plain" onPress={() => onPpOn(undefined)} />
+            </View>
+          ) : null}
+        </Group>
       ) : null}
-      {advanced.length > 0 ? <Disclosure label={content.edit.advanced}>{rows(advanced)}</Disclosure> : null}
-      {stage === DISPLAY_STAGE ? <FixedDisplay /> : null}
+      {stage === DISPLAY_STAGE ? (
+        <Group>
+          <View style={styles.fixedPad}>
+            <FixedDisplay />
+          </View>
+        </Group>
+      ) : null}
     </>
+  );
+}
+
+/** Đặt lại Mx về bản gốc: outline pill under the groups, centred (AlphaApp v15). */
+function ResetButton({ label, onPress }: { label: string; onPress: () => void }) {
+  const theme = useTheme();
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={({ pressed }) => [styles.reset, { borderColor: theme.outline }, pressed && { backgroundColor: theme.fill }]}
+    >
+      <Text style={[styles.resetText, { color: theme.label }]}>{label}</Text>
+    </Pressable>
   );
 }
 
@@ -414,8 +452,6 @@ export default function EditSlot() {
   const slot = draft?.slots[slotIndex];
   const baseSettings = saved?.slots[slotIndex].settings;
   const slotModified = slot !== undefined && baseSettings !== undefined && isSlotModified(baseSettings, slot.settings);
-  const marks =
-    draft && saved ? changedStages(saved.slots[slotIndex].settings, draft.slots[slotIndex].settings) : undefined;
   const slotItems: (SlotItem & { name: string })[] =
     draft && saved
       ? draft.slots.map((s, i) => ({
@@ -425,8 +461,6 @@ export default function EditSlot() {
           modified: isSlotModified(saved.slots[i].settings, s.settings),
         }))
       : [];
-
-  const setLabel = (label: string) => setDraft((d) => (d ? mapSlot(d, slotIndex, (s) => ({ ...s, label })) : d));
 
   const save = async (): Promise<boolean> => {
     if (!result || !("set" in result)) return false;
@@ -464,14 +498,15 @@ export default function EditSlot() {
   const next = () => goTo(nextPosition({ slot: slotIndex, stage }, LAST_SLOT, LAST_STAGE));
   const selectStage = (index: number) => goTo(positionOfStage({ slot: slotIndex, stage }, index, LAST_STAGE));
 
-  const copyToEdit = async (shipped: PresetSet) => {
-    try {
-      const copy = await setStore.duplicate(shipped.id);
-      router.replace({ pathname: "/sets/[id]/edit", params: { id: copy.id } });
-    } catch (e) {
-      setNotice(messageOf(e, content.sets.actionFailed));
-    }
-  };
+  // v21: Chỉnh slot edits a recommended set in place. Its edits live in a user copy, opened here instead of a read-only note.
+  useEffect(() => {
+    if (status.kind !== "bundled") return;
+    const shipped = status.set;
+    editableCopyId(shipped.id)
+      .then((copyId) => router.replace({ pathname: "/sets/[id]/edit", params: { id: copyId } }))
+      .catch((e: unknown) => setNotice(messageOf(e, content.sets.actionFailed)));
+  }, [status, router]);
+
 
   /** Restores the last snapshot. The follow-up toast is deferred: the bar hides itself after onPress. */
   const undo = () => {
@@ -564,7 +599,7 @@ export default function EditSlot() {
   // window does not resize, so the bar would sit under the keyboard.
   const footer =
     status.kind === "user" && draft ? (
-      <View style={[styles.bar, { backgroundColor: theme.bg, borderTopColor: theme.separator }]}>
+      <View style={[styles.bar, { backgroundColor: theme.card, borderTopColor: theme.separator }]}>
         {error ? (
           <View style={styles.errorBox}>
             <Text style={[styles.danger, { color: theme.danger }]}>
@@ -577,69 +612,66 @@ export default function EditSlot() {
         ) : null}
         {notice ? <Text style={[styles.note, { color: theme.secondary }]}>{notice}</Text> : null}
         <View style={styles.actions}>
-          <View style={styles.half}>
-            <Button label={content.edit.previous} variant="secondary" onPress={goPrev} disabled={stage === 0} />
-          </View>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={content.edit.previous}
+            accessibilityState={{ disabled: slotIndex === 0 && stage === 0 }}
+            disabled={slotIndex === 0 && stage === 0}
+            onPress={goPrev}
+            style={({ pressed }) => [styles.prevButton, { borderColor: theme.outline }, pressed && { backgroundColor: theme.fill }]}
+          >
+            <View style={[styles.prevChevron, { borderColor: theme.label }]} />
+          </Pressable>
           <View style={styles.half}>{nextButton}</View>
         </View>
       </View>
     ) : null;
 
+  const editing = status.kind === "user" && draft && saved && slot && baseSettings;
+
+  // Slot segment and stage tabs stay put above the scroll area (AlphaApp screen 2).
+  const top = editing ? (
+    <>
+      <SlotChips slots={slotItems} value={String(slotIndex)} onChange={(v) => setSlotIndex(Number(v))} />
+      <StageTabs stages={content.stages} current={stage} onSelect={selectStage} />
+    </>
+  ) : null;
+
   return (
     <Screen
+      top={top}
       footer={keyboardVisible ? null : footer}
       scrollRef={scrollRef}
-      scrollEdge
       overlay={<Snackbar state={snack.state} onDismiss={snack.hide} />}
     >
       <Stack.Screen
         options={{
           ...navHeader({ title: content.edit.title }),
+          // Hoàn tác | Xong is the iOS toolbar (AlphaIOS); Android moves with Tiếp and the undo toast.
           headerRight:
-            status.kind === "user" && draft ? () => <EditToolbar blocked={blocked} onUndo={undo} onDone={() => void done()} /> : undefined,
+            Platform.OS === "ios" && status.kind === "user" && draft
+              ? () => <EditToolbar blocked={blocked} onUndo={undo} onDone={() => void done()} />
+              : undefined,
         }}
       />
       {status.kind === "loading" ? <Loading label={content.edit.loading} /> : null}
       {status.kind === "missing" ? <Text style={[styles.note, { color: theme.secondary }]}>{content.edit.notFound}</Text> : null}
       {status.kind === "failed" ? <Text style={[styles.danger, { color: theme.danger }]}>{status.message}</Text> : null}
-      {status.kind === "bundled" ? (
-        <Card>
-          <Text style={[styles.cardTitle, { color: theme.label }]}>{status.set.name}</Text>
-          <Text style={[styles.note, { color: theme.secondary }]}>{content.edit.readOnly}</Text>
-          <Button label={content.edit.copyToEdit} onPress={() => void copyToEdit(status.set)} />
-        </Card>
-      ) : null}
-      {status.kind === "user" && draft && saved && slot && baseSettings ? (
+      {status.kind === "bundled" ? <Loading label={content.edit.loading} /> : null}
+      {editing ? (
         <>
-          <Text style={[styles.setName, { color: theme.label }]}>{draft.name}</Text>
-          <SlotChips slots={slotItems} value={String(slotIndex)} onChange={(v) => setSlotIndex(Number(v))} />
-          <Field label={content.edit.slotLabel}>
-            <TextInput
-              value={slot.label}
-              onChangeText={setLabel}
-              maxLength={PRESET_LIMITS.slotLabel}
-              style={[styles.input, { color: theme.label, backgroundColor: theme.bg, borderColor: theme.separator }]}
-              accessibilityLabel={content.edit.slotLabel}
-            />
-          </Field>
-          <StageStepper stages={content.stages} current={stage} marked={marks} onSelect={selectStage} />
-          <Card>
-            <Text style={[styles.cardTitle, { color: theme.label }]}>{content.stages[stage]}</Text>
-            <StageBody
-              key={stage}
-              stage={stage}
-              base={baseSettings}
-              current={slot.settings}
-              ppBank={ppBank}
-              onRow={openRow}
-              onPp={openPp}
-              onPpOn={setPpOn}
-              onPpBank={setPpBank}
-            />
-            {slotModified ? (
-              <Button label={content.edit.resetSlot(slotName(slotIndex))} variant="plain" onPress={resetCurrent} />
-            ) : null}
-          </Card>
+          <StageBody
+            key={stage}
+            stage={stage}
+            base={baseSettings}
+            current={slot.settings}
+            ppBank={ppBank}
+            onRow={openRow}
+            onPp={openPp}
+            onPpOn={setPpOn}
+            onPpBank={setPpBank}
+          />
+          {slotModified ? <ResetButton label={content.edit.resetSlot(slotName(slotIndex))} onPress={resetCurrent} /> : null}
           {picker ? <ValuePicker {...picker} onClose={() => setPicker(null)} /> : null}
         </>
       ) : null}
@@ -663,16 +695,41 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
   },
   disclosure: {
-    minHeight: controlHeight,
+    minHeight: 56,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    gap: spacing.md,
+    paddingLeft: spacing.xl,
+    paddingRight: spacing.s14,
   },
-  disclosureLabel: { ...typeScale.callout, fontFamily: fontFamily.semibold },
-  disclosureMark: { ...typeScale.callout },
+  disclosureLabel: { ...typeScale.body },
+  chevronBox: { width: 20, height: 20, alignItems: "center", justifyContent: "center" },
+  chevronOpen: { transform: [{ rotate: "180deg" }] },
+  chevronDown: { width: 9, height: 9, marginTop: -4, borderRightWidth: 2, borderBottomWidth: 2, transform: [{ rotate: "45deg" }] },
+  group: { borderRadius: 24, overflow: "hidden" },
+  toggleRow: { paddingLeft: spacing.xl, paddingRight: spacing.lg },
+  ppGrid: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm, paddingHorizontal: spacing.lg, paddingBottom: spacing.lg },
+  // Five per row: (100% − 4 gaps of 8) / 5.
+  ppChip: { width: "18.4%", flexGrow: 1, height: 48, borderRadius: 14, alignItems: "center", justifyContent: "center" },
+  ppChipText: { ...typeScale.subhead, fontFamily: fontFamily.semibold },
+  heldRow: { paddingHorizontal: spacing.lg, paddingBottom: spacing.sm },
+  fixedPad: { padding: spacing.xl },
+  reset: {
+    alignSelf: "center",
+    height: 48,
+    paddingHorizontal: spacing.xl,
+    borderWidth: 1,
+    borderRadius: radii.pill,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  resetText: { ...typeScale.label },
+  prevButton: { width: 48, height: 48, borderRadius: radii.pill, borderWidth: 1, alignItems: "center", justifyContent: "center" },
+  prevChevron: { width: 10, height: 10, marginLeft: 4, borderLeftWidth: 2.2, borderBottomWidth: 2.2, transform: [{ rotate: "45deg" }] },
   pressed: { opacity: 0.85 },
-  bar: { gap: spacing.sm, padding: spacing.lg, borderTopWidth: 1 },
-  actions: { flexDirection: "row", gap: spacing.sm },
+  bar: { gap: spacing.sm, paddingHorizontal: spacing.lg, paddingVertical: spacing.md, borderTopWidth: 1 },
+  actions: { flexDirection: "row", gap: spacing.md },
   half: { flex: 1 },
   errorBox: { gap: spacing.sm },
   capsule: { height: TOOLBAR_HEIGHT, flexDirection: "row", alignItems: "center", borderRadius: radii.pill },

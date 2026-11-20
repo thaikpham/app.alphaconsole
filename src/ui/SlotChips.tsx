@@ -18,10 +18,10 @@ type Props = {
   onChange: (id: string) => void;
 };
 
-// Canvas v16: 44px track, pills inset 3px from its edge (38px tall). Unselected pills are 56px wide.
-const TRACK_HEIGHT = 44;
-const INSET = 3;
-const BASIS = 56;
+// AlphaApp slot segment: 48 px buttons on the track, each pill inset 4 px (40 px tall). Unselected buttons are 60 px wide.
+const TRACK_HEIGHT = 48;
+const INSET = 4;
+const BASIS = 60;
 
 /** Slot picker (M1 to M4) on a solid track (L1). The selected pill grows with a spring and shows its slot name. */
 export function SlotChips({ slots, value, onChange }: Props) {
@@ -32,7 +32,7 @@ export function SlotChips({ slots, value, onChange }: Props) {
   };
   return (
     <View accessibilityRole="radiogroup">
-      <View style={[styles.track, { backgroundColor: theme.fill }]}>
+      <View style={[styles.track, { backgroundColor: theme.separator }]}>
         {slots.map((slot) => (
           <SlotChip key={slot.id} slot={slot} selected={slot.id === value} onPress={() => choose(slot.id)} />
         ))}
@@ -60,26 +60,34 @@ function SlotChip({ slot, selected, onPress }: { slot: SlotItem; selected: boole
     animatedSpring(grow, toValue, "smooth", false).start(); // flexGrow is layout
   }, [selected, reduce, grow]);
 
-  const label = selected && slot.name ? `${slot.label} · ${slot.name}` : slot.label;
   const accessibleName = `${slot.label}${slot.name ? `, ${slot.name}` : ""}${slot.modified ? `, ${content.edit.modified}` : ""}`;
 
   return (
-    <Animated.View style={{ flexBasis: BASIS, flexGrow }}>
+    <Animated.View style={{ flexBasis: BASIS, flexGrow, flexShrink: selected ? 1 : 0, minWidth: 0 }}>
       <Pressable
         accessibilityRole="radio"
         accessibilityLabel={accessibleName}
         accessibilityState={{ selected }}
         onPress={onPress}
-        style={({ pressed }) => [styles.chip, selected && { backgroundColor: theme.chip }, pressed && styles.pressed]}
+        style={styles.hit}
       >
-        <Text
-          numberOfLines={1}
-          ellipsizeMode="tail"
-          style={[selected ? styles.labelOn : styles.label, { color: selected ? theme.chipfg : theme.secondary }]}
+        <View
+          style={[
+            styles.chip,
+            { paddingHorizontal: selected ? spacing.s14 : spacing.xs },
+            selected && [styles.on, { backgroundColor: theme.segmentOn }],
+          ]}
         >
-          {label}
-        </Text>
-        {slot.modified ? <ModifiedDot style={styles.dot} /> : null}
+          <Text style={[selected ? styles.labelOn : styles.label, { color: selected ? theme.label : theme.secondary }]}>
+            {slot.label}
+          </Text>
+          {selected && slot.name ? (
+            <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.name, { color: theme.label }]}>
+              {`· ${slot.name}`}
+            </Text>
+          ) : null}
+          {slot.modified ? <ModifiedDot /> : null}
+        </View>
       </Pressable>
     </Animated.View>
   );
@@ -90,17 +98,19 @@ const styles = StyleSheet.create({
     height: TRACK_HEIGHT,
     flexDirection: "row",
     borderRadius: radii.pill,
-    padding: INSET,
   },
+  hit: { flex: 1, padding: INSET },
   chip: {
     flex: 1,
+    flexDirection: "row",
+    gap: 5,
     borderRadius: radii.pill,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: spacing.s14,
   },
-  pressed: { opacity: 0.85 },
-  label: { ...typeScale.subhead, flexShrink: 1 },
-  labelOn: { ...typeScale.subhead, fontFamily: fontFamily.semibold, flexShrink: 1 },
-  dot: { position: "absolute", top: spacing.s6, right: spacing.s6 },
+  // Design: 0 1px 2px rgba(11,13,18,.14) under the selected pill.
+  on: { boxShadow: "0 1px 2px rgba(11, 13, 18, 0.14)" },
+  label: { ...typeScale.subhead, fontFamily: fontFamily.medium, flexShrink: 0 },
+  labelOn: { ...typeScale.subhead, fontFamily: fontFamily.semibold, flexShrink: 0 },
+  name: { ...typeScale.subhead, flexShrink: 1, minWidth: 0 },
 });
