@@ -1,6 +1,8 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { fonts, typeScale } from "./tokens";
-import { controlHeight, radii, spacing, useTheme } from "./theme";
+import { useEffect, useState } from "react";
+import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
+import { typeScale } from "./tokens";
+import { controlHeight, glass, motion, radii, spacing, useTheme } from "./theme";
+import { useReduceMotion } from "./useReduceMotion";
 
 type Option<T extends string> = { value: T; label: string };
 
@@ -10,11 +12,50 @@ type Props<T extends string> = {
   onChange: (value: T) => void;
 };
 
-/** Tabs whose selected segment is raised on a fill, with no border. Same props as Segmented. */
+// Track padding (SPEC-IOS §2): the thumb sits this far inside the track on every side.
+const PAD = 3;
+
+/**
+ * Tabs for the home preset list (SPEC-IOS §2, `.seg`). Same props as SegmentedTabs.tsx. The thumb slides on the seg
+ * spring and Reduce Motion sets it in place. The selected label is fieldLabel. Press feedback is scale, never opacity.
+ */
 export function SegmentedTabs<T extends string>({ options, value, onChange }: Props<T>) {
   const theme = useTheme();
+  const reduce = useReduceMotion();
+  const [width, setWidth] = useState(0);
+  const index = Math.max(0, options.findIndex((option) => option.value === value));
+  const [slide] = useState(() => new Animated.Value(index));
+  const slot = options.length > 0 ? (width - PAD * 2) / options.length : 0;
+
+  useEffect(() => {
+    if (reduce) {
+      slide.setValue(index);
+      return;
+    }
+    const run = Animated.spring(slide, { toValue: index, ...motion.spring.seg, useNativeDriver: true });
+    run.start();
+    return () => run.stop();
+  }, [index, reduce, slide]);
+
   return (
-    <View accessibilityRole="radiogroup" style={[styles.track, { backgroundColor: theme.fill }]}>
+    <View
+      accessibilityRole="radiogroup"
+      onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+      style={[styles.track, { backgroundColor: theme.fill }]}
+    >
+      {width > 0 ? (
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            styles.thumb,
+            {
+              width: slot,
+              backgroundColor: theme.segmentOn,
+              transform: [{ translateX: Animated.multiply(slide, slot) }],
+            },
+          ]}
+        />
+      ) : null}
       {options.map((option) => {
         const selected = option.value === value;
         return (
@@ -23,18 +64,9 @@ export function SegmentedTabs<T extends string>({ options, value, onChange }: Pr
             accessibilityRole="radio"
             accessibilityState={{ selected }}
             onPress={() => onChange(option.value)}
-            style={({ pressed }) => [
-              styles.segment,
-              selected && [styles.raised, { backgroundColor: theme.segmentOn }],
-              pressed && styles.pressed,
-            ]}
+            style={({ pressed }) => [styles.segment, pressed && styles.pressed]}
           >
-            <Text
-              style={[
-                selected ? styles.labelOn : styles.label,
-                { color: selected ? theme.label : theme.secondary },
-              ]}
-            >
+            <Text style={[selected ? styles.labelOn : styles.label, { color: selected ? theme.label : theme.secondary }]}>
               {option.label}
             </Text>
           </Pressable>
@@ -47,26 +79,27 @@ export function SegmentedTabs<T extends string>({ options, value, onChange }: Pr
 const styles = StyleSheet.create({
   track: {
     flexDirection: "row",
-    borderRadius: radii.control,
-    padding: spacing.xs,
-    gap: spacing.xs,
+    borderRadius: radii.pill,
+    padding: PAD,
+  },
+  // Inset highlight: a hairline light edge on the thumb (glass.highlightTop).
+  thumb: {
+    position: "absolute",
+    left: PAD,
+    top: PAD,
+    bottom: PAD,
+    borderRadius: radii.pill,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: `rgba(255, 255, 255, ${glass.highlightTop})`,
   },
   segment: {
     flex: 1,
     minHeight: controlHeight,
-    borderRadius: radii.control - spacing.xs,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: spacing.sm,
   },
-  raised: {
-    shadowColor: "#0b0d12",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.14,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  pressed: { opacity: 0.85 },
+  pressed: { transform: [{ scale: 0.96 }] },
   label: { ...typeScale.subhead },
-  labelOn: { ...typeScale.subhead, fontFamily: fonts.semibold },
+  labelOn: { ...typeScale.fieldLabel },
 });

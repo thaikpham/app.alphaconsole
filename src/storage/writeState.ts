@@ -1,6 +1,6 @@
 // The app's write state file (Documents/write-state.json): family per card, last write, and a write not yet confirmed.
 import { File, Paths } from "expo-file-system";
-import { parseWriteState, serializeWriteState, type WriteState } from "@/core/transfer/state";
+import { parseWriteState, serializeWriteState, type WriteState } from "@/core/web/lib/app-core/transfer/state";
 
 const file = new File(Paths.document, "write-state.json");
 

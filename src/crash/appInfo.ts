@@ -9,6 +9,8 @@ export function appVersion(): string {
 
 /** The Android release and the device model, e.g. 14 and Pixel 8. */
 export function deviceInfo(): { androidVersion: string; model: string } {
+  // The web build has no Platform.constants (no Release or Model).
+  if (Platform.OS === "web") return { androidVersion: "unknown", model: "unknown" };
   const constants = Platform.constants;
   const release = "Release" in constants ? constants.Release : undefined;
   const model = "Model" in constants ? constants.Model : undefined;

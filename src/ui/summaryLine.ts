@@ -1,8 +1,8 @@
 // Settings line for the iOS preview screen (SPEC-IOS §4.9, O19): six values in one row, separated by " · ".
 // A value the selected slot compares and the camera does not match reads "readback→slot" and is flagged warn.
 // Pure: no native or React imports. The slot text repeats the private slotText in src/write/mismatch.ts (src/write is not editable from here).
-import type { SlotCheck } from "../core/preview/match.ts";
-import type { PreviewLabels, PreviewReadings, Reading } from "../core/preview/props.ts";
+import type { SlotCheck } from "../core/web/lib/app-core/preview/match.ts";
+import type { PreviewLabels, PreviewReadings, Reading } from "../core/web/lib/app-core/preview/props.ts";
 import type { SlotDraft } from "../core/web/lib/presetSets.ts";
 
 export type SummaryKey = "mode" | "aperture" | "shutter" | "iso" | "wb" | "pp";

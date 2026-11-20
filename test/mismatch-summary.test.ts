@@ -1,8 +1,8 @@
 /** Mismatch line for the preview screen: camera readback against one slot. Fixtures are PTP values decoded by readPreview. Pure helper: src/write/mismatch.ts. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { matchSlot } from "../src/core/preview/match.ts";
-import { PROP, readPreview, type PreviewLabels, type PtpProp } from "../src/core/preview/props.ts";
+import { matchSlot } from "../src/core/web/lib/app-core/preview/match.ts";
+import { PROP, readPreview, type PreviewLabels, type PtpProp } from "../src/core/web/lib/app-core/preview/props.ts";
 import type { SlotDraft } from "../src/core/web/lib/presetSets.ts";
 import { mismatchSummary } from "../src/write/mismatch.ts";
 

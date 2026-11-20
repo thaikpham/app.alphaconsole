@@ -1,10 +1,10 @@
 // Device pick, first screen of onboarding (SPEC screen 8). The choice is saved as the camera selection.
 import { useEffect, useState } from "react";
-import { Platform, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { Stack, useRouter } from "expo-router";
 
 import { content } from "@/content";
-import { modelById, type ModelId } from "@/core/models";
+import { modelById, type ModelId } from "@/core/web/lib/app-core/models";
 import { loadCameraSelection, saveCameraSelection } from "@/storage/cameraFile";
 import { Button } from "@/ui/Button";
 import { CameraList } from "@/ui/CameraList";
@@ -59,12 +59,7 @@ export default function DevicePick() {
         </PinnedBar>
       }
     >
-      {Platform.OS === "ios" ? <Stack.Screen options={navHeader({ title: content.device.title, largeTitle: true })} /> : null}
-      {Platform.OS === "ios" ? null : (
-        <Text style={[typeScale.title2, { color: theme.label }]} accessibilityRole="header">
-          {content.device.title}
-        </Text>
-      )}
+      <Stack.Screen options={navHeader({ title: content.device.title, largeTitle: true })} />
       <CameraList selected={selected} onSelect={setSelected} searchPlaceholder={content.device.searchPlaceholder} />
 
       {model && !model.capabilities.write ? (

@@ -22,9 +22,14 @@
       "sha256": "b2648aadb7da8929b2f631682a39c4d270326ef1914a35c93ad9b251ead64efd"
     },
     {
+      "path": "lib/zve10/zip.ts",
+      "bytes": 3733,
+      "sha256": "67dc978e133f3838bec393e9d16870301cb2aaef3b71ff497ea8517bcf77ffd2"
+    },
+    {
       "path": "lib/a6400/dat.ts",
-      "bytes": 6036,
-      "sha256": "a0a88f51710b8ca1914df38c237542714ba74d445d561ce73c99c5d84c6bf8f8"
+      "bytes": 7752,
+      "sha256": "d320cbbb9090f16a77992845bb751a3ed9f80cef732d17dced8d21e75348665f"
     },
     {
       "path": "lib/a7c2/dat.ts",
@@ -58,78 +63,106 @@
     },
     {
       "path": "data/preset-sets.json",
-      "bytes": 9685,
-      "sha256": "870e94fdcb71345f9b6b456a2eb8025e60e81037b9f1b3c3dda4f5c8d461ac1c"
+      "bytes": 9550,
+      "sha256": "8c94863f03f6dcd778cd2c582d39197f08e13be369073b632524c6b90f881aff"
     },
     {
-      "path": "public/dat/zve10-base-pal.dat",
-      "bytes": 4608,
-      "sha256": "591b8a787553f6437d8baa3ac9f2d4e0fd9835e39767a37b2d295d19857e0d21"
+      "path": "lib/app-core/bases.ts",
+      "bytes": 2350,
+      "sha256": "347d1ab7b213d114d6cf4c9f603ef1625ad32d0aa29f227e1f810ddbd740d261"
     },
     {
-      "path": "public/dat/zve10-base-ntsc.dat",
-      "bytes": 4608,
-      "sha256": "ce79ba6faa0f0a4047f1e8d0e51cae7e837a51c1104ab41348c85c18a1e99f75"
+      "path": "lib/app-core/generated/datBases.ts",
+      "bytes": 61815,
+      "sha256": "7bdea6f771ed46fd4a1260b86cd9614740cb316864712004b3f0282e5a69959d"
     },
     {
-      "path": "public/dat/zve10-pal-m1.dat",
-      "bytes": 4608,
-      "sha256": "a42f1e67ba08f69bbfe310c029796d5458af972cbd0ae3e01fb3f1344058d0fc"
+      "path": "lib/app-core/models.ts",
+      "bytes": 5734,
+      "sha256": "12fea6657b80ab4b4be0eb01300c072791107606f96559b2adf0d816b8c5411f"
     },
     {
-      "path": "public/dat/zve10-pal-m2.dat",
-      "bytes": 4608,
-      "sha256": "63b18017f1b04c755cba187017add38ac0a6d383ccdb25401f239ab880fb8ad8"
+      "path": "lib/app-core/card/readOnly.ts",
+      "bytes": 1665,
+      "sha256": "ebf551c3fed026be6cec50cb23aa57f7399e96b733b68cf9ee83e7cf0d9cb070"
     },
     {
-      "path": "public/dat/zve10-pal-m3.dat",
-      "bytes": 4608,
-      "sha256": "5795a40b94b6ff6b5631b769501522359a12b5cd5a521656a64c94607253498c"
+      "path": "lib/app-core/card/view.ts",
+      "bytes": 2780,
+      "sha256": "5a8044d6a25b7b9c033b9c26c3ed572d3753d78b7e1bc5d6af02c9563d2e2bfe"
     },
     {
-      "path": "public/dat/zve10-pal-m4.dat",
-      "bytes": 4608,
-      "sha256": "365a3b347aed4eb558ec1cc47cb2a3c9ed6e6b1669583a6f23662e85630f1e0c"
+      "path": "lib/app-core/preview/match.ts",
+      "bytes": 4040,
+      "sha256": "3f8e9bcf5d2eef364a3c9e111828b757489352b094f70af2d714fcf71dee36ab"
     },
     {
-      "path": "public/dat/zve10-ntsc-m1.dat",
-      "bytes": 4608,
-      "sha256": "5dddfe9866d64424c047e24887e1acb840204ab9e199f3c0d2a9e0b659ea9285"
+      "path": "lib/app-core/preview/props.ts",
+      "bytes": 5040,
+      "sha256": "22cddb3f1c7060d07b62470a608e60091995b6f9b5202dda764c768c0163d1bf"
     },
     {
-      "path": "public/dat/zve10-ntsc-m2.dat",
-      "bytes": 4608,
-      "sha256": "1460cdbb2413ae543b7bafe00ef91ee9eb2658d4999894c87a39d235da1631a2"
+      "path": "lib/app-core/sets/draft.ts",
+      "bytes": 5523,
+      "sha256": "f9817f215ea42d60a26830a1af4f71490fbe0edd8976feb644d3aeb70f6412dd"
     },
     {
-      "path": "public/dat/zve10-ntsc-m3.dat",
-      "bytes": 4608,
-      "sha256": "1e61afdb9fec233c012bc4d6e116ecd38ff03c138bf5a85a5d89ca01570babc8"
+      "path": "lib/app-core/sets/history.ts",
+      "bytes": 709,
+      "sha256": "9c4773053a4e05db237fa9c97cd32ee4618c003b06db1aee22488e3905a231e7"
     },
     {
-      "path": "public/dat/zve10-ntsc-m4.dat",
-      "bytes": 4608,
-      "sha256": "ce79ba6faa0f0a4047f1e8d0e51cae7e837a51c1104ab41348c85c18a1e99f75"
+      "path": "lib/app-core/sets/match.ts",
+      "bytes": 640,
+      "sha256": "a3dc70d8a4119439dfaa8b29c5356129a5f36d97f6df8dc8e8d09d184145178f"
+    },
+    {
+      "path": "lib/app-core/sets/options.ts",
+      "bytes": 2548,
+      "sha256": "275f8dda77c664d732a9d8cf979530c7163e0a06c2839df5aa78d31d5dee2dc1"
+    },
+    {
+      "path": "lib/app-core/sets/rows.ts",
+      "bytes": 10230,
+      "sha256": "c012ab865a777467f2166502b1de80bbd6ec4abce982786cb7a63355ffdaa63e"
+    },
+    {
+      "path": "lib/app-core/sets/stageNav.ts",
+      "bytes": 1231,
+      "sha256": "de060375b73f5926b182ea7778f2e95e14239029ffb3ec6781475456cec77721"
+    },
+    {
+      "path": "lib/app-core/sets/store.ts",
+      "bytes": 7100,
+      "sha256": "3e33608128f514e4fae2ee81db2bfa42238babe634c66da6fc2d56c0187419fd"
+    },
+    {
+      "path": "lib/app-core/shims/textDecoder.ts",
+      "bytes": 4423,
+      "sha256": "e325a908f247bd2fee1bd681037afe6075ed1cf3362592138521c5c0ed993993"
+    },
+    {
+      "path": "lib/app-core/transfer/a7c2Plan.ts",
+      "bytes": 829,
+      "sha256": "f143a77f18e57cb34716f6c95177abc796270ad5cdb1b15879f02726e11c0b0b"
+    },
+    {
+      "path": "lib/app-core/transfer/plan.ts",
+      "bytes": 8128,
+      "sha256": "04e8e80d2775a7f9bed92a4f4c110d9e9ebc7b5d7b124b5cb74afae04b7fcdb4"
+    },
+    {
+      "path": "lib/app-core/transfer/sha256.ts",
+      "bytes": 2924,
+      "sha256": "faf5d6a175726420f7dcc10addd4d65b0d5ff244918fda01127b07c91df6bcfb"
+    },
+    {
+      "path": "lib/app-core/transfer/state.ts",
+      "bytes": 6934,
+      "sha256": "e4ab7bd1bec3fd3d62b0405da807c0c04d5071874530b240ecbb5c873ba9d392"
     }
   ],
   "generated": [
-    {
-      "path": "generated/datBases.ts",
-      "from": [
-        "public/dat/zve10-base-pal.dat",
-        "public/dat/zve10-base-ntsc.dat",
-        "public/dat/zve10-pal-m1.dat",
-        "public/dat/zve10-pal-m2.dat",
-        "public/dat/zve10-pal-m3.dat",
-        "public/dat/zve10-pal-m4.dat",
-        "public/dat/zve10-ntsc-m1.dat",
-        "public/dat/zve10-ntsc-m2.dat",
-        "public/dat/zve10-ntsc-m3.dat",
-        "public/dat/zve10-ntsc-m4.dat"
-      ],
-      "bytes": 61810,
-      "sha256": "29686be6e8628a41c5be541d513b341eba3ade6c671fdc43766243e7c20773ad"
-    },
     {
       "path": "package.json",
       "from": [],

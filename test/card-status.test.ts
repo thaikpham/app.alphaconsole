@@ -3,8 +3,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { cardLine, type UsbStatus } from "../src/card/status.ts";
 import type { CardReading, ReadyCard } from "../src/card/session.ts";
-import { modelById } from "../src/core/models.ts";
-import type { Family } from "../src/core/transfer/plan.ts";
+import { modelById } from "../src/core/web/lib/app-core/models.ts";
+import type { Family } from "../src/core/web/lib/app-core/transfer/plan.ts";
 
 const massStorage: UsbStatus = { vendorId: 1356, productId: 0, mode: "mass-storage" };
 const ptp: UsbStatus = { vendorId: 1356, productId: 0, mode: "ptp" };

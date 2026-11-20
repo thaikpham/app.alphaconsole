@@ -35,30 +35,13 @@ export default function Intro() {
         </PinnedBar>
       }
     >
-      {Platform.OS === "ios" ? (
-        <Stack.Screen
-          options={{
-            ...navHeader({ title: content.intro.title, largeTitle: true }),
-            // First run only: skip sits in the header. Reopened, the system back button replaces the body back row.
-            ...(canGoBack ? {} : { headerRight: () => <Button label={content.intro.skip} onPress={finish} variant="secondary" /> }),
-          }}
-        />
-      ) : null}
-      {Platform.OS === "ios" ? null : (
-        <View style={canGoBack ? styles.start : styles.end}>
-          {canGoBack ? (
-            <Button label={content.common.back} onPress={() => router.back()} variant="plain" />
-          ) : (
-            <Button label={content.intro.skip} onPress={finish} variant="plain" />
-          )}
-        </View>
-      )}
-
-      {Platform.OS === "ios" ? null : (
-        <Text style={[typeScale.title2, { color: theme.label }]} accessibilityRole="header">
-          {content.intro.title}
-        </Text>
-      )}
+      <Stack.Screen
+        options={{
+          ...navHeader({ title: content.intro.title, largeTitle: true }),
+          // First run only: skip sits in the header. Reopened, the system back button replaces the body back row.
+          ...(canGoBack ? {} : { headerRight: () => <Button label={content.intro.skip} onPress={finish} variant="secondary" /> }),
+        }}
+      />
 
       <View style={styles.grid}>
         {content.intro.slotScenes.map((scene, index) => (
@@ -70,7 +53,7 @@ export default function Intro() {
       </View>
 
       <View style={styles.block}>
-        {content.intro.rows.map((row) => (
+        {(Platform.OS === "web" ? content.intro.webRows : content.intro.rows).map((row) => (
           <Text key={row} style={[typeScale.body, { color: theme.label }]}>
             {row}
           </Text>
@@ -95,8 +78,6 @@ export default function Intro() {
 }
 
 const styles = StyleSheet.create({
-  start: { alignItems: "flex-start" },
-  end: { alignItems: "flex-end" },
   grid: { flexDirection: "row", flexWrap: "wrap", gap: spacing.md },
   cell: { width: "47%", gap: spacing.xs },
   thumb: { width: "100%", aspectRatio: 3 / 2, borderRadius: radii.control },

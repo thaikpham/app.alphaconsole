@@ -1,7 +1,7 @@
 /** Camera search (SPEC 5.7 norm) and the device pick / camera sheet grouping. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { CAMERAS, type CameraModel } from "../src/core/models.ts";
+import { CAMERAS, type CameraModel } from "../src/core/web/lib/app-core/models.ts";
 import { groupCameras, matchesSearch, normalizeSearch } from "../src/camera/cameraList.ts";
 
 const ids = (models: readonly CameraModel[]) => models.map((model) => model.id);

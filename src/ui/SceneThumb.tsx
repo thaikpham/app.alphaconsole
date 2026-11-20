@@ -17,7 +17,7 @@ type Props = {
   style?: StyleProp<ViewStyle>;
 };
 
-/** Scene preview from the bundled photos. Crops to fill the frame; the default frame is 3:2. */
+/** Scene preview from the bundled photos. Crops to fill the frame; the default frame is 3:2. Radius is 10 on iOS (media). */
 export function SceneThumb({ scene, overlay, style }: Props) {
   return (
     <View style={[styles.frame, style]}>
@@ -28,5 +28,5 @@ export function SceneThumb({ scene, overlay, style }: Props) {
 }
 
 const styles = StyleSheet.create({
-  frame: { aspectRatio: 1.5, borderRadius: radii.control, overflow: "hidden" },
+  frame: { aspectRatio: 1.5, borderRadius: radii.media, overflow: "hidden" },
 });

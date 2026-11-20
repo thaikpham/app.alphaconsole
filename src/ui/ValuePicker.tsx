@@ -1,15 +1,22 @@
-import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+// iOS row sheet (SPEC-IOS §8, canvas 2s). Options beyond SEGMENT_LIMIT get an RN-drawn wheel (O11).
+// Same props as ValuePicker.tsx, plus `stepper`: numeric rows get the Stepper (canvas 2o) instead of the wheel.
+import { useRef, useState, type ComponentRef } from "react";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { content } from "@/content";
-import { SEGMENT_LIMIT } from "@/core/sets/rows";
+import { SEGMENT_LIMIT } from "@/core/web/lib/app-core/sets/rows";
 import { BottomSheet } from "./BottomSheet";
 import { Button } from "./Button";
 import { SegmentedTabs } from "./SegmentedTabs";
+import { Stepper } from "./Stepper";
 import { Toggle } from "./Toggle";
-import { fonts, typeScale } from "./tokens";
+import { typeScale } from "./tokens";
 import { controlHeight, radii, spacing, useTheme } from "./theme";
 
 const AUTO = "auto";
+// Wheel rows are 44 pt (SPEC-IOS §2, O11). The frame holds five rows, with the band on the middle one.
+const ROW = 44;
+const FRAME = 220;
+const PAD = (FRAME - ROW) / 2;
 
 type Props = {
   title: string;
@@ -21,7 +28,7 @@ type Props = {
   autoable?: boolean;
   /** Shows the Như máy row. kelvin, A–B and G–M cannot be held. */
   canHold: boolean;
-  /** iOS shows the Stepper for numeric rows. Base ignores it. */
+  /** Numeric rows: shows the Stepper instead of the wheel. */
   stepper?: boolean;
   /** Called with the chosen value, or undefined for Như máy. */
   onCommit: (value: string | undefined) => void;
@@ -31,7 +38,7 @@ type Props = {
 };
 
 /**
- * Row sheet. A stepper when there are more than SEGMENT_LIMIT options, a segmented control otherwise.
+ * Row sheet. A stepper for numeric rows, a wheel when there are more than SEGMENT_LIMIT options, a segmented control otherwise.
  * Tự động dims the options and blocks picking. Đặt commits and closes. Áp cho cả 4 slot commits and closes.
  */
 export function ValuePicker({
@@ -41,11 +48,11 @@ export function ValuePicker({
   current,
   autoable = false,
   canHold,
+  stepper = false,
   onCommit,
   onApplyAll,
   onClose,
 }: Props) {
-  const theme = useTheme();
   const [pending, setPending] = useState<string | undefined>(current);
   // Last concrete option picked. Turning Tự động or Như máy off returns to it.
   const [manual, setManual] = useState<string | undefined>(() =>
@@ -53,10 +60,6 @@ export function ValuePicker({
   );
 
   const auto = pending === AUTO;
-  const index = pending === undefined || auto ? -1 : options.indexOf(pending);
-  const canDown = !auto && index > 0;
-  const canUp = !auto && index < options.length - 1;
-
   const pick = (value: string) => {
     if (auto) return;
     setPending(value);
@@ -70,23 +73,39 @@ export function ValuePicker({
     setPending(held ? undefined : (manual ?? options[0]));
   };
 
+  // The wheel stays where the manual value is, even while held or on Tự động.
+  const focus = pending !== undefined && !auto ? pending : manual;
+  const position = Math.max(0, focus === undefined ? 0 : options.indexOf(focus));
+
+  // Same stepping rules as ValuePicker.tsx. Held and Tự động have no index, so Giảm is off and Tăng starts at the first option.
+  const index = pending === undefined || auto ? -1 : options.indexOf(pending);
   const step = (delta: number) => {
     const target = options[index + delta];
     if (target !== undefined) pick(target);
   };
-
   const shownLabel = pending === undefined ? content.edit.held : auto ? content.edit.auto : labelOf(pending);
 
   return (
     <BottomSheet visible title={title} onClose={onClose}>
       {autoable ? <Toggle label={content.edit.auto} value={auto} onChange={setAuto} /> : null}
       <View style={auto ? styles.dim : undefined}>
-        {options.length > SEGMENT_LIMIT ? (
-          <View style={styles.stepper}>
-            <StepButton label={content.edit.decrease} glyph="−" disabled={!canDown} onPress={() => step(-1)} />
-            <Text style={[styles.stepValue, { color: theme.label }]}>{shownLabel}</Text>
-            <StepButton label={content.edit.increase} glyph="+" disabled={!canUp} onPress={() => step(1)} />
-          </View>
+        {stepper ? (
+          <Stepper
+            value={shownLabel}
+            canDecrease={!auto && index > 0}
+            canIncrease={!auto && index < options.length - 1}
+            onDecrease={() => step(-1)}
+            onIncrease={() => step(1)}
+          />
+        ) : options.length > SEGMENT_LIMIT ? (
+          <Wheel
+            options={options}
+            labelOf={labelOf}
+            picked={auto ? undefined : pending}
+            position={position}
+            enabled={!auto}
+            onPick={pick}
+          />
         ) : (
           <SegmentedTabs
             options={options.map((value) => ({ value, label: labelOf(value) }))}
@@ -119,34 +138,73 @@ export function ValuePicker({
   );
 }
 
-function StepButton({
-  label,
-  glyph,
-  disabled,
-  onPress,
-}: {
-  label: string;
-  glyph: string;
-  disabled: boolean;
-  onPress: () => void;
-}) {
+type WheelProps = {
+  options: readonly string[];
+  labelOf: (value: string) => string;
+  /** Row shown as selected. undefined shows no selection (held or Tự động). */
+  picked: string | undefined;
+  /** Index the wheel is scrolled to. */
+  position: number;
+  enabled: boolean;
+  onPick: (value: string) => void;
+};
+
+/** Snap ScrollView wheel. Settling on a row picks it. VoiceOver adjusts it with swipe up and down. */
+function Wheel({ options, labelOf, picked, position, enabled, onPick }: WheelProps) {
   const theme = useTheme();
+  const scroller = useRef<ComponentRef<typeof ScrollView>>(null);
+
+  const go = (index: number) => {
+    const i = Math.min(options.length - 1, Math.max(0, index));
+    const value = options[i];
+    if (value === undefined) return;
+    scroller.current?.scrollTo({ y: i * ROW, animated: true });
+    onPick(value);
+  };
+
+  // Picks the row nearest the offset where the scroll settled.
+  const settle = (y: number) => {
+    const i = Math.min(options.length - 1, Math.max(0, Math.round(y / ROW)));
+    const value = options[i];
+    if (value !== undefined) onPick(value);
+  };
+
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      accessibilityState={{ disabled }}
-      disabled={disabled}
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.stepButton,
-        { backgroundColor: theme.fill },
-        disabled && styles.dim,
-        pressed && styles.pressed,
-      ]}
+    <View
+      style={styles.frame}
+      accessibilityRole="adjustable"
+      accessibilityValue={{ text: picked === undefined ? "" : labelOf(picked) }}
+      accessibilityActions={[{ name: "increment" }, { name: "decrement" }]}
+      onAccessibilityAction={(event) => {
+        if (enabled) go(position + (event.nativeEvent.actionName === "increment" ? 1 : -1));
+      }}
     >
-      <Text style={[styles.glyph, { color: theme.label }]}>{glyph}</Text>
-    </Pressable>
+      <View pointerEvents="none" style={[styles.band, { backgroundColor: theme.fill }]} />
+      <ScrollView
+        ref={scroller}
+        style={StyleSheet.absoluteFill}
+        contentOffset={{ x: 0, y: position * ROW }}
+        contentContainerStyle={{ paddingVertical: PAD }}
+        snapToInterval={ROW}
+        decelerationRate="fast"
+        showsVerticalScrollIndicator={false}
+        scrollEnabled={enabled}
+        accessibilityElementsHidden
+        onScrollEndDrag={(event) => settle(event.nativeEvent.contentOffset.y)}
+        onMomentumScrollEnd={(event) => settle(event.nativeEvent.contentOffset.y)}
+      >
+        {options.map((value, i) => {
+          const on = value === picked;
+          return (
+            <Pressable key={value} disabled={!enabled} onPress={() => go(i)} style={styles.item}>
+              <Text style={[on ? typeScale.headline : typeScale.body, { color: on ? theme.label : theme.secondary }]}>
+                {labelOf(value)}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+    </View>
   );
 }
 
@@ -173,12 +231,12 @@ function HeldRow({
       <View
         style={[
           styles.box,
-          { borderColor: held ? theme.high : theme.outline, backgroundColor: held ? theme.high : theme.card },
+          { borderColor: held ? theme.accent : theme.outline, backgroundColor: held ? theme.accent : theme.card },
         ]}
       >
-        {held ? <Text style={[styles.tick, { color: theme.onHigh }]}>✓</Text> : null}
+        {held ? <Text style={[styles.tick, { color: theme.onAccent }]}>✓</Text> : null}
       </View>
-      <Text style={[styles.heldLabel, { color: theme.label }]}>{content.edit.held}</Text>
+      <Text style={[typeScale.body, { color: theme.label }]}>{content.edit.held}</Text>
     </Pressable>
   );
 }
@@ -186,16 +244,16 @@ function HeldRow({
 const styles = StyleSheet.create({
   dim: { opacity: 0.4 },
   pressed: { opacity: 0.85 },
-  stepper: { flexDirection: "row", alignItems: "center", gap: spacing.md },
-  stepButton: {
-    width: controlHeight,
-    height: controlHeight,
-    borderRadius: radii.pill,
-    alignItems: "center",
-    justifyContent: "center",
+  frame: { height: FRAME, overflow: "hidden" },
+  band: {
+    position: "absolute",
+    left: spacing.sm,
+    right: spacing.sm,
+    top: PAD,
+    height: ROW,
+    borderRadius: radii.control,
   },
-  glyph: { ...typeScale.title2 },
-  stepValue: { ...typeScale.callout, fontFamily: fonts.semibold, flex: 1, textAlign: "center" },
+  item: { height: ROW, alignItems: "center", justifyContent: "center" },
   heldRow: { minHeight: controlHeight, flexDirection: "row", alignItems: "center", gap: spacing.md },
   box: {
     width: 24,
@@ -205,6 +263,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  tick: { ...typeScale.subhead, fontFamily: fonts.semibold },
-  heldLabel: { ...typeScale.callout },
+  tick: { ...typeScale.subhead, fontWeight: "600" },
 });

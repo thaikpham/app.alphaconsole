@@ -1,6 +1,8 @@
 // Crash capture for release builds. Installed once at startup from src/app/_layout.tsx.
 // A JS error is recorded, then the previous global handler still runs, so RN's own handling is kept.
 // RN tracks promise rejections only in __DEV__, so Hermes is asked for them directly.
+import { Platform } from "react-native";
+
 import { describeError, type CrashEntry, type CrashSource } from "@/crash/entry";
 import { appVersion, deviceInfo } from "@/crash/appInfo";
 import { recentAcl } from "@/crash/ring";
@@ -35,10 +37,21 @@ export function recordCrash(source: CrashSource, error: unknown): void {
   }
 }
 
+/** The web has no ErrorUtils or Hermes tracker. Window events carry the same errors. */
+function installWebHandlers(): void {
+  window.addEventListener("error", (event) => recordCrash("js", event.error ?? event.message));
+  window.addEventListener("unhandledrejection", (event) => recordCrash("promise", event.reason));
+}
+
 /** Installs the JS handlers once per process. Calls after the first do nothing. */
 export function installCrashLog(): void {
   if (installed) return;
   installed = true;
+
+  if (Platform.OS === "web") {
+    installWebHandlers();
+    return;
+  }
 
   const previous = ErrorUtils.getGlobalHandler();
   ErrorUtils.setGlobalHandler((error, isFatal) => {

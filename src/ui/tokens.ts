@@ -1,6 +1,5 @@
-import { Easing } from "react-native";
+// Unified token values (SPEC-IOS §1.3, §1.4). The system font is set by fontWeight alone (O9).
 
-// Light values from AlphaColorLab/design/tokens/tokens.json (web repo, canonical). Generated full set incl. dark: design/tokens/out/tokens.ts.
 export const colors = {
   bg: "#f2f2f7",
   card: "#ffffff",
@@ -19,27 +18,23 @@ export const colors = {
   dangerTint: "#fbe5e2",
 } as const;
 
-export const fonts = {
-  regular: "NotoSans_400Regular",
-  medium: "NotoSans_500Medium",
-  semibold: "NotoSans_600SemiBold",
-  bold: "NotoSans_700Bold",
-} as const;
-
 export const typeScale = {
-  title2: { fontFamily: fonts.bold, fontSize: 24, lineHeight: 32 },
-  title3: { fontFamily: fonts.semibold, fontSize: 20, lineHeight: 28 },
-  body: { fontFamily: fonts.regular, fontSize: 17, lineHeight: 27 },
-  callout: { fontFamily: fonts.regular, fontSize: 16, lineHeight: 24 },
-  subhead: { fontFamily: fonts.medium, fontSize: 15, lineHeight: 22 },
-  footnote: { fontFamily: fonts.regular, fontSize: 13, lineHeight: 19 },
-  button: { fontFamily: fonts.semibold, fontSize: 17, lineHeight: 22 },
+  largeTitle: { fontSize: 34, lineHeight: 41, fontWeight: "700", letterSpacing: -0.8 },
+  title2: { fontSize: 22, lineHeight: 28, fontWeight: "700", letterSpacing: -0.4 },
+  title3: { fontSize: 20, lineHeight: 28, fontWeight: "600" },
+  headline: { fontSize: 17, lineHeight: 22, fontWeight: "600", letterSpacing: -0.4 },
+  body: { fontSize: 17, lineHeight: 22, fontWeight: "400" },
+  callout: { fontSize: 16, lineHeight: 24, fontWeight: "400" },
+  subhead: { fontSize: 15, lineHeight: 20, fontWeight: "400", letterSpacing: -0.2 },
+  sectionHeader: { fontSize: 17, lineHeight: 22, fontWeight: "600" },
+  fieldLabel: { fontSize: 15, lineHeight: 20, fontWeight: "600" },
+  footnote: { fontSize: 13, lineHeight: 19, fontWeight: "400" },
+  button: { fontSize: 17, lineHeight: 22, fontWeight: "600" },
+  toolbarTitle: { fontSize: 15, lineHeight: 20, fontWeight: "600" },
 } as const;
 
-export const radii = { card: 24, control: 14, badge: 8, pill: 999 } as const;
+export const radii = { card: 26, control: 14, badge: 8, pill: 999, sheet: 24, tile: 7, media: 10 } as const;
 
 export const spacing = { xs: 4, sm: 8, md: 12, lg: 16, xl: 20 } as const;
 
-export const controlHeight = 44;
-
-export const easing = Easing.bezier(0.16, 1, 0.3, 1);
+export const rowMinHeight = 52;

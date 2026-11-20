@@ -14,6 +14,8 @@ export type GuardInput = {
   access: boolean | null;
   /** Set by "Để sau" for this session. */
   deferred: boolean;
+  /** False on the web: card actions ask for folder access on tap, so the gate never shows on load. */
+  gateOnLoad: boolean;
   route: RouteKind;
 };
 
@@ -38,14 +40,20 @@ export function routeOf(segments: readonly string[]): RouteKind {
  * The screen the guard moves to, or null to stay. First launch goes to the device pick and keeps the user in the
  * onboarding screens until the flag is saved. After that, refused all-files access shows the access gate until the
  * user defers it; the gate leaves once access is granted or deferred. Device and intro stay reachable (intro from the overflow).
+ * With gateOnLoad false the gate never shows.
  */
 export function guardTarget(input: GuardInput): GuardTarget | null {
-  const { seen, accessChecked, access, deferred, route } = input;
+  const { seen, accessChecked, access, deferred, gateOnLoad, route } = input;
   if (seen === null) return null;
   if (!seen) return route === "device" || route === "intro" ? null : "/onboarding/device";
   if (route === "device" || route === "intro") return null;
   if (!accessChecked) return null;
-  const refused = access === false && !deferred;
+  const refused = gateOnLoad && access === false && !deferred;
   if (route === "access") return refused ? null : "/";
   return refused ? "/onboarding/access" : null;
+}
+
+/** Where the guard actually navigates: leaving the gate ("/") returns to the route it interrupted, else home. */
+export function exitRoute(target: GuardTarget, interrupted: string | null): string {
+  return target === "/" ? (interrupted ?? "/") : target;
 }

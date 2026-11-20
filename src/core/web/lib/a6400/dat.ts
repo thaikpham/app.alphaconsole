@@ -48,6 +48,12 @@ type Spec = {
 
 const PP1 = (fieldIndex: number) => 0x317 + 14 * fieldIndex;
 
+// Trường PP1 số: byte có dấu như ZV-E10 (rule.signed). knee_auto_max/knee_point dùng công thức (raw + b) * 5/2 của ZV-E10.
+const ppSigned = (r: number) => (r >= 128 ? r - 256 : r);
+const ppKnee = (b: number) => (r: number) => ((ppSigned(r) + b) * 5) / 2;
+const ppInt = (index: number, observed: number[]): Spec => ({ zve: PP1(index), width: 1, observed, decode: ppSigned });
+const ppEnum = (index: number, observed: string[], values: Record<string, number>): Spec => ({ zve: PP1(index), width: 1, observed, decode: (r) => enumKey(values, r) });
+
 const SPEC = {
   mode: {
     zve: PROFILE.shoot_offsets[0] as number,
@@ -103,6 +109,28 @@ const SPEC = {
     observed: [0, 5, -5],
     decode: (r) => (r >= 128 ? r - 256 : r),
   },
+  ppBlackGammaRange: ppEnum(2, ["Middle", "Narrow"], PROFILE.pp.black_gamma_range.values),
+  ppBlackGammaLevel: ppInt(3, [0, -3, 2]),
+  ppKneeMode: ppEnum(4, ["Auto", "Manual"], PROFILE.pp.knee_mode.values),
+  ppKneeAutoMax: { zve: PP1(5), width: 1, observed: [100, 97.5, 95], decode: ppKnee(36) },
+  ppKneeAutoSens: ppEnum(6, ["Mid", "Low", "High"], PROFILE.pp.knee_auto_sens.values),
+  ppKneePoint: { zve: PP1(7), width: 1, observed: [95, 85], decode: ppKnee(30) },
+  ppKneeSlope: ppInt(8, [0, -2, 2]),
+  ppSaturation: ppInt(10, [0, 12, -12]),
+  ppColorPhase: ppInt(11, [0, -3, 2]),
+  ppDepthR: ppInt(12, [0, 1, -2]),
+  ppDepthG: ppInt(13, [0, 2, -3]),
+  ppDepthB: ppInt(14, [0, -1, 3]),
+  ppDepthC: ppInt(15, [0, -4, 3]),
+  ppDepthM: ppInt(16, [0, 5, -5]),
+  ppDepthY: ppInt(17, [0, -6, 1]),
+  ppDetailLevel: ppInt(18, [0, 3, -2]),
+  ppDetailMode: ppEnum(19, ["Auto", "Manual"], PROFILE.pp.detail_mode.values),
+  ppDetailVh: ppInt(20, [0, -1, 1]),
+  ppDetailBw: ppEnum(21, ["Type3", "Type4", "Type1"], PROFILE.pp.detail_bw.values),
+  ppDetailLimit: ppInt(22, [7, 3, 5]),
+  ppDetailCrisp: ppInt(23, [0, 2, 4]),
+  ppDetailHilight: ppInt(24, [0, 1, 3]),
 } satisfies Record<string, Spec>;
 
 export type A6400FieldKey = keyof typeof SPEC;

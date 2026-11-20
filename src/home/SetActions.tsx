@@ -1,13 +1,15 @@
-// Actions of the selected set card (SPEC 5.1). Edit for every set; rename and remove only for the user's own sets.
+// Actions of the selected set card (SPEC-IOS §4.4). Edit is a glass secondary button (Button);
+// rename and remove show only for the user's own sets. The rename field uses the fill and control radius.
 import { useState } from "react";
-import { Alert, StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
 
 import { content } from "@/content";
 import { PRESET_LIMITS, type PresetSet } from "@/core/web/lib/presetSets";
-import { StoreError } from "@/core/sets/store";
+import { StoreError } from "@/core/web/lib/app-core/sets/store";
 import { setStore } from "@/storage/userSetsFile";
 import { Button } from "@/ui/Button";
+import { confirmDestructive } from "@/ui/confirm";
 import { typeScale } from "@/ui/tokens";
 import { controlHeight, radii, spacing, useTheme } from "@/ui/theme";
 
@@ -56,10 +58,13 @@ export function SetActions({ set, own, onChanged }: Props) {
   };
 
   const confirmRemove = () => {
-    Alert.alert(content.sets.removeTitle, content.sets.removeBody(set.name), [
-      { text: content.sets.cancel, style: "cancel" },
-      { text: content.sets.remove, style: "destructive", onPress: () => void remove() },
-    ]);
+    confirmDestructive({
+      title: content.sets.removeTitle,
+      message: content.sets.removeBody(set.name),
+      cancel: content.sets.cancel,
+      action: content.sets.remove,
+      onConfirm: () => void remove(),
+    });
   };
 
   return (

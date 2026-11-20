@@ -1,15 +1,16 @@
-// "Bộ mới" sheet (SPEC 9.2). A copy of a base set with the user's name and slot labels, saved as a new set in "Của tôi".
-import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from "react-native";
+// iOS "Bộ mới" sheet (SPEC-IOS §9.2, canvas 2ca). Same props as CreateSetSheet.tsx.
+// Large detent. Hủy leading, Tạo trailing (primary, disabled while the name is empty).
+// A copy of a base set with the user's name and slot labels, saved as a new set in "Của tôi".
+import { useState, type ReactNode } from "react";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { content } from "@/content";
 import type { PresetSet } from "@/core/web/lib/presetSets";
 import { applyNewSet, NEW_LABEL_LIMIT, NEW_NAME_LIMIT } from "@/home/createSet";
 import { setStore } from "@/storage/userSetsFile";
-import { BottomSheet } from "@/ui/BottomSheet";
-import { Button } from "@/ui/Button";
+import { BottomSheet, HeaderAction } from "@/ui/BottomSheet";
 import { typeScale } from "@/ui/tokens";
-import { controlHeight, radii, spacing, useTheme } from "@/ui/theme";
+import { controlHeight, radii, rowMinHeight, spacing, useTheme } from "@/ui/theme";
 
 type Props = {
   visible: boolean;
@@ -21,25 +22,30 @@ type Props = {
   onCreated: (set: PresetSet) => void;
 };
 
-export function CreateSetSheet({ visible, bases, initialBaseId, onClose, onCreated }: Props) {
-  return (
-    <BottomSheet visible={visible} title={content.createSet.title} onClose={onClose}>
-      <CreateSetForm bases={bases} initialBaseId={initialBaseId} onCreated={onCreated} />
-    </BottomSheet>
-  );
-}
+const EMPTY_LABELS = ["", "", "", ""];
 
-// BottomSheet unmounts its children while hidden, so this form starts empty on every open.
-function CreateSetForm({ bases, initialBaseId, onCreated }: Omit<Props, "visible" | "onClose">) {
+export function CreateSetSheet({ visible, bases, initialBaseId, onClose, onCreated }: Props) {
   const theme = useTheme();
-  const { height } = useWindowDimensions();
   const [name, setName] = useState("");
   const [baseId, setBaseId] = useState(initialBaseId);
-  const [labels, setLabels] = useState<string[]>(["", "", "", ""]);
+  const [labels, setLabels] = useState<string[]>(EMPTY_LABELS);
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
   const base = bases.find((set) => set.id === baseId) ?? bases[0];
   const canSubmit = name.trim() !== "" && !busy && base !== undefined;
+
+  // The sheet stays mounted between opens, so start each open from an empty form.
+  // Set during render so the first frame of an open already shows the reset form.
+  const [wasVisible, setWasVisible] = useState(visible);
+  if (visible !== wasVisible) {
+    setWasVisible(visible);
+    if (visible) {
+      setName("");
+      setBaseId(initialBaseId);
+      setLabels(EMPTY_LABELS);
+      setFailed(false);
+    }
+  }
 
   const setLabel = (index: number, text: string) => {
     setLabels((prev) => prev.map((label, i) => (i === index ? text : label)));
@@ -65,10 +71,16 @@ function CreateSetForm({ bases, initialBaseId, onCreated }: Omit<Props, "visible
   };
 
   return (
-    <View style={styles.form}>
-      <ScrollView style={{ maxHeight: height * 0.55 }} contentContainerStyle={styles.fields} keyboardShouldPersistTaps="handled">
-        <View style={styles.field}>
-          <Text style={[typeScale.subhead, { color: theme.secondary }]}>{content.createSet.name}</Text>
+    <BottomSheet
+      visible={visible}
+      title={content.createSet.title}
+      onClose={onClose}
+      detent="large"
+      leading={<HeaderAction label={content.sets.cancel} onPress={onClose} />}
+      trailing={<HeaderAction label={content.createSet.submit} onPress={() => void submit()} primary disabled={!canSubmit} />}
+    >
+      <View style={styles.form}>
+        <Field label={content.createSet.name}>
           <TextInput
             value={name}
             onChangeText={setName}
@@ -78,55 +90,82 @@ function CreateSetForm({ bases, initialBaseId, onCreated }: Omit<Props, "visible
             accessibilityLabel={content.createSet.name}
             style={[typeScale.body, styles.input, { backgroundColor: theme.fill, color: theme.label }]}
           />
-        </View>
+        </Field>
 
-        <View style={styles.field}>
-          <Text style={[typeScale.subhead, { color: theme.secondary }]}>{content.createSet.base}</Text>
-          {bases.map((set) => {
-            const on = set.id === base?.id;
-            return (
-              <Pressable
-                key={set.id}
-                onPress={() => setBaseId(set.id)}
-                accessibilityRole="radio"
-                accessibilityState={{ selected: on }}
-                style={({ pressed }) => [styles.option, { backgroundColor: on ? theme.accentWash : theme.fill }, pressed && styles.pressed]}
-              >
-                <Text style={[typeScale.body, { color: theme.label }]}>{set.name}</Text>
-                <Text style={[typeScale.subhead, { color: theme.secondary }]}>{set.slots.map((slot) => slot.label).join(" · ")}</Text>
-              </Pressable>
-            );
-          })}
-        </View>
-
-        <Text style={[typeScale.subhead, { color: theme.secondary }]}>{content.createSet.slotNames}</Text>
-        {labels.map((label, i) => (
-          <View key={i} style={styles.field}>
-            <Text style={[typeScale.subhead, { color: theme.label }]}>{content.createSet.slotName(i + 1)}</Text>
-            <TextInput
-              value={label}
-              onChangeText={(text) => setLabel(i, text)}
-              placeholder={base?.slots[i]?.label}
-              placeholderTextColor={theme.secondary}
-              maxLength={NEW_LABEL_LIMIT}
-              accessibilityLabel={content.createSet.slotName(i + 1)}
-              style={[typeScale.body, styles.input, { backgroundColor: theme.fill, color: theme.label }]}
-            />
+        <Field label={content.createSet.base}>
+          <View style={[styles.group, { backgroundColor: theme.cell }]}>
+            {bases.map((set, i) => {
+              const on = set.id === base?.id;
+              return (
+                <Pressable
+                  key={set.id}
+                  onPress={() => setBaseId(set.id)}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: on }}
+                  style={({ pressed }) => [
+                    styles.option,
+                    i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: theme.separator },
+                    pressed && styles.pressed,
+                  ]}
+                >
+                  <View style={styles.optionText}>
+                    <Text style={[typeScale.body, { color: theme.label }]}>{set.name}</Text>
+                    <Text style={[typeScale.subhead, { color: theme.secondary }]}>
+                      {set.slots.map((slot) => slot.label).join(" · ")}
+                    </Text>
+                  </View>
+                  {on ? <Text style={[typeScale.headline, { color: theme.accent }]}>✓</Text> : null}
+                </Pressable>
+              );
+            })}
           </View>
-        ))}
-      </ScrollView>
+        </Field>
 
-      {failed ? <Text style={[typeScale.subhead, { color: theme.danger }]}>{content.sets.actionFailed}</Text> : null}
-      <Button label={content.createSet.submit} onPress={() => void submit()} disabled={!canSubmit} />
+        <Field label={content.createSet.slotNames}>
+          {labels.map((label, i) => (
+            <Field key={i} label={content.createSet.slotName(i + 1)}>
+              <TextInput
+                value={label}
+                onChangeText={(text) => setLabel(i, text)}
+                placeholder={base?.slots[i]?.label}
+                placeholderTextColor={theme.secondary}
+                maxLength={NEW_LABEL_LIMIT}
+                accessibilityLabel={content.createSet.slotName(i + 1)}
+                style={[typeScale.body, styles.input, { backgroundColor: theme.fill, color: theme.label }]}
+              />
+            </Field>
+          ))}
+        </Field>
+
+        {failed ? <Text style={[typeScale.subhead, { color: theme.danger }]}>{content.sets.actionFailed}</Text> : null}
+      </View>
+    </BottomSheet>
+  );
+}
+
+function Field({ label, children }: { label: string; children: ReactNode }) {
+  const theme = useTheme();
+  return (
+    <View style={styles.field}>
+      <Text style={[typeScale.fieldLabel, { color: theme.secondary }]}>{label}</Text>
+      {children}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  form: { gap: spacing.lg },
-  fields: { gap: spacing.lg },
+  form: { gap: spacing.xl },
   field: { gap: spacing.sm },
-  input: { minHeight: controlHeight, borderRadius: radii.control, paddingHorizontal: spacing.md },
-  option: { borderRadius: radii.control, padding: spacing.md, gap: spacing.xs },
+  input: { height: controlHeight, borderRadius: radii.control, paddingHorizontal: spacing.lg },
+  group: { borderRadius: radii.card, overflow: "hidden" },
+  option: {
+    minHeight: rowMinHeight,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+  },
+  optionText: { flex: 1, gap: spacing.xs },
   pressed: { opacity: 0.6 },
 });

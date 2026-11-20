@@ -10,7 +10,7 @@ export const content = {
     done: "Xong",
   },
   home: {
-    title: "Alpha Color Lab",
+    title: "Alpha Console",
     steps: ["Cắm máy", "Chọn bộ", "Chỉnh", "Ghi", "Nạp"],
     cameraTitle: "Máy ảnh",
     model: "ZV-E10",
@@ -25,10 +25,16 @@ export const content = {
     current: "Đang có: ",
     otherSet: "bộ khác",
     onboarding: {
-      text: "Cho phép Alpha Color Lab đọc và ghi thẻ máy ảnh khi cắm cáp",
+      text: "Cho phép Alpha Console đọc và ghi thẻ máy ảnh khi cắm cáp",
+      webText: "Chọn thư mục gốc của thẻ (thư mục có PRIVATE) để app đọc và ghi thẻ máy ảnh.",
+      webFilesText: "Trình duyệt này chỉ đọc được các tệp CAMPR bạn chọn. Ghi thẻ đi qua Lưu vào Tệp.",
       grant: "Cấp quyền",
       later: "Để sau",
       openFailed: "Không mở được cài đặt quyền. Thử lại.",
+    },
+    installHint: {
+      text: "Chạm Chia sẻ → Thêm vào MH chính để dùng app như ứng dụng.",
+      dismiss: "Đã hiểu",
     },
     details: { show: "Xem chi tiết", hide: "Ẩn chi tiết" },
     reading: "Đang đọc thẻ…",
@@ -36,6 +42,11 @@ export const content = {
     readFailed: "Không đọc được thẻ. Thử lại.",
     noSony: "Thẻ chưa format trong máy",
     absent: "Chưa cắm thẻ — cắm máy ảnh (Mass Storage) để đọc thẻ",
+    webNoFolder: "Chưa cho app đọc thẻ",
+    webAbsent: "Không thấy thẻ máy ảnh trong thư mục đã chọn",
+    webGrantFolder: "Chọn thư mục thẻ",
+    webGrantFiles: "Chọn các tệp CAMPR trên thẻ",
+    webNoFiles: "Chưa chọn tệp CAMPR nào. Chọn các tệp .DAT trong thư mục SETTING của thẻ.",
     noSlots: "Thẻ chưa có M1–M4 — app sẽ tạo khi ghi",
     readOnly: (name: string) => `${name} · Ghi: Sắp có`,
     unsupported: (name: string) => `${name} · Sắp có`,
@@ -124,6 +135,17 @@ export const content = {
     toastApply: (title: string) => `Đã áp ${title} cho M1–M4`,
     toastReset: (slot: string) => `Đã đặt lại ${slot} về bản gốc`,
   },
+  /** Display settings the user sets once on the camera (src/core/sets/fixedDisplay.ts). Paths are ZV-E10 menus. */
+  fixedDisplay: {
+    title: "Cài tay một lần trên máy",
+    note: "Máy không lưu các mục này vào M1–M4.",
+    values: { high: "Cao (High)", "sunny-weather": "Thời tiết nắng (Sunny Weather)" },
+    rows: {
+      displayQuality: { label: "Chất lượng hiển thị", path: "MENU › Cài đặt › Chất lượng hiển thị" },
+      monitorBrightness: { label: "Độ sáng màn hình", path: "MENU › Cài đặt › Độ sáng màn hình" },
+      autoPowerOffTemp: { label: "Nhiệt độ tự tắt nguồn", path: "MENU › Cài đặt › Nhiệt độ tự tắt nguồn" },
+    },
+  },
   write: {
     titles: {
       connect: "Cắm máy ảnh",
@@ -155,6 +177,19 @@ export const content = {
     diffChange: "sẽ thay",
     mismatch: "Thẻ đang có bộ khác — app sẽ sao lưu trước khi ghi",
     writeButton: "Ghi M1–M4 vào máy",
+    /** Writing on a web browser. Where the browser has the card folder, the write is the Android one; the rest share files. */
+    web: {
+      waiting: "Chưa đọc được thẻ. Cấp quyền thẻ ở mục Máy ảnh phía trên, rồi chạm Đọc lại.",
+      target: (folder: string) => `Thư mục trên thẻ: ${folder}`,
+      names: (names: string) => `Tên tệp: ${names}`,
+      shareHint: "Chạm Lưu vào Tệp, chọn thư mục trên thẻ và giữ nguyên tên tệp.",
+      shareButton: "Lưu vào Tệp",
+      zip: "Tải ZIP",
+      zipNote: "Giải nén ZIP vào thẻ, giữ nguyên đường dẫn thư mục.",
+      verifyNote: "Trên trình duyệt này app không kiểm tra được thẻ sau khi ghi. Đọc thẻ lần sau để app so lại.",
+      shared: "Đã lưu tệp. Đọc thẻ lần sau để app so lại.",
+      shareFailed: "Không lưu được tệp. Thử lại hoặc tải ZIP.",
+    },
     doNotUnplug: "Đừng rút cáp",
     written: "Đã ghi M1–M4",
     keepOld: "Máy vẫn giữ bộ cũ",
@@ -207,6 +242,7 @@ export const content = {
     guideTitle: "Chọn PC Remote",
     diagram: ["Kết nối USB", "PC Remote"],
     liveAria: "Live view từ máy ảnh",
+    androidOnly: "Xem thử màu chỉ có trên app Android.",
     lost: "Đã ngắt máy. Bật PC Remote, app sẽ tự kết nối lại.",
     usb: {
       pcRemoteOn: "Máy chưa ở PC Remote. Trên máy: MENU › Mạng › PC Remote: Bật. App sẽ tự kết nối.",
@@ -311,7 +347,7 @@ export const content = {
     steadyShot: "SteadyShot",
     eFrontCurtain: "Màn trập trước điện tử",
   },
-  /** Option labels by SlotSettings field (ENUM_OPTIONS keys in src/core/sets/options.ts). "keep" is shown as edit.keep. */
+  /** Option labels by SlotSettings field (ENUM_OPTIONS keys in src/core/web/lib/app-core/sets/options.ts). "keep" is shown as edit.keep. */
   labels: {
     mode: { P: "P", A: "A", S: "S", M: "M" },
     focus: { MF: "MF · Lấy nét tay", "AF-S": "AF-S · AF một lần", "AF-C": "AF-C · AF liên tục" },
@@ -348,6 +384,7 @@ export const content = {
     title: "M1–M4 lên máy, gọi bằng MR",
     slotScenes: ["Đời thường", "Chân dung", "Hoàng hôn", "Đêm"],
     rows: ["Một bộ màu có 4 cảnh: M1–M4", "Ghi cả 4 vào máy qua cáp USB-C", "Lúc chụp: MODE → MR → chọn 1–4"],
+    webRows: ["Một bộ màu có 4 cảnh: M1–M4", "Ghi cả 4 vào thẻ máy ảnh", "Lúc chụp: MODE → MR → chọn 1–4"],
     diagramAria: "Trên máy: MODE, MR, chọn 1 đến 4",
     diagram: ["MODE", "MR", "1", "2", "3", "4"],
     exampleAria: "Ví dụ: Đo sáng, Như máy",

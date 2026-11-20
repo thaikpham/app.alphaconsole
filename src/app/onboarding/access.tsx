@@ -4,8 +4,8 @@ import { Platform, StyleSheet, Text } from "react-native";
 import { Stack } from "expo-router";
 
 import { useCardDriver } from "@/card/useCardDriver";
+import { canPickCardFolder } from "@/card/webAccess";
 import { content } from "@/content";
-import { openAllFilesAccessSettings } from "../../../modules/usb-volume";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
 import { Screen } from "@/ui/Screen";
@@ -15,28 +15,26 @@ import { typeScale } from "@/ui/tokens";
 
 export default function AccessGate() {
   const theme = useTheme();
-  const { defer } = useCardDriver();
+  const { defer, grantAccess } = useCardDriver();
   const [notice, setNotice] = useState<string | null>(null);
 
-  const grant = async () => {
+  const grant = () => {
     setNotice(null);
-    try {
-      await openAllFilesAccessSettings();
-    } catch {
-      setNotice(content.home.onboarding.openFailed);
-    }
+    void grantAccess().then(setNotice);
   };
+
+  const body =
+    Platform.OS !== "web"
+      ? content.home.onboarding.text
+      : canPickCardFolder()
+        ? content.home.onboarding.webText
+        : content.home.onboarding.webFilesText;
 
   return (
     <Screen>
-      {Platform.OS === "ios" ? <Stack.Screen options={navHeader({ title: content.home.title })} /> : null}
-      {Platform.OS === "ios" ? null : (
-        <Text style={[typeScale.title2, { color: theme.label }]} accessibilityRole="header">
-          {content.home.title}
-        </Text>
-      )}
+      <Stack.Screen options={navHeader({ title: content.home.title })} />
       <Card>
-        <Text style={[typeScale.body, { color: theme.label }]}>{content.home.onboarding.text}</Text>
+        <Text style={[typeScale.body, { color: theme.label }]}>{body}</Text>
         <Button label={content.home.onboarding.grant} onPress={grant} />
         {notice ? <Text style={[typeScale.subhead, styles.notice, { color: theme.danger }]}>{notice}</Text> : null}
       </Card>

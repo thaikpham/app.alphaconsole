@@ -1,13 +1,13 @@
-// Camera list with search, shared by the device pick (onboarding) and the camera sheet (SPEC 9.3, D8).
-// Every camera is selectable; the ones without write support sit under "Sắp có" with a lock.
+// iOS camera list (SPEC-IOS §9.3, O14, O16). Same props as CameraList.tsx.
+// Locked cameras are disabled here. The base list keeps them pressable (O14 deviation, flagged).
 import { useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { groupCameras } from "@/camera/cameraList";
 import { content } from "@/content";
-import { CAMERAS, type CameraModel, type ModelId } from "@/core/models";
-import { controlHeight, radii, spacing, useTheme } from "@/ui/theme";
-import { fonts, typeScale } from "@/ui/tokens";
+import { CAMERAS, type CameraModel, type ModelId } from "@/core/web/lib/app-core/models";
+import { radii, rowMinHeight, spacing, useTheme } from "@/ui/theme";
+import { typeScale } from "@/ui/tokens";
 
 type CameraListProps = {
   selected: ModelId | null;
@@ -31,6 +31,7 @@ export function CameraList({ selected, onSelect, searchPlaceholder }: CameraList
         accessibilityLabel={content.camera.searchAria}
         autoCapitalize="none"
         autoCorrect={false}
+        clearButtonMode="while-editing"
         style={[typeScale.body, styles.search, { backgroundColor: theme.fill, color: theme.label }]}
       />
       <View accessibilityLabel={content.camera.listAria} style={styles.list}>
@@ -40,7 +41,7 @@ export function CameraList({ selected, onSelect, searchPlaceholder }: CameraList
         {groups.soon.length > 0 ? (
           <Section title={content.camera.soon} models={groups.soon} selected={selected} onSelect={onSelect} locked />
         ) : null}
-        {empty ? <Text style={[typeScale.body, { color: theme.secondary }]}>{content.camera.empty}</Text> : null}
+        {empty ? <Text style={[typeScale.body, styles.empty, { color: theme.secondary }]}>{content.camera.empty}</Text> : null}
       </View>
     </View>
   );
@@ -58,16 +59,19 @@ function Section({ title, models, selected, onSelect, locked }: SectionProps) {
   const theme = useTheme();
   return (
     <View style={styles.section}>
-      <Text style={[typeScale.subhead, styles.sectionTitle, { color: theme.secondary }]}>{title}</Text>
-      {models.map((model) => (
-        <CameraRow
-          key={model.id}
-          model={model}
-          selected={model.id === selected}
-          locked={locked}
-          onPress={() => onSelect(model.id)}
-        />
-      ))}
+      <Text style={[typeScale.footnote, styles.sectionTitle, { color: theme.secondary }]}>{title}</Text>
+      <View style={[styles.cell, { backgroundColor: theme.cell }]}>
+        {models.map((model, i) => (
+          <CameraRow
+            key={model.id}
+            model={model}
+            selected={model.id === selected}
+            locked={locked}
+            first={i === 0}
+            onPress={() => onSelect(model.id)}
+          />
+        ))}
+      </View>
     </View>
   );
 }
@@ -76,27 +80,30 @@ type CameraRowProps = {
   model: CameraModel;
   selected: boolean;
   locked: boolean;
+  first: boolean;
   onPress: () => void;
 };
 
-function CameraRow({ model, selected, locked, onPress }: CameraRowProps) {
+function CameraRow({ model, selected, locked, first, onPress }: CameraRowProps) {
   const theme = useTheme();
   return (
     <Pressable
       onPress={onPress}
+      disabled={locked}
       accessibilityRole="radio"
-      accessibilityState={{ selected }}
+      accessibilityState={{ selected, disabled: locked }}
       style={({ pressed }) => [
         styles.row,
-        { backgroundColor: selected ? theme.accentWash : theme.card, opacity: pressed ? 0.6 : 1 },
+        !first && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: theme.separator },
+        { backgroundColor: pressed && !locked ? theme.press : theme.cell },
       ]}
     >
-      {locked ? <LockIcon color={theme.secondary} /> : null}
+      {locked ? <LockIcon color={theme.accent} /> : null}
       <View style={styles.rowText}>
-        <Text style={[typeScale.body, { color: theme.label }]}>{model.name}</Text>
+        <Text style={[typeScale.body, { color: locked ? theme.secondary : theme.label }]}>{model.name}</Text>
         <Text style={[typeScale.subhead, { color: theme.secondary }]}>{model.sonyModel}</Text>
       </View>
-      {selected ? <View style={[styles.dot, { backgroundColor: theme.accent }]} /> : null}
+      {selected ? <Text style={[typeScale.headline, { color: theme.accent }]}>✓</Text> : null}
     </Pressable>
   );
 }
@@ -113,25 +120,21 @@ function LockIcon({ color }: { color: string }) {
 
 const styles = StyleSheet.create({
   wrap: { gap: spacing.md },
-  search: {
-    minHeight: controlHeight,
-    borderRadius: radii.control,
-    paddingHorizontal: spacing.md,
-  },
+  search: { height: 44, borderRadius: radii.pill, paddingHorizontal: spacing.lg },
   list: { gap: spacing.lg },
   section: { gap: spacing.sm },
-  sectionTitle: { fontFamily: fonts.semibold },
+  sectionTitle: { paddingHorizontal: spacing.lg },
+  cell: { borderRadius: radii.card, overflow: "hidden" },
   row: {
-    minHeight: controlHeight,
+    minHeight: rowMinHeight,
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.md,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
-    borderRadius: radii.control,
   },
   rowText: { flex: 1, gap: spacing.xs },
-  dot: { width: 10, height: 10, borderRadius: 5 },
+  empty: { textAlign: "center", paddingVertical: spacing.xl },
   lock: { width: 14, height: 16, alignItems: "center", justifyContent: "flex-end" },
   shackle: {
     width: 10,

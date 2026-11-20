@@ -4,10 +4,11 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 
 import { beginWrite, endWrite, readCard, userMessage, type CardReading } from "@/card/session";
 import { useCardDriver } from "@/card/useCardDriver";
+import { canPickCardFolder } from "@/card/webAccess";
 import { content } from "@/content";
-import { bytesToBase64 } from "@/core/bases";
-import { CARD_SETTING_DIR, compare, explicitPp, planWriteFor, slotFileName, type Family } from "@/core/transfer/plan";
-import { chooseFamily, newBackupId, recordFor } from "@/core/transfer/state";
+import { bytesToBase64 } from "@/core/web/lib/app-core/bases";
+import { CARD_SETTING_DIR, compare, explicitPp, planWriteFor, slotFileName, type Family } from "@/core/web/lib/app-core/transfer/plan";
+import { chooseFamily, newBackupId, recordFor } from "@/core/web/lib/app-core/transfer/state";
 import type { PresetSet, SlotDraft } from "@/core/web/lib/presetSets";
 import { setStore } from "@/storage/userSetsFile";
 import { dropPending, updateWriteState } from "@/storage/writeState";
@@ -23,9 +24,10 @@ import { StageStepper } from "@/ui/StageStepper";
 import { StatusChip, type ChipTone } from "@/ui/StatusChip";
 import { ValueRow } from "@/ui/ValueRow";
 import { radii, spacing, useTheme } from "@/ui/theme";
-import { fonts, typeScale } from "@/ui/tokens";
+import { typeScale } from "@/ui/tokens";
 import { ringCount, stageOf, stepIndex, type WritePhase } from "@/write/progress";
 import { usbHint } from "@/write/usbHint";
+import { WebWritePanel } from "@/write/WebWritePanel";
 import { subscribeWriteProgress, writeFilesVerified, type WriteReport, type WriteStatus } from "../../modules/usb-volume";
 
 type Loaded = { reading: CardReading; set: PresetSet | null };
@@ -93,7 +95,8 @@ export default function Write() {
     setSeenUsbMode(usbMode);
     setDroppedFromPtp(usbMode === null && seenUsbMode === "ptp");
   }
-  const hint = usbHint("write", usb, droppedFromPtp);
+  // The browser has no USB state, so the USB hints do not apply to it.
+  const hint = Platform.OS === "web" ? null : usbHint("write", usb, droppedFromPtp);
 
   useEffect(() => {
     phaseRef.current = phase;
@@ -155,10 +158,12 @@ export default function Write() {
 
   const files = plan && "files" in plan ? plan.files : null;
   const diff = plan && "diff" in plan ? plan.diff : null;
-  // iOS cannot write yet (O1): canWrite stays false and the write button names the camera as not supported.
-  const canWrite = Platform.OS === "android" && files !== null && (phase === "idle" || phase === "rolledBack");
-  const writeLabel =
-    Platform.OS === "android" || !card ? content.write.writeButton : content.presets.unwritable(card.model.name);
+  // iOS cannot write yet (O1): canWrite stays false and the write button names the camera as not supported. A browser
+  // without the card folder saves the files through WebWritePanel instead.
+  const webShare = Platform.OS === "web" && !canPickCardFolder();
+  const writeHere = Platform.OS === "android" || canPickCardFolder();
+  const canWrite = writeHere && files !== null && (phase === "idle" || phase === "rolledBack");
+  const writeLabel = writeHere || !card ? content.write.writeButton : content.presets.unwritable(card.model.name);
   const okFiles = Object.values(statuses).filter((s) => s === "ok").length;
   const stage = stageOf(phase, recallOpen);
   const recheck = () => setNonce((n) => n + 1);
@@ -242,7 +247,7 @@ export default function Write() {
   if (stage === "connect") {
     actions = waiting ? (
       <Button label={content.write.camera.waiting} onPress={noop} disabled />
-    ) : issue ? (
+    ) : issue || webShare ? (
       <Button label={content.common.recheck} onPress={recheck} />
     ) : (
       <>
@@ -300,14 +305,16 @@ export default function Write() {
 
   return (
     <Screen footer={<PinnedBar>{actions}</PinnedBar>}>
-      <ScreenHeader title={content.write.titles[stage]} onBack={() => router.back()} />
+      <ScreenHeader title={content.write.titles[stage]} />
       <StageStepper stages={content.home.steps} current={stepIndex(stage)} />
 
       {stage === "connect" ? <CardStatusPanel /> : null}
 
       {stage === "connect" && waiting ? (
         <Card>
-          {hint === "ptpOff" ? (
+          {Platform.OS === "web" ? (
+            <Text style={[styles.title, { color: theme.label }]}>{content.write.web.waiting}</Text>
+          ) : hint === "ptpOff" ? (
             <>
               <Text style={[styles.title, { color: theme.label }]}>{content.write.camera.ptpLines[0]}</Text>
               <Text style={[typeScale.callout, { color: theme.label }]}>{content.write.camera.ptpLines[1]}</Text>
@@ -360,6 +367,8 @@ export default function Write() {
             ) : null}
             {plan && "error" in plan ? <Text style={[styles.danger, { color: theme.danger }]}>{plan.error}</Text> : null}
           </Card>
+
+          {webShare && files ? <WebWritePanel files={files} family={family} setId={set.id} uuid={card.uuid} /> : null}
 
           {slotCard}
 
@@ -450,14 +459,8 @@ export default function Write() {
 const styles = StyleSheet.create({
   title: { ...typeScale.title3 },
   note: { ...typeScale.subhead },
-  strong:
-    Platform.OS === "ios"
-      ? { ...typeScale.subhead, fontWeight: "600" }
-      : { ...typeScale.subhead, fontFamily: fonts.semibold },
-  danger:
-    Platform.OS === "ios"
-      ? { ...typeScale.subhead, fontWeight: "500" }
-      : { ...typeScale.subhead, fontFamily: fonts.medium },
+  strong: { ...typeScale.subhead, fontWeight: "600" },
+  danger: { ...typeScale.subhead, fontWeight: "500" },
   ring: { alignItems: "center", paddingVertical: spacing.md },
   step: { gap: spacing.xs, paddingTop: spacing.sm, borderTopWidth: StyleSheet.hairlineWidth },
   slotRow: {

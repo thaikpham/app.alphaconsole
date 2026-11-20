@@ -1,8 +1,8 @@
 /** iOS preview settings line (SPEC-IOS §4.9, O19): camera readback in one row, mismatches as readback→slot. Pure helper: src/ui/summaryLine.ts. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { matchSlot } from "../../src/core/preview/match.ts";
-import { PROP, readPreview, type PreviewLabels, type PtpProp } from "../../src/core/preview/props.ts";
+import { matchSlot } from "../../src/core/web/lib/app-core/preview/match.ts";
+import { PROP, readPreview, type PreviewLabels, type PtpProp } from "../../src/core/web/lib/app-core/preview/props.ts";
 import type { SlotDraft } from "../../src/core/web/lib/presetSets.ts";
 import { settingsLine, type SummarySegment } from "../../src/ui/summaryLine.ts";
 

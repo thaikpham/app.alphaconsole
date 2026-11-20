@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
-  Alert,
   LayoutAnimation,
-  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -14,8 +12,9 @@ import {
 import { Stack, useLocalSearchParams, usePreventRemove, useRouter } from "expo-router";
 
 import { content } from "@/content";
-import { canonical, changedStages, clearPp, setSetting, validateEdited } from "@/core/sets/draft";
-import { popHistory, pushHistory } from "@/core/sets/history";
+import { canonical, changedStages, clearPp, setSetting, validateEdited } from "@/core/web/lib/app-core/sets/draft";
+import { FIXED_DISPLAY } from "@/core/sets/fixedDisplay";
+import { popHistory, pushHistory } from "@/core/web/lib/app-core/sets/history";
 import {
   DEFAULT_KELVIN,
   PP_BANKS,
@@ -35,27 +34,28 @@ import {
   writePp,
   writeRow,
   type RowId,
-} from "@/core/sets/rows";
-import { nextPosition, positionOfStage, prevPosition, type StagePosition } from "@/core/sets/stageNav";
-import { StoreError } from "@/core/sets/store";
+} from "@/core/web/lib/app-core/sets/rows";
+import { nextPosition, positionOfStage, prevPosition, type StagePosition } from "@/core/web/lib/app-core/sets/stageNav";
+import { StoreError } from "@/core/web/lib/app-core/sets/store";
 import { PRESET_LIMITS, type PresetSet, type PresetSlot, type SlotDraft } from "@/core/web/lib/presetSets";
 import { PP_FIELDS } from "@/core/web/lib/zve10/dat";
 import { setStore } from "@/storage/userSetsFile";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
+import { confirmDestructive } from "@/ui/confirm";
 import { Glass } from "@/ui/Glass";
 import { Loading } from "@/ui/Loading";
 import { navHeader } from "@/ui/navHeader";
 import { Screen } from "@/ui/Screen";
-import { ScreenHeader } from "@/ui/ScreenHeader";
 import { SettingRow } from "@/ui/SettingRow";
 import { SlotChips, type SlotItem } from "@/ui/SlotChips";
 import { Snackbar, useSnackbar } from "@/ui/Snackbar";
 import { StageStepper } from "@/ui/StageStepper";
 import { Toggle } from "@/ui/Toggle";
 import { ValuePicker } from "@/ui/ValuePicker";
+import { ValueRow } from "@/ui/ValueRow";
 import { controlHeight, motion, radii, spacing, useTheme } from "@/ui/theme";
-import { fonts, typeScale } from "@/ui/tokens";
+import { typeScale } from "@/ui/tokens";
 import { useKeyboardVisible } from "@/ui/useKeyboardVisible";
 import { useReduceMotion } from "@/ui/useReduceMotion";
 
@@ -63,12 +63,12 @@ const LAST_SLOT = 3;
 const LAST_STAGE = 3;
 /** Stage index of Màu & da. It also holds the Picture Profile switch and the PP block. */
 const COLOR_STAGE = 2;
+/** Stage index of Hiển thị. It also holds the fixed camera settings block, read-only. */
+const DISPLAY_STAGE = 3;
 /** Rows the codec stores inside wb. They cannot be held (Như máy). */
 const UNHELDABLE: ReadonlySet<RowId> = new Set<RowId>(["kelvin", "ab", "gm"]);
-/** Range rows. iOS edits them with the Stepper; the other rows use the wheel or segments. */
+/** Range rows. The Stepper edits them; the other rows use the wheel or segments. */
 const NUMERIC_ROWS: ReadonlySet<RowId> = new Set<RowId>(["kelvin", "ab", "gm"]);
-/** iOS-only chrome. Android keeps the base render path. */
-const ios = Platform.OS === "ios";
 /** iOS header toolbar capsule (canvas v13): 36 pt tall, the touch area reaches 44 pt. */
 const TOOLBAR_HEIGHT = 36;
 const TOOLBAR_HIT_SLOP = { top: 4, bottom: 4 };
@@ -183,7 +183,7 @@ function Disclosure({ label, children }: { label: string; children: ReactNode })
   const reduce = useReduceMotion();
   const [open, setOpen] = useState(false);
   const toggle = () => {
-    if (ios && !reduce) LayoutAnimation.configureNext(DISCLOSURE_ANIMATION);
+    if (!reduce) LayoutAnimation.configureNext(DISCLOSURE_ANIMATION);
     setOpen((o) => !o);
   };
   return (
@@ -231,6 +231,29 @@ function EditToolbar({ blocked, onUndo, onDone }: { blocked: boolean; onUndo: ()
         </Text>
       </Pressable>
     </Glass>
+  );
+}
+
+/** Fixed camera settings of Hiển thị. Read-only: they are not slot rows and never reach the DAT. */
+function FixedDisplay() {
+  const theme = useTheme();
+  return (
+    <View style={styles.fixed}>
+      <Text style={[styles.subhead, { color: theme.label }]}>{content.fixedDisplay.title}</Text>
+      <Text style={[styles.note, { color: theme.secondary }]}>{content.fixedDisplay.note}</Text>
+      {FIXED_DISPLAY.map((item, i) => {
+        const text = content.fixedDisplay.rows[item.id];
+        return (
+          <View
+            key={item.id}
+            style={[styles.fixedRow, i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: theme.separator }]}
+          >
+            <ValueRow label={text.label} value={content.fixedDisplay.values[item.value]} />
+            <Text style={[styles.path, { color: theme.secondary }]}>{text.path}</Text>
+          </View>
+        );
+      })}
+    </View>
   );
 }
 
@@ -302,6 +325,7 @@ function StageBody({ stage, base, current, ppBank, onRow, onPp, onPpOn, onPpBank
         </>
       ) : null}
       {advanced.length > 0 ? <Disclosure label={content.edit.advanced}>{rows(advanced)}</Disclosure> : null}
+      {stage === DISPLAY_STAGE ? <FixedDisplay /> : null}
     </>
   );
 }
@@ -359,17 +383,16 @@ export default function EditSlot() {
 
   const releaseRef = useRef<() => void>(() => {});
   const disablePrevention = usePreventRemove(dirty, ({ repeat }) => {
-    Alert.alert(content.edit.unsavedTitle, content.edit.unsavedBody, [
-      { text: content.edit.stay, style: "cancel" },
-      {
-        text: content.edit.discard,
-        style: "destructive",
-        onPress: () => {
-          releaseRef.current();
-          repeat();
-        },
+    confirmDestructive({
+      title: content.edit.unsavedTitle,
+      message: content.edit.unsavedBody,
+      cancel: content.edit.stay,
+      action: content.edit.discard,
+      onConfirm: () => {
+        releaseRef.current();
+        repeat();
       },
-    ]);
+    });
   });
   useEffect(() => {
     releaseRef.current = disablePrevention;
@@ -540,26 +563,12 @@ export default function EditSlot() {
           </View>
         ) : null}
         {notice ? <Text style={[styles.note, { color: theme.secondary }]}>{notice}</Text> : null}
-        {ios ? (
-          <View style={styles.actions}>
-            <View style={styles.half}>
-              <Button label={content.edit.previous} variant="secondary" onPress={goPrev} disabled={stage === 0} />
-            </View>
-            <View style={styles.half}>{nextButton}</View>
+        <View style={styles.actions}>
+          <View style={styles.half}>
+            <Button label={content.edit.previous} variant="secondary" onPress={goPrev} disabled={stage === 0} />
           </View>
-        ) : (
-          <>
-            <View style={styles.actions}>
-              <View style={styles.half}>
-                <Button label={content.edit.previous} variant="plain" onPress={goPrev} disabled={stage === 0} />
-              </View>
-              <View style={styles.half}>
-                <Button label={content.edit.save} variant="secondary" onPress={() => void save()} disabled={blocked} />
-              </View>
-            </View>
-            {nextButton}
-          </>
-        )}
+          <View style={styles.half}>{nextButton}</View>
+        </View>
       </View>
     ) : null;
 
@@ -567,20 +576,15 @@ export default function EditSlot() {
     <Screen
       footer={keyboardVisible ? null : footer}
       scrollRef={scrollRef}
-      nativeHeader={ios}
       overlay={<Snackbar state={snack.state} onDismiss={snack.hide} />}
     >
-      {ios ? (
-        <Stack.Screen
-          options={{
-            ...navHeader({ title: content.edit.title }),
-            headerRight:
-              status.kind === "user" && draft ? () => <EditToolbar blocked={blocked} onUndo={undo} onDone={() => void done()} /> : undefined,
-          }}
-        />
-      ) : (
-        <ScreenHeader title={content.edit.title} onBack={() => router.back()} />
-      )}
+      <Stack.Screen
+        options={{
+          ...navHeader({ title: content.edit.title }),
+          headerRight:
+            status.kind === "user" && draft ? () => <EditToolbar blocked={blocked} onUndo={undo} onDone={() => void done()} /> : undefined,
+        }}
+      />
       {status.kind === "loading" ? <Loading label={content.edit.loading} /> : null}
       {status.kind === "missing" ? <Text style={[styles.note, { color: theme.secondary }]}>{content.edit.notFound}</Text> : null}
       {status.kind === "failed" ? <Text style={[styles.danger, { color: theme.danger }]}>{status.message}</Text> : null}
@@ -595,9 +599,6 @@ export default function EditSlot() {
         <>
           <Text style={[styles.setName, { color: theme.label }]}>{draft.name}</Text>
           <SlotChips slots={slotItems} value={String(slotIndex)} onChange={(v) => setSlotIndex(Number(v))} />
-          {slotModified && !ios ? (
-            <Button label={content.edit.resetSlot(slotName(slotIndex))} variant="secondary" onPress={resetCurrent} />
-          ) : null}
           <Field label={content.edit.slotLabel}>
             <TextInput
               value={slot.label}
@@ -621,7 +622,7 @@ export default function EditSlot() {
               onPpOn={setPpOn}
               onPpBank={setPpBank}
             />
-            {slotModified && ios ? (
+            {slotModified ? (
               <Button label={content.edit.resetSlot(slotName(slotIndex))} variant="plain" onPress={resetCurrent} />
             ) : null}
           </Card>
@@ -634,11 +635,11 @@ export default function EditSlot() {
 
 const styles = StyleSheet.create({
   cardTitle: { ...typeScale.title3 },
-  setName: { ...typeScale.callout, fontFamily: fonts.semibold },
-  subhead: { ...typeScale.subhead, fontFamily: fonts.semibold },
-  label: { ...typeScale.subhead, fontFamily: fonts.medium },
+  setName: { ...typeScale.callout, fontWeight: "600" },
+  subhead: { ...typeScale.subhead, fontWeight: "600" },
+  label: { ...typeScale.subhead, fontWeight: "500" },
   note: { ...typeScale.subhead },
-  danger: { ...typeScale.subhead, fontFamily: fonts.medium },
+  danger: { ...typeScale.subhead, fontWeight: "500" },
   field: { gap: spacing.xs },
   input: {
     ...typeScale.callout,
@@ -653,7 +654,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  disclosureLabel: { ...typeScale.callout, fontFamily: fonts.semibold },
+  disclosureLabel: { ...typeScale.callout, fontWeight: "600" },
   disclosureMark: { ...typeScale.callout },
   pressed: { opacity: 0.85 },
   bar: { gap: spacing.sm, padding: spacing.lg, borderTopWidth: 1 },
@@ -671,4 +672,7 @@ const styles = StyleSheet.create({
   capsuleDivider: { width: 1, height: 20 },
   capsuleText: { ...typeScale.subhead, fontWeight: "600" },
   pressedScale: { transform: [{ scale: 0.96 }] },
+  fixed: { gap: spacing.sm },
+  fixedRow: { gap: spacing.xs },
+  path: { ...typeScale.footnote },
 });

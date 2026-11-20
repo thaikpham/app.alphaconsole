@@ -1,20 +1,23 @@
 import { useCallback, useState } from "react";
-import { Alert, StyleSheet, Text } from "react-native";
-import { useFocusEffect, useRouter } from "expo-router";
+import { Platform, StyleSheet, Text } from "react-native";
+import { useFocusEffect } from "expo-router";
 
+import { useCardDriver } from "@/card/useCardDriver";
 import { beginWrite, endWrite, readCard, type CardReading } from "@/card/session";
+import { canPickCardFolder } from "@/card/webAccess";
 import { content } from "@/content";
-import { describeCard, toCardState, type CardView } from "@/core/card/view";
-import { recordHolds } from "@/core/transfer/state";
+import { describeCard, toCardState, type CardView } from "@/core/web/lib/app-core/card/view";
+import { recordHolds } from "@/core/web/lib/app-core/transfer/state";
 import { listedSets } from "@/core/web/lib/presetSets";
 import { setStore } from "@/storage/userSetsFile";
 import { dropLastWritten, dropPending, loadWriteState, updateWriteState } from "@/storage/writeState";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
+import { confirmDestructive } from "@/ui/confirm";
 import { Loading } from "@/ui/Loading";
 import { Screen } from "@/ui/Screen";
 import { ScreenHeader } from "@/ui/ScreenHeader";
-import { colors, fonts, spacing, typeScale } from "@/ui/tokens";
+import { colors, spacing, typeScale } from "@/ui/tokens";
 import {
   listBackups,
   readBackup,
@@ -45,11 +48,12 @@ function slotLine(slot: CardView["slots"][number]): string {
 }
 
 export default function Backups() {
-  const router = useRouter();
   const [rows, setRows] = useState<Row[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [restoring, setRestoring] = useState(false);
+  const [cardMissing, setCardMissing] = useState(false);
+  const { grantAccess } = useCardDriver();
 
   const load = useCallback(async () => {
     setLoadError(null);
@@ -83,11 +87,13 @@ export default function Backups() {
   const restore = async (id: string) => {
     setRestoring(true);
     setNotice(null);
+    setCardMissing(false);
     let target: string | null = null;
     try {
       const reading: CardReading = await readCard();
       if (reading.kind !== "ready") {
         setNotice(content.backups.noCard);
+        setCardMissing(true);
         return;
       }
       const uuid = reading.card.uuid;
@@ -116,19 +122,34 @@ export default function Backups() {
     }
   };
 
+  // Web: folder access is asked for on this tap, after a restore finds no card.
+  const grant = () => {
+    void grantAccess().then(setNotice);
+  };
+
   const confirmRestore = (info: BackupInfo) => {
-    Alert.alert(content.backups.restoreTitle, content.backups.restoreBody(formatDate(info.createdAt)), [
-      { text: content.sets.cancel, style: "cancel" },
-      { text: content.backups.restore, style: "destructive", onPress: () => void restore(info.id) },
-    ]);
+    confirmDestructive({
+      title: content.backups.restoreTitle,
+      message: content.backups.restoreBody(formatDate(info.createdAt)),
+      cancel: content.sets.cancel,
+      action: content.backups.restore,
+      onConfirm: () => void restore(info.id),
+    });
   };
 
   return (
     <Screen>
-      <ScreenHeader title={content.backups.title} onBack={() => router.back()} />
+      <ScreenHeader title={content.backups.title} />
 
       {loadError ? <Text style={styles.danger}>{loadError}</Text> : null}
       {notice ? <Text style={styles.danger}>{notice}</Text> : null}
+      {cardMissing && Platform.OS === "web" ? (
+        <Button
+          label={canPickCardFolder() ? content.home.webGrantFolder : content.home.webGrantFiles}
+          onPress={grant}
+          variant="secondary"
+        />
+      ) : null}
       {rows === null && !loadError ? <Loading label={content.backups.loading} /> : null}
       {restoring ? <Loading label={content.backups.restoring} /> : null}
 
@@ -161,6 +182,6 @@ export default function Backups() {
 const styles = StyleSheet.create({
   cardTitle: { ...typeScale.title3, color: colors.label },
   note: { ...typeScale.footnote, color: colors.secondary },
-  danger: { ...typeScale.footnote, fontFamily: fonts.medium, color: colors.danger },
+  danger: { ...typeScale.footnote, fontWeight: "500", color: colors.danger },
   line: { ...typeScale.footnote, color: colors.label, paddingTop: spacing.xs },
 });

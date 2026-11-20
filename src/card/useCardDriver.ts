@@ -11,12 +11,19 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
-import { AppState } from "react-native";
+import { AppState, Platform } from "react-native";
 
-import { cardReader, grantCardFolder, mountWait, type CardReading } from "@/card/session";
-import { cardLine, type CardLine, type UsbStatus } from "@/card/status";
+import { cardReader, errorCode, grantCardFolder, mountWait, type CardReading } from "@/card/session";
+import { cardLine, webCardLine, type CardLine, type UsbStatus } from "@/card/status";
 import { aclLog } from "@/card/timing";
-import { getUsbState, hasAllFilesAccess, subscribeUsb, subscribeVolumes } from "../../modules/usb-volume";
+import { content } from "@/content";
+import {
+  getUsbState,
+  hasAllFilesAccess,
+  openAllFilesAccessSettings,
+  subscribeUsb,
+  subscribeVolumes,
+} from "../../modules/usb-volume";
 
 export type CardDriver = {
   /** Null until the first access check. False means all-files access is refused. */
@@ -25,6 +32,11 @@ export type CardDriver = {
   /** Set by "Để sau" for this session. Until then, onboarding replaces the screen while access is refused. */
   deferred: boolean;
   defer: () => void;
+  /**
+   * Opens the card grant on this browser (folder picker or CAMPR file chooser). Resolves to the notice to show, or null.
+   * On the web a granted access reads the card at once.
+   */
+  grantAccess: () => Promise<string | null>;
   /** The last reading, whether a read runs, and the latest read's failure. */
   reading: CardReading | null;
   busy: boolean;
@@ -48,11 +60,25 @@ export function CardDriverProvider({ children }: { children: ReactNode }) {
   /** The folder picker opens once per USB attach, so a cancelled picker does not reopen by itself. */
   const pickerOffered = useRef(false);
 
-  const checkAccess = useCallback(async () => {
+  const refreshAccess = useCallback(async () => {
     setAccess(await hasAllFilesAccess().catch(() => null));
   }, []);
 
   const defer = useCallback(() => setDeferred(true), []);
+
+  const grantAccess = useCallback(async (): Promise<string | null> => {
+    try {
+      await openAllFilesAccessSettings();
+    } catch (e) {
+      const code = errorCode(e);
+      if (code === "E_PICK_CANCELLED") return null;
+      return code === "E_NO_CAMPR" ? content.home.webNoFiles : content.home.onboarding.openFailed;
+    }
+    if (Platform.OS !== "web") return null;
+    await refreshAccess();
+    void cardReader.request("picker");
+    return null;
+  }, [refreshAccess]);
 
   useEffect(() => {
     let alive = true;
@@ -72,11 +98,11 @@ export function CardDriverProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const sub = AppState.addEventListener("change", (state) => {
       if (state !== "active") return;
-      void checkAccess();
+      void refreshAccess();
       void cardReader.request("appstate");
     });
     return () => sub.remove();
-  }, [checkAccess]);
+  }, [refreshAccess]);
 
   useEffect(() => {
     let alive = true;
@@ -108,7 +134,8 @@ export function CardDriverProvider({ children }: { children: ReactNode }) {
   // A volume change (Android 11+) reads the card at once while a mount wait runs. See mountWait.ts.
   useEffect(() => subscribeVolumes((change) => mountWait.volumeChanged(change.state)), []);
 
-  const status = cardLine(usb, reading, waiting);
+  // The web has no USB state, so its line follows the card access instead.
+  const status = Platform.OS === "web" ? webCardLine(access, reading) : cardLine(usb, reading, waiting);
   const offerPicker =
     access === false &&
     deferred &&
@@ -131,6 +158,7 @@ export function CardDriverProvider({ children }: { children: ReactNode }) {
     accessChecked,
     deferred,
     defer,
+    grantAccess,
     reading,
     busy,
     failure,

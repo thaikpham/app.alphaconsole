@@ -2,12 +2,12 @@
   {
     "id": "shoot-easy",
     "name": "Shoot Easy",
-    "description": "by Thaikpham",
+    "description": "by Thai K. Pham",
     "recommended": true,
-    "unlisted": true,
     "author": {
       "name": "Thai K. Pham",
-      "handle": "thaikpham"
+      "handle": "thaikpham",
+      "link": "https://instagram.com/thaikphams"
     },
     "slots": [
       {
@@ -20,20 +20,20 @@
           "facePriority": "on",
           "softSkin": "mid",
           "autoReview": "off",
-          "iso": "auto",
-          "wb": {
-            "mode": "awb",
-            "ab": 0,
-            "gm": 0,
-            "priority": "white"
-          },
           "flashMode": "rear-sync",
           "expCompSet": "ambient-flash",
           "awbPriority": "white",
           "preAF": "on",
           "steadyShot": "off",
           "eFrontCurtain": "on",
-          "liveView": "setting-effect-on"
+          "liveView": "setting-effect-on",
+          "iso": "auto",
+          "wb": {
+            "mode": "awb",
+            "ab": 0,
+            "gm": 0,
+            "priority": "white"
+          }
         }
       },
       {
@@ -46,20 +46,20 @@
           "facePriority": "on",
           "softSkin": "mid",
           "autoReview": "off",
-          "iso": "auto",
-          "wb": {
-            "mode": "awb",
-            "ab": 0,
-            "gm": 0,
-            "priority": "white"
-          },
           "flashMode": "rear-sync",
           "expCompSet": "ambient-flash",
           "awbPriority": "white",
           "preAF": "on",
           "steadyShot": "off",
           "eFrontCurtain": "on",
-          "liveView": "setting-effect-on"
+          "liveView": "setting-effect-on",
+          "iso": "auto",
+          "wb": {
+            "mode": "awb",
+            "ab": 0,
+            "gm": 0,
+            "priority": "white"
+          }
         }
       },
       {
@@ -72,20 +72,20 @@
           "facePriority": "on",
           "softSkin": "mid",
           "autoReview": "off",
-          "iso": "auto",
-          "wb": {
-            "mode": "awb",
-            "ab": 0,
-            "gm": 0,
-            "priority": "white"
-          },
           "flashMode": "rear-sync",
           "expCompSet": "ambient-flash",
           "awbPriority": "white",
           "preAF": "on",
           "steadyShot": "off",
           "eFrontCurtain": "on",
-          "liveView": "setting-effect-on"
+          "liveView": "setting-effect-on",
+          "iso": "auto",
+          "wb": {
+            "mode": "awb",
+            "ab": 0,
+            "gm": 0,
+            "priority": "white"
+          }
         }
       },
       {
@@ -98,20 +98,20 @@
           "facePriority": "on",
           "softSkin": "mid",
           "autoReview": "off",
-          "iso": "auto",
-          "wb": {
-            "mode": "awb",
-            "ab": 0,
-            "gm": 0,
-            "priority": "white"
-          },
           "flashMode": "rear-sync",
           "expCompSet": "ambient-flash",
           "awbPriority": "white",
           "preAF": "on",
           "steadyShot": "off",
           "eFrontCurtain": "on",
-          "liveView": "setting-effect-on"
+          "liveView": "setting-effect-on",
+          "iso": "auto",
+          "wb": {
+            "mode": "awb",
+            "ab": 0,
+            "gm": 0,
+            "priority": "white"
+          }
         }
       }
     ]
@@ -119,7 +119,7 @@
   {
     "id": "zv-e10-hybrid",
     "name": "ZV-E10 Hybrid",
-    "description": "Bốn ô nhớ cho người mới dùng ZV-E10: đời thường, chân dung, livestream và chụp với đèn flash. Mỗi ô đi kèm một công thức màu của Color Bank.",
+    "description": "by Thaikpham",
     "author": {
       "name": "Thai K. Pham",
       "handle": "thaikpham"
@@ -136,6 +136,11 @@
           "facePriority": "on",
           "softSkin": "mid",
           "autoReview": "off",
+          "awbPriority": "standard",
+          "preAF": "on",
+          "steadyShot": "on",
+          "eFrontCurtain": "on",
+          "liveView": "setting-effect-on",
           "iso": "auto",
           "wb": {
             "mode": "awb",
@@ -143,18 +148,14 @@
             "gm": 0,
             "priority": "standard"
           },
-          "awbPriority": "standard",
-          "preAF": "on",
-          "steadyShot": "on",
-          "eFrontCurtain": "on",
-          "liveView": "setting-effect-on",
-          "recipeId": "pp-049",
           "pp": {
             "black_level": -2,
             "gamma": "Still",
             "black_gamma_range": "Narrow",
             "black_gamma_level": -1,
             "knee_mode": "Manual",
+            "knee_point": 95,
+            "knee_slope": 1,
             "color_mode": "Still",
             "saturation": 6,
             "color_phase": 0,
@@ -170,10 +171,9 @@
             "detail_bw": "Type3",
             "detail_limit": 5,
             "detail_crisp": 3,
-            "detail_hilight": 2,
-            "knee_point": 95,
-            "knee_slope": 1
-          }
+            "detail_hilight": 2
+          },
+          "recipeId": "pp-049"
         }
       },
       {
@@ -187,6 +187,10 @@
           "facePriority": "on",
           "softSkin": "mid",
           "autoReview": "off",
+          "preAF": "on",
+          "steadyShot": "on",
+          "eFrontCurtain": "on",
+          "liveView": "setting-effect-on",
           "iso": "auto",
           "wb": {
             "mode": "ctemp",
@@ -195,17 +199,14 @@
             "gm": 0,
             "priority": "standard"
           },
-          "preAF": "on",
-          "steadyShot": "on",
-          "eFrontCurtain": "on",
-          "liveView": "setting-effect-on",
-          "recipeId": "pp-075",
           "pp": {
             "black_level": 4,
             "gamma": "Cine1",
             "black_gamma_range": "Wide",
             "black_gamma_level": 3,
             "knee_mode": "Manual",
+            "knee_point": 85,
+            "knee_slope": -1,
             "color_mode": "Cinema",
             "saturation": -6,
             "color_phase": 0,
@@ -221,10 +222,9 @@
             "detail_bw": "Type3",
             "detail_limit": 4,
             "detail_crisp": 5,
-            "detail_hilight": 1,
-            "knee_point": 85,
-            "knee_slope": -1
-          }
+            "detail_hilight": 1
+          },
+          "recipeId": "pp-075"
         }
       },
       {
@@ -238,6 +238,11 @@
           "facePriority": "on",
           "softSkin": "mid",
           "autoReview": "off",
+          "awbPriority": "white",
+          "preAF": "on",
+          "steadyShot": "off",
+          "eFrontCurtain": "on",
+          "liveView": "setting-effect-on",
           "iso": "auto",
           "wb": {
             "mode": "awb",
@@ -245,18 +250,14 @@
             "gm": 0.75,
             "priority": "standard"
           },
-          "awbPriority": "white",
-          "preAF": "on",
-          "steadyShot": "off",
-          "eFrontCurtain": "on",
-          "liveView": "setting-effect-on",
-          "recipeId": "pp-047",
           "pp": {
             "black_level": -3,
             "gamma": "Cine1",
             "black_gamma_range": "Wide",
             "black_gamma_level": -7,
             "knee_mode": "Manual",
+            "knee_point": 105,
+            "knee_slope": 2,
             "color_mode": "Movie",
             "saturation": 15,
             "color_phase": 0,
@@ -272,10 +273,9 @@
             "detail_bw": "Type3",
             "detail_limit": 3,
             "detail_crisp": 7,
-            "detail_hilight": 4,
-            "knee_point": 105,
-            "knee_slope": 2
-          }
+            "detail_hilight": 4
+          },
+          "recipeId": "pp-047"
         }
       },
       {
@@ -289,6 +289,12 @@
           "facePriority": "on",
           "softSkin": "mid",
           "autoReview": "2s",
+          "flashMode": "rear-sync",
+          "expCompSet": "ambient-only",
+          "preAF": "on",
+          "steadyShot": "on",
+          "eFrontCurtain": "on",
+          "liveView": "setting-effect-off",
           "iso": "auto",
           "wb": {
             "mode": "ctemp",
@@ -297,13 +303,6 @@
             "gm": 0,
             "priority": "standard"
           },
-          "flashMode": "rear-sync",
-          "expCompSet": "ambient-only",
-          "preAF": "on",
-          "steadyShot": "on",
-          "eFrontCurtain": "on",
-          "liveView": "setting-effect-off",
-          "recipeId": "pp-050",
           "pp": {
             "black_level": -1,
             "gamma": "ITU709",
@@ -326,7 +325,8 @@
             "detail_limit": 5,
             "detail_crisp": 4,
             "detail_hilight": 2
-          }
+          },
+          "recipeId": "pp-050"
         }
       }
     ]

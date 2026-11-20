@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View, type ViewStyle } from "react-native";
-import { fonts, typeScale } from "./tokens";
+import { typeScale } from "./tokens";
 import { radii, spacing, useTheme, type Palette } from "./theme";
 
 type Props = {
@@ -19,9 +19,9 @@ function stateOf(index: number, current: number): DotState {
   return index < current ? "done" : "idle";
 }
 
-// Active uses the high-emphasis fill, not accent: accent fill is reserved for the primary Button.
+// Active is an accent ring on card, not an accent fill: the solid fill is the primary capsule's, and a dark accent fill would read as a button.
 function dotPaint(state: DotState, theme: Palette): ViewStyle {
-  if (state === "active") return { backgroundColor: theme.high };
+  if (state === "active") return { backgroundColor: theme.card, borderWidth: 2, borderColor: theme.accent };
   if (state === "done") return { backgroundColor: theme.separator };
   return { backgroundColor: theme.card, borderWidth: 1, borderColor: theme.separator };
 }
@@ -43,8 +43,8 @@ export function StageStepper({ stages, current, marked, onSelect }: Props) {
             style={styles.step}
           >
             <View style={[styles.dot, dotPaint(state, theme)]}>
-              <Text style={[styles.dotText, { color: active ? theme.onHigh : theme.secondary }]}>{i + 1}</Text>
-              {marked?.[i] ? <View style={[styles.mark, { backgroundColor: theme.label, borderColor: theme.card }]} /> : null}
+              <Text style={[styles.dotText, { color: active ? theme.accentText : theme.secondary }]}>{i + 1}</Text>
+              {marked?.[i] ? <View style={[styles.mark, { backgroundColor: theme.success, borderColor: theme.card }]} /> : null}
             </View>
             <Text style={[styles.name, { color: active ? theme.label : theme.secondary }]}>{name}</Text>
           </Pressable>
@@ -67,6 +67,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     borderWidth: 1,
   },
-  dotText: { ...typeScale.subhead, fontFamily: fonts.semibold },
+  dotText: { ...typeScale.fieldLabel },
   name: { ...typeScale.subhead, textAlign: "center" },
 });

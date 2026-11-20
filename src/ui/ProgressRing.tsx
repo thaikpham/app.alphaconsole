@@ -1,6 +1,8 @@
-import { StyleSheet, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Animated, StyleSheet, Text, View } from "react-native";
 import { typeScale } from "./tokens";
-import { useTheme } from "./theme";
+import { motion, useTheme } from "./theme";
+import { useReduceMotion } from "./useReduceMotion";
 
 const SIZE = 208;
 const RADIUS = 90;
@@ -9,17 +11,35 @@ const BOX = (RADIUS + STROKE / 2) * 2; // outer edge of the stroke
 const INSET = (SIZE - BOX) / 2;
 
 /**
- * Four-quarter ring with "filled/4" in the middle. Zero dependencies: each quarter is a circle whose
- * only visible border is the top side (a 90 degree arc), rotated into place clockwise from 12 o'clock.
+ * Four-quarter ring with "filled/4" in the middle (SPEC-IOS §4.7). Same drawing as ProgressRing.tsx: zero dependencies,
+ * each quarter is a circle whose only visible border is the top side. When the ring completes it springs once,
+ * scale 1 → 1.08 → 1, in place of the symbolEffect bounce. Reduce Motion skips the spring.
  */
 export function ProgressRing({ filled }: { filled: number }) {
   const theme = useTheme();
+  const reduce = useReduceMotion();
   const done = Math.min(4, Math.max(0, Math.round(filled)));
+  const complete = done === 4;
+  const [pop] = useState(() => new Animated.Value(1));
+
+  useEffect(() => {
+    if (!complete || reduce) {
+      pop.setValue(1);
+      return;
+    }
+    const run = Animated.sequence([
+      Animated.spring(pop, { toValue: 1.08, ...motion.spring.btn, useNativeDriver: true }),
+      Animated.spring(pop, { toValue: 1, ...motion.spring.btn, useNativeDriver: true }),
+    ]);
+    run.start();
+    return () => run.stop();
+  }, [complete, reduce, pop]);
+
   return (
-    <View
+    <Animated.View
       accessibilityRole="progressbar"
       accessibilityValue={{ min: 0, max: 4, now: done, text: `${done}/4` }}
-      style={styles.frame}
+      style={[styles.frame, { transform: [{ scale: pop }] }]}
     >
       {[0, 1, 2, 3].map((quarter) => (
         <View
@@ -34,7 +54,7 @@ export function ProgressRing({ filled }: { filled: number }) {
         />
       ))}
       <Text style={[styles.count, { color: theme.label }]}>{`${done}/4`}</Text>
-    </View>
+    </Animated.View>
   );
 }
 

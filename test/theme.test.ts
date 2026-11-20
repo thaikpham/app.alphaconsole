@@ -10,6 +10,7 @@ const STUB = "stub:react-native";
 const STUB_SOURCE = `
 export const Easing = { bezier: () => (t) => t };
 export function useColorScheme() { return globalThis.__aclScheme ?? "light"; }
+export const Platform = { OS: globalThis.__aclOS ?? "android" };
 `;
 
 registerHooks({

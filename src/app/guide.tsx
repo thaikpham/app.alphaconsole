@@ -8,7 +8,7 @@ import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
 import { Screen } from "@/ui/Screen";
 import { ScreenHeader } from "@/ui/ScreenHeader";
-import { colors, fonts, radii, spacing, typeScale } from "@/ui/tokens";
+import { colors, radii, spacing, typeScale } from "@/ui/tokens";
 
 type GuideSection = { title: string; lines: readonly string[]; showRecallWarning?: boolean };
 
@@ -19,7 +19,7 @@ export default function Guide() {
 
   return (
     <Screen>
-      <ScreenHeader title={content.guide.title} onBack={() => router.back()} />
+      <ScreenHeader title={content.guide.title} />
 
       {sections.map((section) => (
         <Fragment key={section.title}>
@@ -51,6 +51,6 @@ const styles = StyleSheet.create({
   cardTitle: { ...typeScale.title3, color: colors.label },
   line: { ...typeScale.body, color: colors.label },
   note: { ...typeScale.footnote, color: colors.secondary },
-  stepTitle: { ...typeScale.subhead, fontFamily: fonts.semibold, color: colors.label },
+  stepTitle: { ...typeScale.subhead, fontWeight: "600", color: colors.label },
   warning: { backgroundColor: colors.warningTint, borderRadius: radii.control, padding: spacing.md, gap: spacing.xs },
 });

@@ -1,15 +1,16 @@
 import { useState } from "react";
-import { Pressable, Share, StyleSheet, Text } from "react-native";
-import { useRouter } from "expo-router";
+import { Platform, Pressable, Share, StyleSheet, Text } from "react-native";
+import { usePreventRemove } from "expo-router";
 
 import { formatCrashEntry } from "@/crash/entry";
 import { clearCrashes, deleteCrash, listCrashEntries, type StoredCrash } from "@/crash/store";
 import { content } from "@/content";
 import { Button } from "@/ui/Button";
+import { downloadFile } from "@/ui/download";
 import { Card } from "@/ui/Card";
 import { Screen } from "@/ui/Screen";
 import { ScreenHeader } from "@/ui/ScreenHeader";
-import { colors, fonts, spacing, typeScale } from "@/ui/tokens";
+import { colors, spacing, typeScale } from "@/ui/tokens";
 
 /** Local time for a list row. Shows the stored text when it is not a date. */
 function rowTime(time: string): string {
@@ -18,9 +19,11 @@ function rowTime(time: string): string {
 }
 
 export default function Logs() {
-  const router = useRouter();
   const [crashes, setCrashes] = useState<StoredCrash[]>(() => listCrashEntries());
   const [selected, setSelected] = useState<StoredCrash | null>(null);
+
+  // With a crash open, back returns to the list instead of leaving the screen.
+  usePreventRemove(selected !== null, () => setSelected(null));
 
   function reload() {
     setCrashes(listCrashEntries());
@@ -28,7 +31,13 @@ export default function Logs() {
   }
 
   function share(crash: StoredCrash) {
-    void Share.share({ message: formatCrashEntry(crash.entry) }).catch(() => undefined);
+    const text = formatCrashEntry(crash.entry);
+    if (Platform.OS !== "web") {
+      void Share.share({ message: text }).catch(() => undefined);
+      return;
+    }
+    // The web has no share sheet here, so the entry is saved as a file.
+    downloadFile(crash.name, new TextEncoder().encode(text), "application/json");
   }
 
   function remove(crash: StoredCrash) {
@@ -43,7 +52,7 @@ export default function Logs() {
 
   return (
     <Screen>
-      <ScreenHeader title={content.logs.title} onBack={() => (selected ? setSelected(null) : router.back())} />
+      <ScreenHeader title={content.logs.title} />
 
       {selected ? (
         <>
@@ -83,9 +92,9 @@ export default function Logs() {
 
 const styles = StyleSheet.create({
   note: { ...typeScale.footnote, color: colors.secondary },
-  detail: { ...typeScale.footnote, fontFamily: fonts.regular, color: colors.label },
+  detail: { ...typeScale.footnote, fontWeight: "400", color: colors.label },
   row: { gap: spacing.xs, paddingTop: spacing.sm, borderTopWidth: 1, borderTopColor: colors.separator },
   pressed: { opacity: 0.85 },
-  rowTime: { ...typeScale.footnote, fontFamily: fonts.medium, color: colors.secondary },
+  rowTime: { ...typeScale.footnote, fontWeight: "500", color: colors.secondary },
   rowMessage: { ...typeScale.subhead, color: colors.label },
 });

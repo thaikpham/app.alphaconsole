@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Animated, Pressable, StyleSheet, Text } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Glass } from "./Glass";
 import { typeScale } from "./tokens";
 import { controlHeight, motion, radii, spacing, useTheme } from "./theme";
 import { useReduceMotion } from "./useReduceMotion";
@@ -42,18 +44,19 @@ export function Snackbar({ state, onDismiss }: { state: SnackbarState | null; on
   return <SnackbarBar key={state.id} message={state.message} action={state.action} onDismiss={onDismiss} />;
 }
 
+/** Glass capsule above the bottom bar. Enters by a transform-only push spring; no opacity on glass. */
 function SnackbarBar({ message, action, onDismiss }: { message: string; action?: SnackbarAction; onDismiss: () => void }) {
   const theme = useTheme();
   const reduce = useReduceMotion();
+  const insets = useSafeAreaInsets();
   const [enter] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
-    Animated.timing(enter, {
-      toValue: 1,
-      duration: reduce ? 0 : motion.standard.duration,
-      easing: motion.standard.easing,
-      useNativeDriver: true,
-    }).start();
+    if (reduce) {
+      enter.setValue(1);
+      return;
+    }
+    Animated.spring(enter, { toValue: 1, ...motion.spring.push, useNativeDriver: true }).start();
   }, [enter, reduce]);
 
   return (
@@ -62,25 +65,26 @@ function SnackbarBar({ message, action, onDismiss }: { message: string; action?:
       style={[
         styles.bar,
         {
-          backgroundColor: theme.inverse,
-          opacity: enter,
+          bottom: 100 + insets.bottom,
           transform: [{ translateY: enter.interpolate({ inputRange: [0, 1], outputRange: [8, 0] }) }],
         },
       ]}
     >
-      <Text style={[styles.message, { color: theme.onInverse }]}>{message}</Text>
-      {action ? (
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => {
-            action.onPress();
-            onDismiss();
-          }}
-          style={({ pressed }) => [styles.action, pressed && styles.pressed]}
-        >
-          <Text style={[styles.actionLabel, { color: theme.inverseAccent }]}>{action.label}</Text>
-        </Pressable>
-      ) : null}
+      <Glass style={styles.surface}>
+        <Text style={[styles.message, { color: theme.label }]}>{message}</Text>
+        {action ? (
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => {
+              action.onPress();
+              onDismiss();
+            }}
+            style={({ pressed }) => [styles.action, pressed && styles.pressed]}
+          >
+            <Text style={[styles.actionLabel, { color: theme.accent }]}>{action.label}</Text>
+          </Pressable>
+        ) : null}
+      </Glass>
     </Animated.View>
   );
 }
@@ -90,7 +94,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: spacing.lg,
     right: spacing.lg,
-    bottom: 100,
+  },
+  surface: {
     minHeight: controlHeight,
     borderRadius: radii.control,
     flexDirection: "row",
@@ -109,5 +114,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
   },
   actionLabel: { ...typeScale.button },
-  pressed: { opacity: 0.6 },
+  pressed: { transform: [{ scale: 0.96 }] },
 });

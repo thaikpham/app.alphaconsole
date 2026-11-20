@@ -4,7 +4,7 @@ import { radii, spacing, useTheme, type Palette } from "./theme";
 
 export type ChipTone = "neutral" | "success" | "warning" | "danger";
 
-// Text on tint: every pair is at least 4.5:1 in both palettes (test/theme.test.ts).
+// Text on tint: same pairs as StatusChip.tsx, each at least 4.5:1 in both palettes (test/theme.test.ts).
 function tonePaint(theme: Palette): Record<ChipTone, { background: string; text: string }> {
   return {
     neutral: { background: theme.neutralTint, text: theme.secondary },
@@ -19,6 +19,7 @@ type Props = {
   tone?: ChipTone;
 };
 
+/** Capsule with tone-coloured text on a tint wash (SPEC-IOS §2). */
 export function StatusChip({ label, tone = "neutral" }: Props) {
   const palette = tonePaint(useTheme())[tone];
   return (
@@ -31,8 +32,8 @@ export function StatusChip({ label, tone = "neutral" }: Props) {
 const styles = StyleSheet.create({
   chip: {
     alignSelf: "flex-start",
-    borderRadius: radii.badge,
-    paddingHorizontal: spacing.sm,
+    borderRadius: radii.pill,
+    paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
   },
   text: { ...typeScale.subhead },

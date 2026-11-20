@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Alpha Color Lab",
+    "name": "Alpha Console",
     "slug": "alpha-color-lab",
     "version": "0.9.2",
     "orientation": "portrait",
@@ -41,7 +41,10 @@
       "reactCompiler": true
     },
     "ios": {
-      "bundleIdentifier": "com.alphacolorlab.app"
+      "bundleIdentifier": "com.alphacolorlab.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "extra": {
       "router": {

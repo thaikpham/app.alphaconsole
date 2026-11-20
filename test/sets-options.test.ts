@@ -14,7 +14,7 @@ import {
   ISO_OPTIONS,
   KELVIN_RANGE,
   SHUTTER_OPTIONS,
-} from "../src/core/sets/options.ts";
+} from "../src/core/web/lib/app-core/sets/options.ts";
 import {
   APERTURES,
   AUTO_REVIEW,

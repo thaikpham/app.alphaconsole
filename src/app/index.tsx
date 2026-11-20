@@ -4,7 +4,7 @@ import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 
 import { content } from "@/content";
-import { DEFAULT_MODEL, modelById, type ModelId } from "@/core/models";
+import { DEFAULT_MODEL, modelById, type ModelId } from "@/core/web/lib/app-core/models";
 import { defaultSet, listedSets, type PresetSet } from "@/core/web/lib/presetSets";
 import { CameraSheet } from "@/home/CameraSheet";
 import { CreateSetSheet } from "@/home/CreateSetSheet";
@@ -17,6 +17,7 @@ import { setStore } from "@/storage/userSetsFile";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
 import { Glass } from "@/ui/Glass";
+import { InstallHint } from "@/ui/InstallHint";
 import { PinnedBar } from "@/ui/PinnedBar";
 import { Screen } from "@/ui/Screen";
 import { SegmentedTabs } from "@/ui/SegmentedTabs";
@@ -83,16 +84,11 @@ export default function Home() {
     { value: "mine", label: content.presets.tabMine(mine.length) },
   ];
 
-  // iOS: the bar carries the create action too (SPEC-IOS §4.4). Hidden in the empty Của tôi state, which offers it in the card.
-  // iOS More sheet rows open the camera and create sheets (MoreSheet.ios). Android has no such rows.
-  const menuOpeners =
-    Platform.OS === "ios" ? { onChooseCamera: () => setCameraOpen(true), onCreateSet: () => setCreateOpen(true) } : {};
-  const pressedStyle = Platform.OS === "ios" ? styles.pressedScale : styles.pressed;
-
+  // The bar carries the create action too (SPEC-IOS §4.4). Hidden in the empty Của tôi state, which offers it in the card.
   // An unwritable camera takes precedence over the selection state.
   const footer = (
     <PinnedBar>
-      {Platform.OS === "ios" && !(own && mine.length === 0) ? (
+      {!(own && mine.length === 0) ? (
         <Button label={content.presets.create} onPress={() => setCreateOpen(true)} variant="secondary" />
       ) : null}
       {!model.capabilities.write ? (
@@ -107,38 +103,29 @@ export default function Home() {
 
   return (
     <>
-      {Platform.OS === "ios" ? (
-        <Stack.Screen
-          options={{
-            ...navHeader({ title: content.presets.title, largeTitle: true }),
-            headerRight: () => (
-              <Pressable
-                onPress={() => setMoreOpen(true)}
-                accessibilityRole="button"
-                accessibilityLabel={content.more.title}
-                hitSlop={8}
-                style={({ pressed }) => (pressed ? styles.pressedScale : undefined)}
-              >
-                <Glass interactive style={styles.avatar}>
-                  <View style={[styles.head, { backgroundColor: theme.label }]} />
-                  <View style={[styles.shoulders, { backgroundColor: theme.label }]} />
-                </Glass>
-              </Pressable>
-            ),
-          }}
-        />
-      ) : null}
+      <Stack.Screen
+        options={{
+          ...navHeader({ title: content.presets.title, largeTitle: true }),
+          headerRight: () => (
+            <Pressable
+              onPress={() => setMoreOpen(true)}
+              accessibilityRole="button"
+              accessibilityLabel={content.more.title}
+              hitSlop={8}
+              style={({ pressed }) => (pressed ? styles.pressedScale : undefined)}
+            >
+              <Glass interactive style={styles.avatar}>
+                <View style={[styles.head, { backgroundColor: theme.label }]} />
+                <View style={[styles.shoulders, { backgroundColor: theme.label }]} />
+              </Glass>
+            </Pressable>
+          ),
+        }}
+      />
       <Screen footer={footer} overlay={<Snackbar state={snack.state} onDismiss={snack.hide} />}>
-        {Platform.OS === "ios" ? null : (
-          <View style={styles.header}>
-            <Text style={[typeScale.title2, { color: theme.label }]} accessibilityRole="header">
-              {content.presets.title}
-            </Text>
-            <Button label={content.presets.more} onPress={() => setMoreOpen(true)} variant="plain" />
-          </View>
-        )}
+        {Platform.OS === "web" ? <InstallHint /> : null}
 
-        <Pressable onPress={() => setCameraOpen(true)} accessibilityRole="button" style={({ pressed }) => (pressed ? pressedStyle : undefined)}>
+        <Pressable onPress={() => setCameraOpen(true)} accessibilityRole="button" style={({ pressed }) => (pressed ? styles.pressedScale : undefined)}>
           <Card>
             <ValueRow label={content.presets.cameraRow} value={model.name} />
           </Card>
@@ -147,10 +134,6 @@ export default function Home() {
         <SegmentedTabs options={tabs} value={tab} onChange={changeTab} />
 
         {loadError ? <Text style={[typeScale.subhead, { color: theme.danger }]}>{loadError}</Text> : null}
-
-        {own && mine.length > 0 && Platform.OS !== "ios" ? (
-          <Button label={content.presets.create} onPress={() => setCreateOpen(true)} variant="secondary" />
-        ) : null}
 
         {own && mine.length === 0 ? (
           <Card>
@@ -173,7 +156,12 @@ export default function Home() {
         ))}
       </Screen>
 
-      <MoreSheet visible={moreOpen} onClose={() => setMoreOpen(false)} {...menuOpeners} />
+      <MoreSheet
+        visible={moreOpen}
+        onClose={() => setMoreOpen(false)}
+        onChooseCamera={() => setCameraOpen(true)}
+        onCreateSet={() => setCreateOpen(true)}
+      />
       <CameraSheet visible={cameraOpen} selected={cameraId} onClose={() => setCameraOpen(false)} onChanged={setCameraId} />
       <CreateSetSheet
         visible={createOpen}
@@ -187,8 +175,6 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  pressed: { opacity: 0.6 },
   pressedScale: { transform: [{ scale: 0.96 }] },
   // Person glyph for the signed-out avatar (drawn with Views; no icon library).
   avatar: { width: 36, height: 36, borderRadius: 18, alignItems: "center", justifyContent: "center", gap: 2 },

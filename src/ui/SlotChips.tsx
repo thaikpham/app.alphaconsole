@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
-import { fonts, typeScale } from "./tokens";
+import { content } from "@/content";
+import { Glass } from "./Glass";
 import { ModifiedDot } from "./ModifiedDot";
-import { controlHeight, motion, radii, spacing, useTheme } from "./theme";
+import { typeScale } from "./tokens";
+import { motion, radii, spacing, useTheme } from "./theme";
 import { useReduceMotion } from "./useReduceMotion";
 
-export type SlotItem = { id: string; label: string; modified?: boolean };
+/** `name` is optional and only the iOS picker shows it, on the selected pill. */
+export type SlotItem = { id: string; label: string; modified?: boolean; name?: string };
 
 type Props = {
   slots: readonly SlotItem[];
@@ -13,16 +16,20 @@ type Props = {
   onChange: (id: string) => void;
 };
 
-const BASIS = 60;
+// Canvas v16: 44px glass track, pills inset 3px from its edge (38px tall). Unselected pills are 56px wide.
+const TRACK_HEIGHT = 44;
+const INSET = 3;
+const BASIS = 56;
 
-/** Slot picker (M1 to M4). The selected slot grows to fill the row; the others stay 60px wide. */
+/** Slot picker (M1 to M4) on a glass track. The selected pill grows with a spring and shows its slot name. */
 export function SlotChips({ slots, value, onChange }: Props) {
-  const theme = useTheme();
   return (
-    <View accessibilityRole="radiogroup" style={[styles.track, { backgroundColor: theme.fill }]}>
-      {slots.map((slot) => (
-        <SlotChip key={slot.id} slot={slot} selected={slot.id === value} onPress={() => onChange(slot.id)} />
-      ))}
+    <View accessibilityRole="radiogroup">
+      <Glass style={styles.track}>
+        {slots.map((slot) => (
+          <SlotChip key={slot.id} slot={slot} selected={slot.id === value} onPress={() => onChange(slot.id)} />
+        ))}
+      </Glass>
     </View>
   );
 }
@@ -31,31 +38,39 @@ function SlotChip({ slot, selected, onPress }: { slot: SlotItem; selected: boole
   const theme = useTheme();
   const reduce = useReduceMotion();
   const [grow] = useState(() => new Animated.Value(selected ? 1 : 0));
+  // A spring can overshoot past 1 or below 0, and a negative flexGrow is invalid, so clamp it.
+  const flexGrow = useMemo(
+    () => grow.interpolate({ inputRange: [0, 1], outputRange: [0, 1], extrapolate: "clamp" }),
+    [grow],
+  );
 
   useEffect(() => {
-    Animated.timing(grow, {
-      toValue: selected ? 1 : 0,
-      duration: reduce ? 0 : motion.emphasized.duration,
-      easing: motion.emphasized.easing,
-      useNativeDriver: false, // flexGrow is layout, so the native driver cannot run it
-    }).start();
+    const toValue = selected ? 1 : 0;
+    if (reduce) {
+      grow.setValue(toValue);
+      return;
+    }
+    Animated.spring(grow, { toValue, ...motion.spring.seg, useNativeDriver: false }).start(); // flexGrow is layout
   }, [selected, reduce, grow]);
 
+  const label = selected && slot.name ? `${slot.label} · ${slot.name}` : slot.label;
+  const accessibleName = `${slot.label}${slot.name ? `, ${slot.name}` : ""}${slot.modified ? `, ${content.edit.modified}` : ""}`;
+
   return (
-    <Animated.View style={{ flexBasis: BASIS, flexGrow: grow }}>
+    <Animated.View style={{ flexBasis: BASIS, flexGrow }}>
       <Pressable
         accessibilityRole="radio"
-        accessibilityLabel={slot.label}
+        accessibilityLabel={accessibleName}
         accessibilityState={{ selected }}
         onPress={onPress}
-        style={({ pressed }) => [
-          styles.chip,
-          selected && [styles.raised, { backgroundColor: theme.segmentOn }],
-          pressed && styles.pressed,
-        ]}
+        style={({ pressed }) => [styles.chip, selected && { backgroundColor: theme.chip }, pressed && styles.pressed]}
       >
-        <Text style={[selected ? styles.labelOn : styles.label, { color: selected ? theme.label : theme.secondary }]}>
-          {slot.label}
+        <Text
+          numberOfLines={1}
+          ellipsizeMode="tail"
+          style={[selected ? styles.labelOn : styles.label, { color: selected ? theme.chipfg : theme.secondary }]}
+        >
+          {label}
         </Text>
         {slot.modified ? <ModifiedDot style={styles.dot} /> : null}
       </Pressable>
@@ -65,28 +80,20 @@ function SlotChip({ slot, selected, onPress }: { slot: SlotItem; selected: boole
 
 const styles = StyleSheet.create({
   track: {
+    height: TRACK_HEIGHT,
     flexDirection: "row",
-    borderRadius: radii.control,
-    padding: spacing.xs,
-    gap: spacing.xs,
+    borderRadius: radii.pill,
+    padding: INSET,
   },
   chip: {
     flex: 1,
-    minHeight: controlHeight,
-    borderRadius: radii.control - spacing.xs,
+    borderRadius: radii.pill,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: spacing.sm,
-  },
-  raised: {
-    shadowColor: "#0b0d12",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.14,
-    shadowRadius: 2,
-    elevation: 1,
+    paddingHorizontal: spacing.s14,
   },
   pressed: { opacity: 0.85 },
-  label: { ...typeScale.subhead },
-  labelOn: { ...typeScale.subhead, fontFamily: fonts.semibold },
-  dot: { position: "absolute", top: spacing.sm, right: spacing.sm },
+  label: { ...typeScale.subhead, flexShrink: 1 },
+  labelOn: { ...typeScale.subhead, fontWeight: "600", flexShrink: 1 },
+  dot: { position: "absolute", top: spacing.s6, right: spacing.s6 },
 });

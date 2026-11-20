@@ -8,13 +8,19 @@
     "android": "expo run:android",
     "sync-core": "node --experimental-strip-types scripts/sync-core.mts",
     "check-core": "node --experimental-strip-types scripts/sync-core.mts --check",
+    "pretest": "npm run check-core",
     "test": "node --experimental-strip-types --test 'test/**/*.test.ts'",
     "typecheck": "tsc --noEmit",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "export:web": "EXPO_BASE_URL=/console-app npx expo export --platform web --output-dir dist-web",
+    "publish": "node --experimental-strip-types scripts/publish-web.mts",
+    "sync": "npm run sync-core && npm run typecheck && npm test && npm run export:web && npm run publish",
+    "release:android": "node --experimental-strip-types scripts/release-android.mts"
   },
   "dependencies": {
-    "@expo-google-fonts/noto-sans": "^0.4.2",
+    "@expo/metro-runtime": "~58.0.17",
     "expo": "~58.0.25",
+    "expo-blur": "~58.0.6",
     "expo-constants": "~58.0.16",
     "expo-dev-client": "~58.0.21",
     "expo-file-system": "~58.0.13",
@@ -29,7 +35,8 @@
     "react-dom": "19.3.0",
     "react-native": "0.88.1",
     "react-native-safe-area-context": "~5.11.1",
-    "react-native-screens": "~4.30.1"
+    "react-native-screens": "~4.30.1",
+    "react-native-web": "^0.21.4"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",

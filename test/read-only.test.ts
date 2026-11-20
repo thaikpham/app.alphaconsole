@@ -4,8 +4,8 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { describeReadOnly } from "../src/core/card/readOnly.ts";
-import { A6400, A7C2, ZV_E10 } from "../src/core/models.ts";
+import { describeReadOnly } from "../src/core/web/lib/app-core/card/readOnly.ts";
+import { A6400, A7C2, ZV_E10 } from "../src/core/web/lib/app-core/models.ts";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const file = (dir: string, name: string) => ({

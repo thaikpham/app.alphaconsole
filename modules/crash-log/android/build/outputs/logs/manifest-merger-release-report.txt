@@ -1,16 +1,16 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest8211779026866854298.xml:2:13-83
-INJECTED from /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest8211779026866854298.xml:2:13-83
+ADDED from /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest7895367169514433693.xml:2:13-83
+INJECTED from /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest7895367169514433693.xml:2:13-83
 	package
-		INJECTED from /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest8211779026866854298.xml
+		INJECTED from /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest7895367169514433693.xml
 	xmlns:android
-		ADDED from /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest8211779026866854298.xml:2:23-81
+		ADDED from /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest7895367169514433693.xml:2:23-81
 uses-sdk
-INJECTED from /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest8211779026866854298.xml reason: use-sdk injection requested
-INJECTED from /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest8211779026866854298.xml
-INJECTED from /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest8211779026866854298.xml
+INJECTED from /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest7895367169514433693.xml reason: use-sdk injection requested
+INJECTED from /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest7895367169514433693.xml
+INJECTED from /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest7895367169514433693.xml
 	android:targetSdkVersion
-		INJECTED from /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest8211779026866854298.xml
+		INJECTED from /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest7895367169514433693.xml
 	android:minSdkVersion
-		INJECTED from /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest8211779026866854298.xml
+		INJECTED from /home/thaikpham/Desktop/AlphaColorLab.com/App.Alphacolorlab/modules/crash-log/android/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest7895367169514433693.xml

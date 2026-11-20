@@ -1,7 +1,7 @@
 // The app's copy of the user sets file (Documents/user-sets.json) and the store built on it.
 import { File, Paths } from "expo-file-system";
-import { createSetStore, type SetsAdapter } from "@/core/sets/store";
-import { explicitPp } from "@/core/transfer/plan";
+import { createSetStore, type SetsAdapter } from "@/core/web/lib/app-core/sets/store";
+import { explicitPp } from "@/core/web/lib/app-core/transfer/plan";
 import { validatePresetSets } from "@/core/web/lib/presetSets";
 import presetJson from "@/core/web/data/preset-sets.json";
 

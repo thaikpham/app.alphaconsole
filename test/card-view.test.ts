@@ -4,9 +4,9 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { describeCard, toCardState, type InspectedCard } from "../src/core/card/view.ts";
-import { planWrite, type CardFile, type CardState } from "../src/core/transfer/plan.ts";
-import { bytesToBase64 } from "../src/core/bases.ts";
+import { describeCard, toCardState, type InspectedCard } from "../src/core/web/lib/app-core/card/view.ts";
+import { planWrite, type CardFile, type CardState } from "../src/core/web/lib/app-core/transfer/plan.ts";
+import { bytesToBase64 } from "../src/core/web/lib/app-core/bases.ts";
 import { listedSets, validatePresetSets } from "../src/core/web/lib/presetSets.ts";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -35,7 +35,8 @@ test("PAL fixture: slot 2 shows its Kelvin white balance and the matching listed
 
 test("labels come only from the sets passed in", () => {
   const card = { sonyMarkers: true, settingFiles: planWrite({ sonyMarkers: true, settingFiles: [] }, shoot, "P").map((f) => ({ name: f.relPath.split("/").pop()!, bytes: f.bytes })) };
-  assert.deepEqual(describeCard(card, listed).slots.map((s) => s.label), [null, null, null, null]);
+  const others = sets.filter((s) => s.id !== shoot.id);
+  assert.deepEqual(describeCard(card, others).slots.map((s) => s.label), [null, null, null, null]);
   assert.deepEqual(describeCard(card, sets).slots.map((s) => s.label), ["Hằng ngày", "Hằng ngày", "Hằng ngày", "Hằng ngày"]);
 });
 

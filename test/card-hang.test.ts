@@ -8,10 +8,10 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { describeCard, toCardState, type InspectedCard } from "../src/core/card/view.ts";
-import { matchingSet } from "../src/core/sets/match.ts";
-import { compare, explicitPp, planWrite, type CardFile, type CardState, type PlannedFile } from "../src/core/transfer/plan.ts";
-import { overwrittenSlots, recordFor, recordHolds } from "../src/core/transfer/state.ts";
+import { describeCard, toCardState, type InspectedCard } from "../src/core/web/lib/app-core/card/view.ts";
+import { matchingSet } from "../src/core/web/lib/app-core/sets/match.ts";
+import { compare, explicitPp, planWrite, type CardFile, type CardState, type PlannedFile } from "../src/core/web/lib/app-core/transfer/plan.ts";
+import { overwrittenSlots, recordFor, recordHolds } from "../src/core/web/lib/app-core/transfer/state.ts";
 import { listedSets, validatePresetSets, type PresetSet } from "../src/core/web/lib/presetSets.ts";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");

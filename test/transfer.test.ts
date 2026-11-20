@@ -12,8 +12,8 @@ import {
   TransferError,
   type CardFile,
   type CardState,
-} from "../src/core/transfer/plan.ts";
-import { loadHeaders } from "../src/core/bases.ts";
+} from "../src/core/web/lib/app-core/transfer/plan.ts";
+import { loadHeaders } from "../src/core/web/lib/app-core/bases.ts";
 import { validatePresetSets } from "../src/core/web/lib/presetSets.ts";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");

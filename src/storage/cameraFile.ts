@@ -1,6 +1,6 @@
 // The camera the user chose (Documents/camera.json, {"model": id}). Read at each card read as the first guess.
 import { File, Paths } from "expo-file-system";
-import { parseCameraSelection, type ModelId } from "@/core/models";
+import { parseCameraSelection, type ModelId } from "@/core/web/lib/app-core/models";
 
 const file = new File(Paths.document, "camera.json");
 

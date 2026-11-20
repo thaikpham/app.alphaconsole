@@ -1,11 +1,12 @@
-// Camera sheet (SPEC 9.3, D8). Saves the chosen camera; the next card read uses it as the first guess.
+// iOS camera sheet (SPEC-IOS §9.3, canvas 2u, O6, O15). Same props as CameraSheet.tsx.
+// Saves the chosen camera; the next card read uses it as the first guess.
 import { useState } from "react";
 import { Text } from "react-native";
 
-import type { ModelId } from "@/core/models";
+import type { ModelId } from "@/core/web/lib/app-core/models";
 import { content } from "@/content";
 import { saveCameraSelection } from "@/storage/cameraFile";
-import { BottomSheet } from "@/ui/BottomSheet";
+import { BottomSheet, HeaderAction } from "@/ui/BottomSheet";
 import { CameraList } from "@/ui/CameraList";
 import { typeScale } from "@/ui/tokens";
 import { useTheme } from "@/ui/theme";
@@ -39,7 +40,13 @@ export function CameraSheet({ visible, selected, onClose, onChanged }: Props) {
   };
 
   return (
-    <BottomSheet visible={visible} title={content.camera.sheetTitle} onClose={close}>
+    <BottomSheet
+      visible={visible}
+      title={content.camera.sheetTitle}
+      onClose={close}
+      detent="medium"
+      trailing={<HeaderAction label={content.common.done} onPress={close} />}
+    >
       <CameraList selected={selected} onSelect={(id) => void choose(id)} searchPlaceholder={content.camera.sheetSearchPlaceholder} />
       {failed ? <Text style={[typeScale.subhead, { color: theme.danger }]}>{content.camera.saveFailed}</Text> : null}
     </BottomSheet>

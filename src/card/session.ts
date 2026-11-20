@@ -1,11 +1,11 @@
 // Reads the card for the screens: what it is, what the app last wrote to it, and an unconfirmed write to finish or undo.
 // The decisions are in src/core. This file ties them to the native module and the write state file.
-import { describeCard, toCardState, type CardView } from "@/core/card/view";
-import { describeReadOnly, type ReadOnlySlot } from "@/core/card/readOnly";
-import { chooseModel, modelFromSystemKind, type CameraModel, type ModelId } from "@/core/models";
-import { matchingSet } from "@/core/sets/match";
-import { existingFamily, explicitPp, planWriteFor, TransferError, type CardState, type Family, type PlannedFile } from "@/core/transfer/plan";
-import { chooseFamily, overwrittenSlots, recordFor, recordHolds, StateError, type PendingWrite, type WriteRecord } from "@/core/transfer/state";
+import { describeCard, toCardState, type CardView } from "@/core/web/lib/app-core/card/view";
+import { describeReadOnly, type ReadOnlySlot } from "@/core/web/lib/app-core/card/readOnly";
+import { chooseModel, modelFromSystemKind, type CameraModel, type ModelId } from "@/core/web/lib/app-core/models";
+import { matchingSet } from "@/core/web/lib/app-core/sets/match";
+import { existingFamily, explicitPp, planWriteFor, TransferError, type CardState, type Family, type PlannedFile } from "@/core/web/lib/app-core/transfer/plan";
+import { chooseFamily, overwrittenSlots, recordFor, recordHolds, StateError, type PendingWrite, type WriteRecord } from "@/core/web/lib/app-core/transfer/state";
 import { listedSets, type PresetSet } from "@/core/web/lib/presetSets";
 import { loadCameraSelection } from "@/storage/cameraFile";
 import { setStore } from "@/storage/userSetsFile";
@@ -62,7 +62,7 @@ export function userMessage(e: unknown, fallback: string): string {
   return e instanceof StateError || e instanceof TransferError ? e.message : fallback;
 }
 
-function errorCode(e: unknown): string | undefined {
+export function errorCode(e: unknown): string | undefined {
   return typeof e === "object" && e !== null && "code" in e ? String(e.code) : undefined;
 }
 

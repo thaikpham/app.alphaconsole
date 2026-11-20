@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { explicitPp, planWrite, type CardFile, type CardState } from "../src/core/transfer/plan.ts";
+import { explicitPp, planWrite, type CardFile, type CardState } from "../src/core/web/lib/app-core/transfer/plan.ts";
 import {
   chooseFamily,
   latestWriteRecord,
@@ -17,8 +17,8 @@ import {
   StateError,
   type WriteRecord,
   type WriteState,
-} from "../src/core/transfer/state.ts";
-import { sha256Hex } from "../src/core/transfer/sha256.ts";
+} from "../src/core/web/lib/app-core/transfer/state.ts";
+import { sha256Hex } from "../src/core/web/lib/app-core/transfer/sha256.ts";
 import { validatePresetSets } from "../src/core/web/lib/presetSets.ts";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");

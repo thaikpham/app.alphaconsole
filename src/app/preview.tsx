@@ -11,23 +11,22 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { Stack, useFocusEffect, useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { readCard } from "@/card/session";
 import { useCardDriver } from "@/card/useCardDriver";
 import { content } from "@/content";
-import { matchSlot } from "@/core/preview/match";
-import { formatCells, readPreview, type CellKey, type PreviewLabels } from "@/core/preview/props";
-import { latestWriteRecord } from "@/core/transfer/state";
+import { matchSlot } from "@/core/web/lib/app-core/preview/match";
+import { formatCells, readPreview, type PreviewLabels } from "@/core/web/lib/app-core/preview/props";
+import { latestWriteRecord } from "@/core/web/lib/app-core/transfer/state";
 import type { PresetSet } from "@/core/web/lib/presetSets";
 import { setStore } from "@/storage/userSetsFile";
 import { loadWriteState } from "@/storage/writeState";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
-import { Glass } from "@/ui/Glass";
+import { Glass, ModalScope } from "@/ui/Glass";
 import { Loading } from "@/ui/Loading";
-import { navHeader } from "@/ui/navHeader";
 import { PinnedBar } from "@/ui/PinnedBar";
 import { Screen } from "@/ui/Screen";
 import { ScreenHeader } from "@/ui/ScreenHeader";
@@ -36,7 +35,7 @@ import { Snackbar, useSnackbar } from "@/ui/Snackbar";
 import { StatusChip } from "@/ui/StatusChip";
 import { settingsLine } from "@/ui/summaryLine";
 import { radii, spacing, useTheme } from "@/ui/theme";
-import { fonts, typeScale } from "@/ui/tokens";
+import { typeScale } from "@/ui/tokens";
 import { mismatchSummary } from "@/write/mismatch";
 import { usbHint } from "@/write/usbHint";
 import {
@@ -55,7 +54,6 @@ import { subscribeUsb } from "../../modules/usb-volume";
 type Link = "connecting" | "connected" | "off";
 
 const SLOTS = [1, 2, 3, 4] as const;
-const CELLS: CellKey[] = ["mode", "aperture", "shutter", "iso", "wb", "pp"];
 /** The replug line is a fallback: PC Remote on reconnects by itself, so the line waits this long first. */
 const REPLUG_FALLBACK_MS = 8000;
 const labels: PreviewLabels = {
@@ -155,8 +153,9 @@ export default function Preview() {
     runConnect();
   }, [runConnect]);
 
-  // Connection events and the first connect. Unmount disconnects.
+  // Connection events and the first connect. Unmount disconnects. The browser has no camera link (see the early return).
   useEffect(() => {
+    if (Platform.OS === "web") return;
     const offState = subscribeState((s) => {
       if (s.status === "disconnected") {
         linkedRef.current = false;
@@ -258,7 +257,6 @@ export default function Preview() {
   const pv = picked ?? 1;
   const check = reading.match?.slots[pv - 1] ?? null;
   const selected = target?.slots[pv - 1]?.settings ?? null;
-  const warn = (key: CellKey) => check?.fields[key] === "mismatch";
   const summary = selected && check ? mismatchSummary(reading.readings, selected, check, labels) : null;
   const settingsSegments = settingsLine(reading.readings, labels, selected, check);
   const matched = reading.match?.matched ?? null;
@@ -284,6 +282,24 @@ export default function Preview() {
     }
   };
 
+  // The live preview runs over the camera's USB link, which only Android has. The browser shows the note instead.
+  if (Platform.OS === "web") {
+    return (
+      <Screen
+        footer={
+          <PinnedBar>
+            <Button label={content.preview.done} onPress={() => router.navigate("/")} />
+          </PinnedBar>
+        }
+      >
+        <ScreenHeader title={content.preview.title} />
+        <Card>
+          <Text style={[typeScale.callout, { color: theme.label }]}>{content.preview.androidOnly}</Text>
+        </Card>
+      </Screen>
+    );
+  }
+
   const shown = viewer ?? 1;
 
   return (
@@ -303,11 +319,7 @@ export default function Preview() {
       }
       overlay={<Snackbar state={snack.state} onDismiss={snack.hide} />}
     >
-      {Platform.OS === "ios" ? (
-        <Stack.Screen options={navHeader({ title: content.preview.title })} />
-      ) : (
-        <ScreenHeader title={content.preview.title} onBack={() => router.back()} />
-      )}
+      <ScreenHeader title={content.preview.title} />
 
       <SlotChips slots={slotItems} value={String(pv)} onChange={(id) => setPicked(Number(id))} />
 
@@ -325,13 +337,11 @@ export default function Preview() {
             onPress={() => setFullscreen(true)}
             style={StyleSheet.absoluteFill}
           />
-          {Platform.OS === "ios" ? (
-            <View pointerEvents="none" style={styles.liveLabel}>
-              <Glass onImage style={styles.liveGlass}>
-                <Text style={[typeScale.subhead, { color: "#fff" }]}>{content.preview.liveAria}</Text>
-              </Glass>
-            </View>
-          ) : null}
+          <View pointerEvents="none" style={styles.liveLabel}>
+            <Glass onImage style={styles.liveGlass}>
+              <Text style={[typeScale.subhead, { color: "#fff" }]}>{content.preview.liveAria}</Text>
+            </Glass>
+          </View>
         </View>
       ) : (
         <Card>
@@ -363,27 +373,19 @@ export default function Preview() {
                   typeScale.callout,
                   {
                     color: matched !== null ? theme.success : theme.warning,
-                    ...(Platform.OS === "ios" ? { fontWeight: "600" } : { fontFamily: fonts.semibold }),
+                    fontWeight: "600",
                   },
                 ]}
               >
                 {statusText}
               </Text>
-              {Platform.OS === "ios" ? (
-                <Text style={[typeScale.subhead, { color: theme.label }]}>
-                  {settingsSegments.map((segment, i) => (
-                    <Text key={i} style={segment.warn ? { color: theme.warning } : undefined}>
-                      {`${i > 0 ? " · " : ""}${segment.warn ? "▲ " : ""}${segment.text}`}
-                    </Text>
-                  ))}
-                </Text>
-              ) : (
-                <View style={styles.row}>
-                  {CELLS.map((key) => (
-                    <StatusChip key={key} label={reading.cells[key]} tone={warn(key) ? "warning" : "neutral"} />
-                  ))}
-                </View>
-              )}
+              <Text style={[typeScale.subhead, { color: theme.label }]}>
+                {settingsSegments.map((segment, i) => (
+                  <Text key={i} style={segment.warn ? { color: theme.warning } : undefined}>
+                    {`${i > 0 ? " · " : ""}${segment.warn ? "▲ " : ""}${segment.text}`}
+                  </Text>
+                ))}
+              </Text>
               {summary ? (
                 <>
                   <StatusChip label={content.preview.mismatch} tone="warning" />
@@ -442,9 +444,9 @@ export default function Preview() {
       </Card>
 
       <Modal visible={fullscreen} animationType="fade" onRequestClose={() => setFullscreen(false)}>
-        <View style={styles.fullscreen}>
-          <LiveView style={StyleSheet.absoluteFill} />
-          {Platform.OS === "ios" ? (
+        <ModalScope>
+          <View style={styles.fullscreen}>
+            <LiveView style={StyleSheet.absoluteFill} />
             <Pressable
               accessibilityRole="button"
               onPress={() => setFullscreen(false)}
@@ -454,60 +456,54 @@ export default function Preview() {
                 <Text style={styles.closeText}>{content.preview.close}</Text>
               </Glass>
             </Pressable>
-          ) : (
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => setFullscreen(false)}
-              style={[styles.closeFull, { top: insets.top + spacing.md }]}
-            >
-              <Text style={styles.closeText}>{content.preview.close}</Text>
-            </Pressable>
-          )}
-        </View>
+          </View>
+        </ModalScope>
       </Modal>
 
       <Modal visible={viewer !== null} animationType="slide" onRequestClose={() => setViewer(null)}>
-        <View
-          style={[
-            styles.viewer,
-            { backgroundColor: theme.bg, paddingTop: insets.top + spacing.lg, paddingBottom: insets.bottom + spacing.lg },
-          ]}
-        >
-          <Text style={[typeScale.title3, styles.center, { color: theme.label }]}>{`M${shown}`}</Text>
-          <ScrollView
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            style={styles.pager}
-            contentOffset={{ x: (shown - 1) * width, y: 0 }}
-            onMomentumScrollEnd={(e) => setViewer(Math.round(e.nativeEvent.contentOffset.x / width) + 1)}
+        <ModalScope>
+          <View
+            style={[
+              styles.viewer,
+              { backgroundColor: theme.bg, paddingTop: insets.top + spacing.lg, paddingBottom: insets.bottom + spacing.lg },
+            ]}
           >
-            {SLOTS.map((n) => {
-              const uri = shots[n];
-              return (
-                <View key={n} style={[styles.page, { width }]}>
-                  {uri ? (
-                    <Image source={{ uri }} style={styles.pageImage} resizeMode="contain" />
-                  ) : (
-                    <Text style={[typeScale.subhead, styles.center, { color: theme.secondary }]}>
-                      {`M${n} · ${content.preview.snapshotEmpty}`}
-                    </Text>
-                  )}
-                </View>
-              );
-            })}
-          </ScrollView>
-          {saving !== null ? <Loading label={content.preview.snapshotSaving} /> : null}
-          <View style={styles.viewerActions}>
-            <Button
-              label={content.preview.recapture}
-              variant="secondary"
-              disabled={!liveOn || saving !== null}
-              onPress={() => void save(shown)}
-            />
-            <Button label={content.preview.close} onPress={() => setViewer(null)} />
+            <Text style={[typeScale.title3, styles.center, { color: theme.label }]}>{`M${shown}`}</Text>
+            <ScrollView
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              style={styles.pager}
+              contentOffset={{ x: (shown - 1) * width, y: 0 }}
+              onMomentumScrollEnd={(e) => setViewer(Math.round(e.nativeEvent.contentOffset.x / width) + 1)}
+            >
+              {SLOTS.map((n) => {
+                const uri = shots[n];
+                return (
+                  <View key={n} style={[styles.page, { width }]}>
+                    {uri ? (
+                      <Image source={{ uri }} style={styles.pageImage} resizeMode="contain" />
+                    ) : (
+                      <Text style={[typeScale.subhead, styles.center, { color: theme.secondary }]}>
+                        {`M${n} · ${content.preview.snapshotEmpty}`}
+                      </Text>
+                    )}
+                  </View>
+                );
+              })}
+            </ScrollView>
+            {saving !== null ? <Loading label={content.preview.snapshotSaving} /> : null}
+            <View style={styles.viewerActions}>
+              <Button
+                label={content.preview.recapture}
+                variant="secondary"
+                disabled={!liveOn || saving !== null}
+                onPress={() => void save(shown)}
+              />
+              <Button label={content.preview.close} onPress={() => setViewer(null)} />
+            </View>
           </View>
-        </View>
+        </ModalScope>
       </Modal>
     </Screen>
   );
@@ -540,14 +536,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   fullscreen: { flex: 1, backgroundColor: "#000" },
-  closeFull: {
-    position: "absolute",
-    right: spacing.lg,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    borderRadius: radii.pill,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-  },
   closeText: { ...typeScale.button, color: "#fff" },
   viewer: { flex: 1, padding: spacing.lg, gap: spacing.md },
   pager: { flex: 1 },

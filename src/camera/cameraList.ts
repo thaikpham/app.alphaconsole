@@ -1,5 +1,5 @@
 // Camera list for the device pick and the camera sheet. Pure: no React or native imports.
-import type { CameraModel } from "../core/models.ts";
+import type { CameraModel } from "../core/web/lib/app-core/models.ts";
 
 /** SPEC 5.7 norm: lower case, with spaces, "-", "_" and "." removed. "ZV-E10", "zv e10" and "ZV.E10" all become "zve10". */
 export function normalizeSearch(text: string): string {

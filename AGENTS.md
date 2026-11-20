@@ -39,3 +39,11 @@ Docs: https://docs.expo.dev/eas/index.md
 - If `ios/` and `android/` directories do not exist, they are generated (Continuous Native Generation). Never create or edit them by hand — configure native behavior in `app.json` and config plugins.
 - Expo Go only includes its bundled native modules. After adding a library with native code, the app needs a development build: `npx expo run:ios|android` locally, or `eas build --profile development`.
 - Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
+
+## Đồng bộ app ↔ web
+
+- Một mã nguồn cho hai đích: app native và Alpha Console trên web (`/console`). Bản web là `dist-web/` từ `npm run export:web` (`EXPO_BASE_URL=/console-app`), publish vào `Web.AlphaColorLab/public/console-app/`.
+- `src/core/web/` là bản sao byte-for-byte của các file trong `Web.AlphaColorLab/lib/app-core/sync-files.json`. Không sửa tay; sửa ở WEB rồi chạy `npm run sync-core`.
+- Sau mọi thay đổi chạy `npm run sync`: sync-core → typecheck → test → export:web → publish. Lệnh này ghi `public/console-app/VERSION.json` ({appVersion, gitSha, coreHash}); `Web.AlphaColorLab/test/console-app-sync.test.ts` báo "Console web lỗi thời" khi lệch.
+- Module native phải có bản web (`*.web.ts(x)`) hoặc nhánh `Platform.OS === "web"`.
+- `npm run release:android` không nằm trong sync: build APK, đặt vào `Web.AlphaColorLab/public/downloads/`, cập nhật khối `android` trong `Web.AlphaColorLab/data/app-release.json`.

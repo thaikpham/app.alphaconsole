@@ -1,7 +1,7 @@
 // Mismatch line for the preview screen (SPEC screen 6): each field the camera reads differently from the selected slot,
 // as "readback → slot". Pure: no native or React imports.
-import type { PreviewField, SlotCheck } from "../core/preview/match.ts";
-import { formatCells, type PreviewLabels, type PreviewReadings } from "../core/preview/props.ts";
+import type { PreviewField, SlotCheck } from "../core/web/lib/app-core/preview/match.ts";
+import { formatCells, type PreviewLabels, type PreviewReadings } from "../core/web/lib/app-core/preview/props.ts";
 import type { SlotDraft } from "../core/web/lib/presetSets.ts";
 
 const FIELDS: readonly PreviewField[] = ["mode", "aperture", "shutter", "iso", "wb", "focus", "metering", "pp"];

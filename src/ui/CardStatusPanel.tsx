@@ -1,5 +1,4 @@
-// Card status on the preset home (D9 card block). Reads the shared session from useCardDriver; the slot details
-// stay collapsed until the user opens them. Logic moved unchanged from the old home screen.
+// Card status on the preset home (D9 card block). Rows are inline; weights come from fontWeight (system font).
 import { useCallback, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -7,15 +6,15 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { cardReader, userMessage, type ReadyCard } from "@/card/session";
 import type { CardLine } from "@/card/status";
 import { useCardDriver } from "@/card/useCardDriver";
+import { canPickCardFolder } from "@/card/webAccess";
 import { content } from "@/content";
-import type { ReadOnlySlot } from "@/core/card/readOnly";
-import type { SlotView } from "@/core/card/view";
-import { Button } from "@/ui/Button";
-import { Card } from "@/ui/Card";
-import { StatusChip, type ChipTone } from "@/ui/StatusChip";
-import { ValueRow } from "@/ui/ValueRow";
-import { useTheme, spacing } from "@/ui/theme";
-import { fonts, typeScale } from "@/ui/tokens";
+import type { ReadOnlySlot } from "@/core/web/lib/app-core/card/readOnly";
+import type { SlotView } from "@/core/web/lib/app-core/card/view";
+import { Button } from "./Button";
+import { Card } from "./Card";
+import { StatusChip, type ChipTone } from "./StatusChip";
+import { spacing, useTheme } from "./theme";
+import { typeScale } from "./tokens";
 
 function statusChip(line: CardLine): { label: string; tone: ChipTone } {
   switch (line.kind) {
@@ -33,6 +32,10 @@ function statusChip(line: CardLine): { label: string; tone: ChipTone } {
       return { label: content.home.mounting, tone: "neutral" };
     case "absent":
       return { label: content.home.absent, tone: "neutral" };
+    case "noFolder":
+      return { label: content.home.webNoFolder, tone: "neutral" };
+    case "webAbsent":
+      return { label: content.home.webAbsent, tone: "neutral" };
     case "unformatted":
       return { label: content.home.noSony, tone: "warning" };
     case "noSlots":
@@ -56,6 +59,17 @@ function slotChip(slot: SlotView): { label: string; tone: ChipTone } {
   return { label: `M${slot.slot} · ${name}`, tone: slot.readable ? "neutral" : "warning" };
 }
 
+/** One setting: name on the left in secondary, value on the right. */
+function InfoRow({ label, value }: { label: string; value: string }) {
+  const theme = useTheme();
+  return (
+    <View style={styles.row}>
+      <Text style={[typeScale.callout, styles.rowLabel, { color: theme.secondary }]}>{label}</Text>
+      <Text style={[typeScale.callout, styles.rowValue, { color: theme.label }]}>{value}</Text>
+    </View>
+  );
+}
+
 function SlotBlock({ slot }: { slot: SlotView }) {
   const theme = useTheme();
   return (
@@ -63,11 +77,11 @@ function SlotBlock({ slot }: { slot: SlotView }) {
       <Text style={[typeScale.subhead, styles.slotTitle, { color: theme.label }]}>{`M${slot.slot}`}</Text>
       {slot.readable ? (
         <>
-          <ValueRow label={content.home.slot.mode} value={slot.mode ?? content.home.empty} />
-          <ValueRow label={content.home.slot.wb} value={slot.wb ?? content.home.empty} />
-          <ValueRow label={content.home.slot.pp} value={slot.ppOn ? content.home.slot.on : content.home.slot.off} />
-          <ValueRow label={content.home.slot.focus} value={slot.focus ?? content.home.empty} />
-          <ValueRow label={content.home.slot.label} value={slot.label ?? content.home.empty} />
+          <InfoRow label={content.home.slot.mode} value={slot.mode ?? content.home.empty} />
+          <InfoRow label={content.home.slot.wb} value={slot.wb ?? content.home.empty} />
+          <InfoRow label={content.home.slot.pp} value={slot.ppOn ? content.home.slot.on : content.home.slot.off} />
+          <InfoRow label={content.home.slot.focus} value={slot.focus ?? content.home.empty} />
+          <InfoRow label={content.home.slot.label} value={slot.label ?? content.home.empty} />
         </>
       ) : (
         <Text style={[typeScale.subhead, { color: theme.secondary }]}>{content.home.slot.unreadable}</Text>
@@ -100,7 +114,7 @@ function ReadOnlySlotBlock({ slot }: { slot: ReadOnlySlot }) {
     <View style={[styles.slot, { borderTopColor: theme.separator }]}>
       <Text style={[typeScale.subhead, styles.slotTitle, { color: theme.label }]}>{`M${slot.slot}`}</Text>
       {slot.rows ? (
-        slot.rows.map((row) => <ValueRow key={row.settingId} label={row.settingId} value={row.valueLabel} />)
+        slot.rows.map((row) => <InfoRow key={row.settingId} label={row.settingId} value={row.valueLabel} />)
       ) : (
         <Text style={[typeScale.subhead, { color: theme.secondary }]}>{content.home.slot.unreadable}</Text>
       )}
@@ -122,9 +136,10 @@ function ReadOnlyDetails({ folder, slots, showDetails }: { folder: boolean; slot
 export function CardStatusPanel() {
   const router = useRouter();
   const theme = useTheme();
-  const { reading, failure, status } = useCardDriver();
+  const { reading, failure, status, grantAccess } = useCardDriver();
   const [showDetails, setShowDetails] = useState(false);
   const [ignoredOverwrite, setIgnoredOverwrite] = useState<string | null>(null);
+  const [grantNotice, setGrantNotice] = useState<string | null>(null);
 
   // The single read path: every focus re-reads, so a write finished on another screen shows here.
   useFocusEffect(
@@ -134,7 +149,12 @@ export function CardStatusPanel() {
   );
 
   const line = statusChip(status);
-  const notice = failure ? userMessage(failure.error, content.home.readFailed) : null;
+  const needsGrant = status.kind === "noFolder" || status.kind === "webAbsent";
+  const grant = () => {
+    setGrantNotice(null);
+    void grantAccess().then(setGrantNotice);
+  };
+  const notice = failure ? userMessage(failure.error, content.home.readFailed) : grantNotice;
   const ready = reading?.kind === "ready" ? reading.card : null;
   const readOnly = reading?.kind === "readOnly" ? reading : null;
   const lastWritten = ready?.lastWritten ?? null;
@@ -152,6 +172,13 @@ export function CardStatusPanel() {
       <Text style={[typeScale.title3, { color: theme.label }]}>{content.home.cameraTitle}</Text>
       <StatusChip label={line.label} tone={line.tone} />
       {notice ? <Text style={[typeScale.subhead, styles.strong, { color: theme.danger }]}>{notice}</Text> : null}
+      {needsGrant ? (
+        <Button
+          label={canPickCardFolder() ? content.home.webGrantFolder : content.home.webGrantFiles}
+          onPress={grant}
+          variant="secondary"
+        />
+      ) : null}
 
       {ready ? (
         <>
@@ -197,10 +224,13 @@ export function CardStatusPanel() {
 }
 
 const styles = StyleSheet.create({
-  strong: { fontFamily: fonts.medium },
+  strong: { fontWeight: "500" },
   details: { gap: spacing.md },
   block: { gap: spacing.sm },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
   slot: { gap: spacing.xs, paddingTop: spacing.sm, borderTopWidth: 1 },
-  slotTitle: { fontFamily: fonts.semibold },
+  slotTitle: { fontWeight: "600" },
+  row: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", gap: spacing.md },
+  rowLabel: { flexShrink: 1 },
+  rowValue: { fontWeight: "500", flexShrink: 1, textAlign: "right" },
 });

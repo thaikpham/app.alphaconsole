@@ -1,16 +1,9 @@
-import { installTextDecoderShim } from "@/core/shims/textDecoder";
-import {
-  NotoSans_400Regular,
-  NotoSans_500Medium,
-  NotoSans_600SemiBold,
-  NotoSans_700Bold,
-} from "@expo-google-fonts/noto-sans";
-import { useFonts } from "expo-font";
+import { installTextDecoderShim } from "@/core/web/lib/app-core/shims/textDecoder";
 import { Stack, type ErrorBoundaryProps } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { Platform, StyleSheet, Text } from "react-native";
+import { StyleSheet, Text } from "react-native";
 
 import { CardDriverProvider } from "@/card/useCardDriver";
 import { installCrashLog, recordCrash } from "@/crash/install";
@@ -21,9 +14,8 @@ import { Button } from "@/ui/Button";
 import { Screen } from "@/ui/Screen";
 import { typeScale } from "@/ui/tokens";
 import { useTheme } from "@/ui/theme";
-import type { IosPalette } from "@/ui/theme.ios";
 
-// Runs before any DAT reader is called (see core/shims/textDecoder.ts).
+// Runs before any DAT reader is called (see core/web/lib/app-core/shims/textDecoder.ts).
 installTextDecoderShim();
 
 // Unhandled JS errors and promise rejections go to the crash log (src/crash/).
@@ -39,7 +31,7 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
   }, [error]);
 
   return (
-    <Screen>
+    <Screen nativeHeader={false}>
       <Text style={[styles.title, { color: theme.label }]}>{content.common.crashed}</Text>
       <Text selectable style={[styles.message, { color: theme.danger }]}>
         {error.message || String(error)}
@@ -55,29 +47,19 @@ const styles = StyleSheet.create({
 });
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    NotoSans_400Regular,
-    NotoSans_500Medium,
-    NotoSans_600SemiBold,
-    NotoSans_700Bold,
-  });
-
+  // The system font needs no load step, so the splash hides as soon as the layout mounts.
   useEffect(() => {
-    // A font error still hides the splash; text then falls back to the system font.
-    if (loaded || error) SplashScreen.hideAsync();
-  }, [loaded, error]);
+    SplashScreen.hideAsync();
+  }, []);
 
   const theme = useTheme();
-  const pageBg = Platform.OS === "ios" ? (theme as IosPalette).edge : theme.bg;
-
-  if (!loaded && !error) return null;
 
   return (
     <OnboardingProvider>
       <CardDriverProvider>
         <OnboardingGuard>
           <StatusBar style="auto" />
-          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: pageBg } }} />
+          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: theme.edge } }} />
         </OnboardingGuard>
       </CardDriverProvider>
     </OnboardingProvider>
