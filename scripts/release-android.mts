@@ -1,5 +1,7 @@
 // Build the Android release APK and publish it to the site:
-//   ../Web.AlphaColorLab/public/downloads/alpha-console-<version>.apk (older alpha-console-*.apk are removed)
+//   GitHub Release app-v<version> on GH_REPO (asset alpha-console-<version>.apk, uploaded with `gh`; the site's QR and
+//   download buttons point at it, public/downloads/ is not deployed),
+//   ../Web.AlphaColorLab/public/downloads/alpha-console-<version>.apk (local copy; older alpha-console-*.apk are removed)
 //   ../Web.AlphaColorLab/data/app-release.json, android block (ios block untouched).
 // Usage: npm run release:android   (not part of npm run sync)
 // Needs a JDK 17 at RELEASE_JAVA_HOME (default /home/thaikpham/.local/jdk-17). Refuses to run if the core copy is stale.
@@ -17,6 +19,7 @@ const APK_BUILD = join(ANDROID_DIR, "app", "build", "outputs", "apk", "release",
 const MANIFEST_DIR = join(ANDROID_DIR, "app", "build", "intermediates", "merged_manifest", "release");
 const DOWNLOADS = join(WEB_ROOT, "public", "downloads");
 const RELEASE_JSON = join(WEB_ROOT, "data", "app-release.json");
+const GH_REPO = process.env.RELEASE_GH_REPO ?? "thaikpham/alphacolorlab.com";
 const JAVA_HOME = process.env.RELEASE_JAVA_HOME ?? "/home/thaikpham/.local/jdk-17";
 // Android SDK: ANDROID_HOME, else the Android Studio default (~/Android/Sdk). android/local.properties is not required.
 const ANDROID_HOME = process.env.ANDROID_HOME ?? process.env.ANDROID_SDK_ROOT ?? join(process.env.HOME ?? "", "Android", "Sdk");
@@ -82,11 +85,17 @@ function main(): void {
   copyFileSync(APK_BUILD, join(DOWNLOADS, name));
 
   const target = join(DOWNLOADS, name);
+  const tag = `app-v${version}`;
+  const ghArgs = ["-R", GH_REPO];
+  let hasRelease = true;
+  try { execFileSync("gh", ["release", "view", tag, ...ghArgs], { stdio: "ignore" }); } catch { hasRelease = false; }
+  if (hasRelease) execFileSync("gh", ["release", "upload", tag, target, "--clobber", ...ghArgs], { stdio: "inherit" });
+  else execFileSync("gh", ["release", "create", tag, target, "--title", `Alpha Console ${version} (Android)`, "--notes", `APK Alpha Console ${version} (versionCode ${versionCode}).`, ...ghArgs], { stdio: "inherit" });
   const release = JSON.parse(readFileSync(RELEASE_JSON, "utf8")) as Record<string, unknown>;
   release.android = {
     version,
     versionCode,
-    file: `/downloads/${name}`,
+    file: `https://github.com/${GH_REPO}/releases/download/${tag}/${name}`,
     size: statSync(target).size,
     sha256: sha256File(target),
     minSdk,
