@@ -8,6 +8,7 @@ import { content } from "@/content";
 import { CAMERAS, type CameraModel, type ModelId } from "@/core/web/lib/app-core/models";
 import { radii, rowMinHeight, spacing, useTheme } from "@/ui/theme";
 import { typeScale } from "@/ui/tokens";
+import { CheckIcon } from "@/ui/StatusIcons";
 
 type CameraListProps = {
   selected: ModelId | null;
@@ -103,7 +104,7 @@ function CameraRow({ model, selected, locked, first, onPress }: CameraRowProps) 
         <Text style={[typeScale.body, { color: locked ? theme.secondary : theme.label }]}>{model.name}</Text>
         <Text style={[typeScale.subhead, { color: theme.secondary }]}>{model.sonyModel}</Text>
       </View>
-      {selected ? <Text style={[typeScale.headline, { color: theme.accentText }]}>✓</Text> : null}
+      {selected ? <CheckIcon color={theme.accentText} size={16} /> : null}
     </Pressable>
   );
 }

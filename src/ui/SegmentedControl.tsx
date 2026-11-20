@@ -4,8 +4,8 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Reanimated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
 import { haptic } from "./haptics";
-import { springs } from "./motion";
-import { glass, gesture, press, typeScale } from "./tokens";
+import { springs, usePressScale } from "./motion";
+import { glass, gesture, typeScale } from "./tokens";
 import { controlHeight, radii, spacing, useTheme } from "./theme";
 import { useReduceMotion } from "./useReduceMotion";
 
@@ -110,29 +110,51 @@ export function SegmentedControl<T extends string>({
         style={[styles.track, { backgroundColor: theme.fill }]}
       >
         <Reanimated.View pointerEvents="none" style={[styles.thumb, { backgroundColor: theme.segmentOn }, knob]} />
-        {options.map((option, i) => {
-          const selected = option.value === value;
-          return (
-            <Pressable
-              key={option.value}
-              accessibilityRole="radio"
-              accessibilityState={{ selected }}
-              onPress={() => choose(i)}
-              style={({ pressed }) => [styles.segment, pressed && styles.pressed]}
-            >
-              <Text
-                style={[
-                  emphasizeSelected && selected ? styles.labelOn : styles.label,
-                  { color: selected ? theme.label : theme.secondary },
-                ]}
-              >
-                {option.label}
-              </Text>
-            </Pressable>
-          );
-        })}
+        {options.map((option, i) => (
+          <Segment
+            key={option.value}
+            label={option.label}
+            selected={option.value === value}
+            emphasized={emphasizeSelected}
+            onPress={() => choose(i)}
+          />
+        ))}
       </View>
     </GestureDetector>
+  );
+}
+
+/** One segment. Presses to `press.button` on the button spring (M6). The hit area is the whole segment. */
+function Segment({
+  label,
+  selected,
+  emphasized,
+  onPress,
+}: {
+  label: string;
+  selected: boolean;
+  emphasized: boolean;
+  onPress: () => void;
+}) {
+  const theme = useTheme();
+  const pressScale = usePressScale("button");
+  return (
+    <Pressable
+      accessibilityRole="radio"
+      accessibilityState={{ selected }}
+      onPress={onPress}
+      onPressIn={pressScale.onPressIn}
+      onPressOut={pressScale.onPressOut}
+      style={styles.segment}
+    >
+      <Reanimated.View style={pressScale.style}>
+        <Text
+          style={[emphasized && selected ? styles.labelOn : styles.label, { color: selected ? theme.label : theme.secondary }]}
+        >
+          {label}
+        </Text>
+      </Reanimated.View>
+    </Pressable>
   );
 }
 
@@ -159,7 +181,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: spacing.sm,
   },
-  pressed: { transform: [{ scale: press.button }] },
   label: { ...typeScale.subhead },
   labelOn: { ...typeScale.fieldLabel },
 });

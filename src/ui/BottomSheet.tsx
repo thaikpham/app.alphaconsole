@@ -8,7 +8,8 @@ import { content } from "@/content";
 import { detentHeight, type Detent } from "./detent";
 import { Glass, ModalScope } from "./Glass";
 import { haptic } from "./haptics";
-import { exitEasing, springs } from "./motion";
+import { exitEasing, springs, usePressScale } from "./motion";
+import { CrossIcon } from "./StatusIcons";
 import { durations, gesture, radii, typeScale } from "./tokens";
 import { spacing, useTheme } from "./theme";
 import { useReduceMotion } from "./useReduceMotion";
@@ -178,9 +179,10 @@ export type HeaderActionProps = {
   disabled?: boolean;
 };
 
-/** Action for the `leading` and `trailing` header slots. */
+/** Action for the `leading` and `trailing` header slots. Presses to `press.button` on the button spring (M6). */
 export function HeaderAction({ label, onPress, primary = false, disabled = false }: HeaderActionProps) {
   const theme = useTheme();
+  const pressScale = usePressScale("button");
   if (primary) {
     return (
       <Pressable
@@ -189,13 +191,14 @@ export function HeaderAction({ label, onPress, primary = false, disabled = false
         accessibilityState={{ disabled }}
         disabled={disabled}
         onPress={onPress}
-        style={({ pressed }) => [
-          styles.capsule,
-          { backgroundColor: disabled ? theme.disabled : theme.prime },
-          pressed && styles.pressed,
-        ]}
+        onPressIn={pressScale.onPressIn}
+        onPressOut={pressScale.onPressOut}
       >
-        <Text style={[typeScale.button, { color: theme.onPrime }]}>{label}</Text>
+        <Reanimated.View
+          style={[styles.capsule, { backgroundColor: disabled ? theme.disabled : theme.prime }, pressScale.style]}
+        >
+          <Text style={[typeScale.button, { color: theme.onPrime }]}>{label}</Text>
+        </Reanimated.View>
       </Pressable>
     );
   }
@@ -205,9 +208,12 @@ export function HeaderAction({ label, onPress, primary = false, disabled = false
       accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
-      style={({ pressed }) => [styles.textHit, pressed && styles.pressed]}
+      onPressIn={pressScale.onPressIn}
+      onPressOut={pressScale.onPressOut}
     >
-      <Text style={[typeScale.button, { color: disabled ? theme.disabled : theme.accentText }]}>{label}</Text>
+      <Reanimated.View style={[styles.textHit, pressScale.style]}>
+        <Text style={[typeScale.button, { color: disabled ? theme.disabled : theme.accentText }]}>{label}</Text>
+      </Reanimated.View>
     </Pressable>
   );
 }
@@ -217,7 +223,7 @@ function CloseButton({ onPress }: { onPress: () => void }) {
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={content.common.close} onPress={onPress} style={styles.closeHit}>
       <Glass interactive style={styles.closeGlass}>
-        <Text style={[styles.closeIcon, { color: theme.label }]}>×</Text>
+        <CrossIcon color={theme.label} size={14} />
       </Glass>
     </Pressable>
   );
@@ -249,7 +255,6 @@ const styles = StyleSheet.create({
   bodyContent: { paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: spacing.xl, gap: spacing.lg },
   closeHit: { width: 44, height: 44, alignItems: "center", justifyContent: "center" },
   closeGlass: { width: 36, height: 36, borderRadius: 18, alignItems: "center", justifyContent: "center" },
-  closeIcon: { ...typeScale.headline },
   textHit: { minHeight: 44, justifyContent: "center" },
   capsule: {
     height: 36,
@@ -258,5 +263,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  pressed: { opacity: 0.6 },
 });

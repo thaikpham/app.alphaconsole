@@ -106,7 +106,7 @@ export const glass = {
     blur: 24,
     saturate: 180,
     light: {
-      tint: "rgba(255, 255, 255, 0.85)",
+      tint: "rgba(255, 255, 255, 0.8)",
       rim: "rgba(255, 255, 255, 0.9)",
       hairline: "rgba(11, 13, 18, 0.08)",
       scrim: "rgba(0, 0, 0, 0)",

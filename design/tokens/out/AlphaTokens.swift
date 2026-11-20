@@ -104,7 +104,7 @@ enum AlphaSpacing {
 }
 
 extension Color {
-    static let alphaGlassRegularTint = Color(light: .hex(0xFFFFFF, alpha: 0.85), dark: .hex(0x1C1C1E, alpha: 0.8))
+    static let alphaGlassRegularTint = Color(light: .hex(0xFFFFFF, alpha: 0.8), dark: .hex(0x1C1C1E, alpha: 0.8))
     static let alphaGlassRegularRim = Color(light: .hex(0xFFFFFF, alpha: 0.9), dark: .hex(0xFFFFFF, alpha: 0.2))
     static let alphaGlassRegularHairline = Color(light: .hex(0x0B0D12, alpha: 0.08), dark: .hex(0xFFFFFF, alpha: 0.14))
     static let alphaGlassRegularScrim = Color(light: .hex(0x000000, alpha: 0), dark: .hex(0x000000, alpha: 0.5))

@@ -15,7 +15,7 @@ import { dropPending, updateWriteState } from "@/storage/writeState";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
 import { CardStatusPanel } from "@/ui/CardStatusPanel";
-import { Glass } from "@/ui/Glass";
+import { GlassToolbar, GlassToolbarButton, GlassToolbarGroup, ToolbarSpacer } from "@/ui/GlassToolbar";
 import { haptic } from "@/ui/haptics";
 import { animatedSpring } from "@/ui/motion";
 import { PinnedBar } from "@/ui/PinnedBar";
@@ -25,6 +25,7 @@ import { ScreenHeader } from "@/ui/ScreenHeader";
 import { Segmented } from "@/ui/Segmented";
 import { StageStepper } from "@/ui/StageStepper";
 import { StatusChip, type ChipTone } from "@/ui/StatusChip";
+import { CheckIcon } from "@/ui/StatusIcons";
 import { useReduceMotion } from "@/ui/useReduceMotion";
 import { ValueRow } from "@/ui/ValueRow";
 import { radii, spacing, useTheme } from "@/ui/theme";
@@ -71,7 +72,7 @@ function statusTone(status: WriteStatus): ChipTone {
   return "neutral";
 }
 
-/** Morphs a result in from press depth on a smooth spring. Reduce Motion fades it only. */
+/** Morphs a result in from press depth on the morph spring. Reduce Motion fades it only. */
 function ResultMorph({ children }: { children: ReactNode }) {
   const reduce = useReduceMotion();
   const [enter] = useState(() => new Animated.Value(0));
@@ -79,7 +80,7 @@ function ResultMorph({ children }: { children: ReactNode }) {
   useEffect(() => {
     const run = reduce
       ? Animated.timing(enter, { toValue: 1, duration: durations.short, useNativeDriver: true })
-      : animatedSpring(enter, 1, "smooth");
+      : animatedSpring(enter, 1, "morph");
     run.start();
     return () => run.stop();
   }, [enter, reduce]);
@@ -434,10 +435,18 @@ export default function Write() {
 
       {stage === "done" ? (
         <ResultMorph>
-          <Glass style={styles.result}>
+          <Card>
             <Text style={[styles.title, { color: theme.label }]}>{content.write.written}</Text>
             {backupId ? <ValueRow label={content.write.backupId} value={backupId} /> : null}
-          </Glass>
+          </Card>
+          <GlassToolbar>
+            <ToolbarSpacer />
+            <GlassToolbarGroup>
+              <GlassToolbarButton accessibilityLabel={content.common.done} onPress={() => router.navigate("/")}>
+                <Text style={[typeScale.button, { color: theme.accentText }]}>{content.common.done}</Text>
+              </GlassToolbarButton>
+            </GlassToolbarGroup>
+          </GlassToolbar>
         </ResultMorph>
       ) : null}
 
@@ -473,7 +482,7 @@ export default function Write() {
                   { borderColor: theme.secondary, backgroundColor: checked[i] ? theme.fill : theme.card },
                 ]}
               >
-                {checked[i] ? <Text style={[typeScale.body, { color: theme.label }]}>✓</Text> : null}
+                {checked[i] ? <CheckIcon color={theme.label} size={14} /> : null}
               </View>
               <Text style={[typeScale.body, { color: theme.label }]}>{item}</Text>
             </Pressable>
@@ -491,8 +500,7 @@ const styles = StyleSheet.create({
   strong: { ...typeScale.subhead, fontWeight: "600" },
   danger: { ...typeScale.subhead, fontWeight: "500" },
   ring: { alignItems: "center", paddingVertical: spacing.md },
-  result: { borderRadius: radii.card, padding: spacing.xl, gap: spacing.md },
-  step: { gap: spacing.xs, paddingTop: spacing.sm, borderTopWidth: StyleSheet.hairlineWidth },
+  step:{ gap: spacing.xs, paddingTop: spacing.sm, borderTopWidth: StyleSheet.hairlineWidth },
   slotRow: {
     flexDirection: "row",
     flexWrap: "wrap",

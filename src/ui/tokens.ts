@@ -96,3 +96,7 @@ export const glass = {
   pressGlowAlpha: 0.18, // gap: press glow inside the glass block
   readabilityScrimAlpha: 0.8, // gap: bottom scrim under text placed on a photo
 } as const;
+
+/** Photo surfaces (L7): labels drawn over a photo, and the solid ground behind a photo. Gap: the generator has no photo tokens. */
+export const photoLabel = "#ffffff"; // gap
+export const photoScrim = "#000000"; // gap

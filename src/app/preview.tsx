@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Reanimated from "react-native-reanimated";
 
 import { readCard } from "@/card/session";
 import { useCardDriver } from "@/card/useCardDriver";
@@ -28,6 +29,7 @@ import { Card } from "@/ui/Card";
 import { Glass, ModalScope } from "@/ui/Glass";
 import { GlassToolbar, GlassToolbarButton, GlassToolbarGroup, ToolbarSpacer } from "@/ui/GlassToolbar";
 import { Loading } from "@/ui/Loading";
+import { usePressScale } from "@/ui/motion";
 import { PinnedBar } from "@/ui/PinnedBar";
 import { ReadabilityScrim } from "@/ui/ReadabilityScrim";
 import { Screen } from "@/ui/Screen";
@@ -35,9 +37,10 @@ import { ScreenHeader } from "@/ui/ScreenHeader";
 import { SlotChips } from "@/ui/SlotChips";
 import { Snackbar, useSnackbar } from "@/ui/Snackbar";
 import { StatusChip } from "@/ui/StatusChip";
+import { CheckIcon, WarningIcon } from "@/ui/StatusIcons";
 import { settingsLine } from "@/ui/summaryLine";
 import { radii, spacing, useTheme } from "@/ui/theme";
-import { press, timing, typeScale } from "@/ui/tokens";
+import { photoLabel, photoScrim, timing, typeScale } from "@/ui/tokens";
 import { mismatchSummary } from "@/write/mismatch";
 import { usbHint } from "@/write/usbHint";
 import {
@@ -129,6 +132,7 @@ export default function Preview() {
   const [fullscreen, setFullscreen] = useState(false);
   const [viewer, setViewer] = useState<number | null>(null);
   const [fallback, setFallback] = useState(false);
+  const closePress = usePressScale("button");
 
   // Sets state only in the promise callbacks, so it can run from the mount effect.
   const runConnect = useCallback(() => {
@@ -266,7 +270,7 @@ export default function Preview() {
       ? content.preview.matched(matched + 1)
       : content.preview.noMatch;
   const ready = target !== undefined && rows.length > 0;
-  const slotItems = SLOTS.map((n) => ({ id: String(n), label: matched === n - 1 ? `M${n} ✓` : `M${n}` }));
+  const slotItems = SLOTS.map((n) => ({ id: String(n), label: `M${n}` }));
 
   const save = async (slot: number) => {
     setSaving(slot);
@@ -305,7 +309,7 @@ export default function Preview() {
   // Without a picture, the toolbar floats over the content and the content starts below it.
   const onPhoto = link === "connected";
   const glassLuminance = onPhoto ? 1 : undefined;
-  const labelColor = onPhoto ? "#fff" : theme.label;
+  const labelColor = onPhoto ? photoLabel : theme.label;
   const toolbarTop = insets.top + spacing.sm;
   const toolbarRoom = toolbarTop + (Platform.OS === "android" ? 48 : 44) + spacing.md;
   const heroHeight = (width * 9) / 16;
@@ -328,7 +332,7 @@ export default function Preview() {
       overlay={
         <>
           <GlassToolbar style={[styles.toolbar, { top: toolbarTop }]}>
-            <GlassToolbarGroup luminance={glassLuminance}>
+            <GlassToolbarGroup luminance={glassLuminance} overPhoto={onPhoto}>
               <GlassToolbarButton
                 accessibilityLabel={content.common.back}
                 onPress={() => (router.canGoBack() ? router.back() : router.navigate("/"))}
@@ -337,7 +341,7 @@ export default function Preview() {
               </GlassToolbarButton>
             </GlassToolbarGroup>
             <ToolbarSpacer />
-            <GlassToolbarGroup luminance={glassLuminance}>
+            <GlassToolbarGroup luminance={glassLuminance} overPhoto={onPhoto}>
               <GlassToolbarButton
                 accessibilityLabel={content.preview.shoot(pv)}
                 disabled={!liveOn || saving !== null}
@@ -374,7 +378,7 @@ export default function Preview() {
           />
           <ReadabilityScrim style={styles.scrim} />
           <View pointerEvents="none" style={styles.liveLabel}>
-            <Text style={[typeScale.subhead, { color: "#fff" }]}>{content.preview.liveAria}</Text>
+            <Text style={[typeScale.subhead, { color: photoLabel }]}>{content.preview.liveAria}</Text>
           </View>
         </View>
       ) : (
@@ -412,24 +416,30 @@ export default function Preview() {
         <Card>
           {ready ? (
             <>
-              <Text
-                style={[
-                  typeScale.callout,
-                  {
-                    color: matched !== null ? theme.success : theme.warning,
-                    fontWeight: "600",
-                  },
-                ]}
-              >
-                {statusText}
-              </Text>
-              <Text style={[typeScale.subhead, { color: theme.label }]}>
+              <View style={styles.statusRow}>
+                {matched !== null ? <CheckIcon color={theme.success} size={14} /> : null}
+                <Text
+                  style={[
+                    typeScale.callout,
+                    styles.statusText,
+                    {
+                      color: matched !== null ? theme.success : theme.warning,
+                      fontWeight: "600",
+                    },
+                  ]}
+                >
+                  {statusText}
+                </Text>
+              </View>
+              <View style={styles.settings}>
                 {settingsSegments.map((segment, i) => (
-                  <Text key={i} style={segment.warn ? { color: theme.warning } : undefined}>
-                    {`${i > 0 ? " · " : ""}${segment.warn ? "▲ " : ""}${segment.text}`}
-                  </Text>
+                  <View key={i} style={styles.settingsItem}>
+                    {i > 0 ? <Text style={[typeScale.subhead, { color: theme.label }]}>{" · "}</Text> : null}
+                    {segment.warn ? <WarningIcon color={theme.warning} size={12} /> : null}
+                    <Text style={[typeScale.subhead, { color: segment.warn ? theme.warning : theme.label }]}>{segment.text}</Text>
+                  </View>
                 ))}
-              </Text>
+              </View>
               {summary ? (
                 <>
                   <StatusChip label={content.preview.mismatch} tone="warning" />
@@ -488,11 +498,15 @@ export default function Preview() {
             <Pressable
               accessibilityRole="button"
               onPress={() => setFullscreen(false)}
-              style={({ pressed }) => [styles.closeAnchor, { top: insets.top + spacing.md }, pressed && styles.pressed]}
+              onPressIn={closePress.onPressIn}
+              onPressOut={closePress.onPressOut}
+              style={[styles.closeAnchor, { top: insets.top + spacing.md }]}
             >
-              <Glass luminance={1} style={styles.closeGlass}>
-                <Text style={styles.closeText}>{content.preview.close}</Text>
-              </Glass>
+              <Reanimated.View style={closePress.style}>
+                <Glass luminance={1} style={styles.closeGlass}>
+                  <Text style={styles.closeText}>{content.preview.close}</Text>
+                </Glass>
+              </Reanimated.View>
             </Pressable>
           </View>
         </ModalScope>
@@ -549,7 +563,7 @@ export default function Preview() {
 
 const styles = StyleSheet.create({
   // Full width, starts at y = 0 so the picture runs under the status bar and Dynamic Island.
-  hero: { marginTop: -spacing.lg, marginHorizontal: -spacing.lg, overflow: "hidden", backgroundColor: "#000" },
+  hero: { marginTop: -spacing.lg, marginHorizontal: -spacing.lg, overflow: "hidden", backgroundColor: photoScrim },
   cover: { ...StyleSheet.absoluteFill, alignItems: "center", justifyContent: "center" },
   // Dark fade only over the lower half of the picture, under the label.
   scrim: { top: "50%" },
@@ -563,8 +577,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
   },
-  pressed: { transform: [{ scale: press.button }] },
   row: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
+  statusRow: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
+  statusText: { flexShrink: 1 },
+  settings: { flexDirection: "row", flexWrap: "wrap", alignItems: "center" },
+  settingsItem: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
   center: { textAlign: "center" },
   strip: { flexDirection: "row", gap: spacing.sm },
   slot: { flex: 1, gap: spacing.xs },
@@ -576,8 +593,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  fullscreen: { flex: 1, backgroundColor: "#000" },
-  closeText: { ...typeScale.button, color: "#fff" },
+  fullscreen: { flex: 1, backgroundColor: photoScrim },
+  closeText: { ...typeScale.button, color: photoLabel },
   viewer: { flex: 1, padding: spacing.lg, gap: spacing.md },
   pager: { flex: 1 },
   page: { flex: 1, alignItems: "center", justifyContent: "center" },

@@ -256,7 +256,7 @@ export const content = {
     liveViewOff: "Máy chưa bật xem thử. Kiểm tra MENU › Mạng › PC Remote: Bật.",
     connectFailed: "Không kết nối được máy. Thử lại.",
     interrupted: "Xem thử bị gián đoạn. Thử lại.",
-    matched: (m: number) => `Máy đang ở: M${m} ✓ khớp`,
+    matched: (m: number) => `Máy đang ở: M${m} khớp`,
     noMatch: "Máy đang ở: không khớp ô nào",
     noTarget: "Chưa có bộ đã ghi để so sánh.",
     cells: { mode: "Chế độ", aperture: "Khẩu độ", shutter: "Tốc độ", iso: "ISO", wb: "WB", pp: "PP" },

@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
 import { content } from "@/content";
-import { Glass } from "./Glass";
 import { haptic } from "./haptics";
 import { ModifiedDot } from "./ModifiedDot";
 import { animatedSpring } from "./motion";
@@ -18,24 +17,25 @@ type Props = {
   onChange: (id: string) => void;
 };
 
-// Canvas v16: 44px glass track, pills inset 3px from its edge (38px tall). Unselected pills are 56px wide.
+// Canvas v16: 44px track, pills inset 3px from its edge (38px tall). Unselected pills are 56px wide.
 const TRACK_HEIGHT = 44;
 const INSET = 3;
 const BASIS = 56;
 
-/** Slot picker (M1 to M4) on a glass track. The selected pill grows with a spring and shows its slot name. */
+/** Slot picker (M1 to M4) on a solid track (L1). The selected pill grows with a spring and shows its slot name. */
 export function SlotChips({ slots, value, onChange }: Props) {
+  const theme = useTheme();
   const choose = (id: string) => {
     if (id !== value) haptic("selection");
     onChange(id);
   };
   return (
     <View accessibilityRole="radiogroup">
-      <Glass style={styles.track}>
+      <View style={[styles.track, { backgroundColor: theme.fill }]}>
         {slots.map((slot) => (
           <SlotChip key={slot.id} slot={slot} selected={slot.id === value} onPress={() => choose(slot.id)} />
         ))}
-      </Glass>
+      </View>
     </View>
   );
 }

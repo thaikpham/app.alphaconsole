@@ -16,7 +16,7 @@ import {
 } from "react";
 import { Animated, Platform, StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
 import { useIsDark, useTheme } from "./theme";
-import { durations, glass, spacing as tokenSpacing } from "./tokens";
+import { durations, glass, photoScrim, spacing as tokenSpacing } from "./tokens";
 import { useReduceMotion } from "./useReduceMotion";
 import { useReduceTransparency } from "./useReduceTransparency";
 
@@ -29,6 +29,8 @@ export type GlassProps = {
   luminance?: number;
   /** Press glow (0 to 1) inside the glass block. Native glass has its own press feedback. Off under Reduce Motion. */
   glow?: Animated.Value;
+  /** Glass over a photo. Forces the dark material so white labels keep contrast in light mode (L7). */
+  overPhoto?: boolean;
 };
 
 export type GlassContainerProps = {
@@ -60,12 +62,13 @@ const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
  * system. Android 12+ blurs the scroll area under the glass. Other platforms get the material tint. Every non-native
  * surface gets the Contour rim (L4). Reduce Transparency gets a solid fill with a hairline (L6).
  */
-export function Glass({ children, style, interactive = false, luminance = 0.5, glow }: GlassProps) {
+export function Glass({ children, style, interactive = false, luminance = 0.5, glow, overPhoto = false }: GlassProps) {
   const theme = useTheme();
   const reduceTransparency = useReduceTransparency();
   const reduceMotion = useReduceMotion();
   const blurSource = useContext(BlurSourceContext);
-  const dark = useIsDark();
+  const systemDark = useIsDark();
+  const dark = overPhoto || systemDark;
   const material = dark ? glass.regular.dark : glass.regular.light;
 
   if (nativeGlass && !reduceTransparency) {
@@ -86,7 +89,7 @@ export function Glass({ children, style, interactive = false, luminance = 0.5, g
       <View
         style={[
           styles.surface,
-          { backgroundColor: theme.card, borderColor: material.hairline },
+          { backgroundColor: overPhoto ? photoScrim : theme.card, borderColor: material.hairline },
           style,
         ]}
       >

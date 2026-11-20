@@ -8,6 +8,7 @@ import { BottomSheet } from "./BottomSheet";
 import { Button } from "./Button";
 import { haptic } from "./haptics";
 import { SegmentedTabs } from "./SegmentedTabs";
+import { CheckIcon } from "./StatusIcons";
 import { Stepper } from "./Stepper";
 import { Toggle } from "./Toggle";
 import { typeScale } from "./tokens";
@@ -245,7 +246,7 @@ function HeldRow({
           { borderColor: held ? theme.accentText : theme.outline, backgroundColor: held ? theme.accent : theme.card },
         ]}
       >
-        {held ? <Text style={[styles.tick, { color: theme.onAccent }]}>✓</Text> : null}
+        {held ? <CheckIcon color={theme.onAccent} size={14} /> : null}
       </View>
       <Text style={[typeScale.body, { color: theme.label }]}>{content.edit.held}</Text>
     </Pressable>
@@ -274,5 +275,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  tick: { ...typeScale.subhead, fontWeight: "600" },
 });

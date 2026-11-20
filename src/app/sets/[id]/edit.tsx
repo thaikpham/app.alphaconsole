@@ -10,6 +10,7 @@ import {
   type ScrollViewInstance,
 } from "react-native";
 import { Stack, useLocalSearchParams, usePreventRemove, useRouter } from "expo-router";
+import Reanimated from "react-native-reanimated";
 
 import { content } from "@/content";
 import { canonical, changedStages, clearPp, setSetting, validateEdited } from "@/core/web/lib/app-core/sets/draft";
@@ -45,6 +46,7 @@ import { Card } from "@/ui/Card";
 import { confirmDestructive } from "@/ui/confirm";
 import { Glass } from "@/ui/Glass";
 import { Loading } from "@/ui/Loading";
+import { usePressScale } from "@/ui/motion";
 import { navHeader } from "@/ui/navHeader";
 import { Screen } from "@/ui/Screen";
 import { SettingRow } from "@/ui/SettingRow";
@@ -55,7 +57,7 @@ import { Toggle } from "@/ui/Toggle";
 import { ValuePicker } from "@/ui/ValuePicker";
 import { ValueRow } from "@/ui/ValueRow";
 import { controlHeight, radii, spacing, useTheme } from "@/ui/theme";
-import { durations, press, typeScale } from "@/ui/tokens";
+import { durations, typeScale } from "@/ui/tokens";
 import { useKeyboardVisible } from "@/ui/useKeyboardVisible";
 import { useReduceMotion } from "@/ui/useReduceMotion";
 
@@ -205,6 +207,8 @@ function Disclosure({ label, children }: { label: string; children: ReactNode })
 /** iOS header toolbar (canvas v13): Hoàn tác | Xong as one glass capsule. */
 function EditToolbar({ blocked, onUndo, onDone }: { blocked: boolean; onUndo: () => void; onDone: () => void }) {
   const theme = useTheme();
+  const undoPress = usePressScale("button");
+  const donePress = usePressScale("button");
   return (
     <Glass style={styles.capsule}>
       <Pressable
@@ -212,9 +216,13 @@ function EditToolbar({ blocked, onUndo, onDone }: { blocked: boolean; onUndo: ()
         accessibilityLabel={content.edit.undo}
         hitSlop={TOOLBAR_HIT_SLOP}
         onPress={onUndo}
-        style={({ pressed }) => [styles.capsuleButton, pressed && styles.pressedScale]}
+        onPressIn={undoPress.onPressIn}
+        onPressOut={undoPress.onPressOut}
+        style={styles.capsuleButton}
       >
-        <Text style={[styles.capsuleText, { color: theme.label }]}>{content.edit.undo}</Text>
+        <Reanimated.View style={undoPress.style}>
+          <Text style={[styles.capsuleText, { color: theme.label }]}>{content.edit.undo}</Text>
+        </Reanimated.View>
       </Pressable>
       <View style={[styles.capsuleDivider, { backgroundColor: theme.separator }]} />
       <Pressable
@@ -224,11 +232,15 @@ function EditToolbar({ blocked, onUndo, onDone }: { blocked: boolean; onUndo: ()
         disabled={blocked}
         hitSlop={TOOLBAR_HIT_SLOP}
         onPress={onDone}
-        style={({ pressed }) => [styles.capsuleButton, pressed && !blocked && styles.pressedScale]}
+        onPressIn={donePress.onPressIn}
+        onPressOut={donePress.onPressOut}
+        style={styles.capsuleButton}
       >
-        <Text style={[styles.capsuleText, { color: blocked ? theme.disabled : theme.accentText }]}>
-          {content.common.done}
-        </Text>
+        <Reanimated.View style={donePress.style}>
+          <Text style={[styles.capsuleText, { color: blocked ? theme.disabled : theme.accentText }]}>
+            {content.common.done}
+          </Text>
+        </Reanimated.View>
       </Pressable>
     </Glass>
   );
@@ -672,7 +684,6 @@ const styles = StyleSheet.create({
   },
   capsuleDivider: { width: 1, height: 20 },
   capsuleText: { ...typeScale.subhead, fontWeight: "600" },
-  pressedScale: { transform: [{ scale: press.button }] },
   fixed: { gap: spacing.sm },
   fixedRow: { gap: spacing.xs },
   path: { ...typeScale.footnote },
