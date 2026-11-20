@@ -15,9 +15,15 @@ export function matchesSearch(model: CameraModel, query: string): boolean {
 
 export type CameraGroups = { supported: CameraModel[]; soon: CameraModel[] };
 
-/** Writable models form "supported"; the rest form "soon". Models that do not match the query are left out. */
+/** Writable models form "supported"; the rest form "soon". Each group is sorted by normalized name (A6400, A6700, A7C, A7C II, A7 IV, ZV-E1). Models that do not match the query are left out. */
 export function groupCameras(models: readonly CameraModel[], query: string): CameraGroups {
-  const shown = models.filter((model) => matchesSearch(model, query));
+  const shown = models
+    .filter((model) => matchesSearch(model, query))
+    .sort((a, b) => {
+      const x = normalizeSearch(a.name);
+      const y = normalizeSearch(b.name);
+      return x < y ? -1 : x > y ? 1 : 0;
+    });
   return {
     supported: shown.filter((model) => model.capabilities.write),
     soon: shown.filter((model) => !model.capabilities.write),

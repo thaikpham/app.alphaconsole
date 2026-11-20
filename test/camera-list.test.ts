@@ -34,10 +34,11 @@ test("an empty query matches every camera and an unknown query matches none", ()
 test("writable cameras form the supported group and the rest form the soon group", () => {
   const groups = groupCameras(CAMERAS, "");
   assert.deepEqual(ids(groups.supported), ["zve10"]);
-  assert.deepEqual(ids(groups.soon), CAMERAS.filter((m) => !m.capabilities.write).map((m) => m.id));
+  // SPEC 2.4.9 order: A6400, A6700, A7C, A7C II, A7 IV, ZV-E1.
+  assert.deepEqual(ids(groups.soon), ["a6400", "a6700", "a7c", "a7c2", "a7iv", "zve1"]);
 });
 
-test("a query narrows both groups and keeps the registry order", () => {
-  assert.deepEqual(groupCameras(CAMERAS, "a7c"), { supported: [], soon: [byId("a7c2"), byId("a7c")] });
+test("a query narrows both groups and keeps the sorted order", () => {
+  assert.deepEqual(groupCameras(CAMERAS, "a7c"), { supported: [], soon: [byId("a7c"), byId("a7c2")] });
   assert.deepEqual(groupCameras(CAMERAS, "zv"), { supported: [byId("zve10")], soon: [byId("zve1")] });
 });
