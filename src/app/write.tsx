@@ -95,7 +95,7 @@ export default function Write() {
   const router = useRouter();
   const theme = useTheme();
   const { id } = useLocalSearchParams<{ id?: string }>();
-  const { status: driver, usb } = useCardDriver();
+  const { status: driver, usb, access, grantAccess } = useCardDriver();
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [pickedFamily, setPickedFamily] = useState<Family | null>(null);
@@ -110,6 +110,7 @@ export default function Write() {
   const usbMode = usb === "checking" || usb === null ? usb : usb.mode;
   const [seenUsbMode, setSeenUsbMode] = useState(usbMode);
   const [droppedFromPtp, setDroppedFromPtp] = useState(false);
+  const [accessNotice, setAccessNotice] = useState<string | null>(null);
   const phaseRef = useRef<WritePhase>(phase);
   // The driver kind the last read ran under: the kind at mount, then each settled kind the card was re-read for.
   const lastSettled = useRef<string>(driver.kind);
@@ -193,6 +194,12 @@ export default function Write() {
   const webShare = Platform.OS === "web" && !canPickCardFolder();
   const writeHere = Platform.OS === "android" || canPickCardFolder();
   const canWrite = writeHere && files !== null && (phase === "idle" || phase === "rolledBack");
+  // Android reads the card only with all-files access. Until it is granted, the connect action asks for it in place of the old access gate.
+  const needAccess = Platform.OS === "android" && access === false;
+  const grantNow = () => {
+    setAccessNotice(null);
+    void grantAccess().then(setAccessNotice);
+  };
   const writeLabel = writeHere || !card ? content.write.writeButton : content.presets.unwritable(card.model.name);
   const okFiles = Object.values(statuses).filter((s) => s === "ok").length;
   const stage = stageOf(phase, recallOpen);
@@ -275,7 +282,9 @@ export default function Write() {
 
   let actions: ReactNode;
   if (stage === "connect") {
-    actions = waiting ? (
+    actions = needAccess ? (
+      <Button label={content.home.onboarding.grant} onPress={grantNow} />
+    ) : waiting ? (
       <Button label={content.write.camera.waiting} onPress={noop} disabled />
     ) : issue || webShare ? (
       <Button label={content.common.recheck} onPress={recheck} />
@@ -286,7 +295,8 @@ export default function Write() {
       </>
     );
   } else if (stage === "writing") {
-    actions = <Button label={content.write.doNotUnplug} onPress={noop} disabled />;
+    // The footer is hidden while the write runs; the body caption asks the user to keep the cable in.
+    actions = null;
   } else if (stage === "done") {
     actions = <Button label={content.write.titles.recall} onPress={() => setRecallOpen(true)} />;
   } else if (stage === "failed") {
@@ -334,13 +344,20 @@ export default function Write() {
     ) : null;
 
   return (
-    <Screen footer={<PinnedBar>{actions}</PinnedBar>}>
+    <Screen footer={stage === "writing" ? undefined : <PinnedBar>{actions}</PinnedBar>}>
       <ScreenHeader title={content.write.titles[stage]} />
       <StageStepper stages={content.home.steps} current={stepIndex(stage)} />
 
       {stage === "connect" ? <CardStatusPanel /> : null}
 
-      {stage === "connect" && waiting ? (
+      {stage === "connect" && needAccess ? (
+        <Card>
+          <Text style={[typeScale.body, { color: theme.label }]}>{content.home.onboarding.text}</Text>
+          {accessNotice ? <Text style={[styles.danger, { color: theme.danger }]}>{accessNotice}</Text> : null}
+        </Card>
+      ) : null}
+
+      {stage === "connect" && waiting && !needAccess ? (
         <Card>
           {Platform.OS === "web" ? (
             <Text style={[styles.title, { color: theme.label }]}>{content.write.web.waiting}</Text>
@@ -456,6 +473,8 @@ export default function Write() {
         </View>
       ) : null}
 
+      {stage === "writing" ? <Text style={[styles.caption, { color: theme.label }]}>{content.write.doNotUnplug}</Text> : null}
+
       {stage === "done" ? (
         <ResultMorph>
           <Card>
@@ -523,6 +542,7 @@ const styles = StyleSheet.create({
   strong: { ...typeScale.subhead, fontFamily: fontFamily.semibold },
   danger: { ...typeScale.subhead, fontFamily: fontFamily.medium },
   ring: { alignItems: "center", paddingVertical: spacing.md },
+  caption: { ...typeScale.subhead, textAlign: "center" },
   step:{ gap: spacing.xs, paddingTop: spacing.sm, borderTopWidth: StyleSheet.hairlineWidth },
   slotRow: {
     flexDirection: "row",
