@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   AppState,
   Image,
   Modal,
@@ -11,7 +12,7 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { useFocusEffect, useRouter } from "expo-router";
+import { Stack, useFocusEffect, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Reanimated from "react-native-reanimated";
 
@@ -25,18 +26,13 @@ import type { PresetSet } from "@/core/web/lib/presetSets";
 import { setStore } from "@/storage/userSetsFile";
 import { loadWriteState } from "@/storage/writeState";
 import { Button } from "@/ui/Button";
-import { Card } from "@/ui/Card";
 import { Glass } from "@/ui/Glass";
-import { GlassToolbar, GlassToolbarButton, GlassToolbarGroup, ToolbarSpacer } from "@/ui/GlassToolbar";
 import { Loading } from "@/ui/Loading";
 import { usePressScale } from "@/ui/motion";
 import { PinnedBar } from "@/ui/PinnedBar";
 import { ReadabilityScrim } from "@/ui/ReadabilityScrim";
 import { Screen } from "@/ui/Screen";
-import { ScreenHeader } from "@/ui/ScreenHeader";
-import { SlotChips } from "@/ui/SlotChips";
 import { Snackbar, useSnackbar } from "@/ui/Snackbar";
-import { StatusChip } from "@/ui/StatusChip";
 import { CheckIcon, WarningIcon } from "@/ui/StatusIcons";
 import { settingsLine } from "@/ui/summaryLine";
 import { radii, spacing, useTheme } from "@/ui/theme";
@@ -55,7 +51,9 @@ import {
   type PtpPropRow,
 } from "../../modules/usb-ptp";
 import { subscribeUsb } from "../../modules/usb-volume";
-import { fontFamily } from "@/ui/v21";
+import { fontFamily, roles } from "@/ui/v21";
+import { CameraIcon } from "@/ui/Glyphs";
+import { navHeader } from "@/ui/navHeader";
 
 type Link = "connecting" | "connected" | "off";
 /** SPEC 2.4.7: none = guide, checking = spinner in the hero frame, ok = live picture. */
@@ -120,7 +118,7 @@ export default function Preview() {
   const pendingRef = useRef(false);
   const linkedRef = useRef(false);
 
-  const [link, setLink] = useState<Link>("connecting");
+  const [link, setLink] = useState<Link>(Platform.OS === "web" ? "off" : "connecting");
   const [notice, setNotice] = useState<string | null>(null);
   const [rows, setRows] = useState<PtpPropRow[]>([]);
   const [liveOn, setLiveOn] = useState(false);
@@ -160,7 +158,7 @@ export default function Preview() {
     runConnect();
   }, [runConnect]);
 
-  // Connection events and the first connect. Unmount disconnects. The browser has no camera link (see the early return).
+  // Connection events and the first connect. Unmount disconnects. The browser has no camera link (it stays "off").
   useEffect(() => {
     if (Platform.OS === "web") return;
     const offState = subscribeState((s) => {
@@ -267,13 +265,7 @@ export default function Preview() {
   const summary = selected && check ? mismatchSummary(reading.readings, selected, check, labels) : null;
   const settingsSegments = settingsLine(reading.readings, labels, selected, check);
   const matched = reading.match?.matched ?? null;
-  const statusText = !target
-    ? content.preview.noTarget
-    : matched !== null
-      ? content.preview.matched(matched + 1)
-      : content.preview.noMatch;
   const ready = target !== undefined && rows.length > 0;
-  const slotItems = SLOTS.map((n) => ({ id: String(n), label: `M${n}` }));
 
   const save = async (slot: number) => {
     setSaving(slot);
@@ -289,203 +281,193 @@ export default function Preview() {
     }
   };
 
-  // The live preview runs over the camera's USB link, which only Android has. The browser shows the note instead.
-  if (Platform.OS === "web") {
-    return (
-      <Screen
-        footer={
-          <PinnedBar>
-            <Button label={content.preview.done} onPress={() => router.navigate("/")} />
-          </PinnedBar>
-        }
-      >
-        <ScreenHeader title={content.preview.title} />
-        <Card>
-          <Text style={[typeScale.callout, { color: theme.label }]}>{content.preview.androidOnly}</Text>
-        </Card>
-      </Screen>
-    );
-  }
-
+  // The browser has no USB link, so it shows the same screen as the app with no camera connected (AlphaApp 06c).
   const shown = viewer ?? 1;
-  // The hero frame is full width, from the top of the screen under the status bar. The toolbar floats over it.
-  // With live state none, the toolbar floats over the content and the content starts below it.
   const liveState: LiveState = liveOn ? "ok" : link === "connected" && !liveError ? "checking" : "none";
-  const onPhoto = liveState === "ok";
-  const overHero = liveState !== "none";
-  const labelColor = overHero ? photoLabel : theme.label;
-  const toolbarTop = insets.top + spacing.sm;
-  const toolbarRoom = toolbarTop + (Platform.OS === "android" ? 48 : 44) + spacing.md;
-  const heroHeight = (width * 9) / 16;
+  const slotName = (n: number) => target?.slots[n - 1]?.label ?? content.intro.slotScenes[n - 1];
+  // Slot segment marks: a green tick on the slot the camera matches, a warning on the shown slot when it differs.
+  const segMark = (n: number): "ok" | "warn" | null =>
+    !ready ? null : matched === n - 1 ? "ok" : n === pv && matched === null ? "warn" : null;
+
+  const top = (
+    <View style={[styles.seg, { backgroundColor: theme.separator }]} accessibilityRole="radiogroup">
+      {SLOTS.map((n) => {
+        const on = n === pv;
+        const mark = segMark(n);
+        return (
+          <Pressable
+            key={n}
+            accessibilityRole="radio"
+            accessibilityState={{ selected: on }}
+            accessibilityLabel={`M${n} · ${slotName(n)}`}
+            onPress={() => setPicked(n)}
+            style={styles.segHit}
+          >
+            <View style={[styles.segPill, on && [styles.segOn, { backgroundColor: theme.segmentOn }]]}>
+              <Text style={[typeScale.subhead, { color: on ? theme.label : theme.secondary, fontFamily: on ? fontFamily.semibold : fontFamily.medium }]}>
+                {`M${n}`}
+              </Text>
+              {mark === "ok" ? <CheckIcon color={theme.success} size={16} /> : null}
+              {mark === "warn" ? <WarningIcon color={theme.warning} size={16} /> : null}
+            </View>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
 
   return (
     <Screen
+      top={top}
       footer={
         <PinnedBar>
-          <Button
-            label={content.preview.editSlot}
-            variant="secondary"
-            disabled={!target}
-            onPress={() => {
-              if (target) router.push({ pathname: "/sets/[id]/edit", params: { id: target.id } });
-            }}
-          />
-          <Button label={content.preview.done} onPress={() => router.navigate("/")} />
+          <View style={styles.actions}>
+            <View style={styles.grow}>
+              <Button
+                label={content.preview.editSlot}
+                variant="secondary"
+                disabled={!target}
+                onPress={() => {
+                  if (target) router.push({ pathname: "/sets/[id]/edit", params: { id: target.id } });
+                }}
+              />
+            </View>
+            <View style={styles.grow}>
+              <Button label={content.preview.done} onPress={() => router.navigate("/")} />
+            </View>
+          </View>
         </PinnedBar>
       }
-      overlay={
-        <>
-          <GlassToolbar style={[styles.toolbar, { top: toolbarTop }]}>
-            <GlassToolbarGroup overPhoto={overHero}>
-              <GlassToolbarButton
-                accessibilityLabel={content.common.back}
-                onPress={() => (router.canGoBack() ? router.back() : router.navigate("/"))}
-              >
-                <Text style={[typeScale.subhead, { color: labelColor }]}>{content.common.back}</Text>
-              </GlassToolbarButton>
-            </GlassToolbarGroup>
-            <ToolbarSpacer />
-            <GlassToolbarGroup overPhoto={overHero}>
-              <GlassToolbarButton
-                accessibilityLabel={content.preview.shoot(pv)}
-                disabled={!liveOn || saving !== null}
-                onPress={() => void save(pv)}
-              >
-                <Text style={[typeScale.subhead, { color: labelColor }]}>{content.preview.shoot(pv)}</Text>
-              </GlassToolbarButton>
-              <GlassToolbarButton
-                accessibilityLabel={content.preview.enlarge}
-                disabled={!onPhoto}
-                onPress={() => setFullscreen(true)}
-              >
-                <Text style={[typeScale.subhead, { color: labelColor }]}>{content.preview.enlarge}</Text>
-              </GlassToolbarButton>
-            </GlassToolbarGroup>
-          </GlassToolbar>
-          <Snackbar state={snack.state} onDismiss={snack.hide} />
-        </>
-      }
+      overlay={<Snackbar state={snack.state} onDismiss={snack.hide} />}
     >
-      {overHero ? (
-        <View style={[styles.hero, { height: heroHeight }]}>
-          <LiveView style={StyleSheet.absoluteFill} />
-          {liveState === "checking" ? (
-            <View style={styles.cover}>
-              <Loading label={content.preview.startingLive} />
-            </View>
-          ) : null}
-          {onPhoto ? (
+      <Stack.Screen options={navHeader({ title: content.preview.title })} />
+
+      <View style={styles.live}>
+        {liveState === "ok" ? (
+          <>
+            <LiveView style={StyleSheet.absoluteFill} />
+            <ReadabilityScrim style={styles.scrim} />
+            <View pointerEvents="none" style={[styles.gridV, { left: "33.33%" }]} />
+            <View pointerEvents="none" style={[styles.gridV, { left: "66.66%" }]} />
+            <View pointerEvents="none" style={[styles.gridH, { top: "33.33%" }]} />
+            <View pointerEvents="none" style={[styles.gridH, { top: "66.66%" }]} />
+            <Text style={[roles.titleBold, styles.mr]}>{`MR${pv}`}</Text>
             <Pressable
               accessibilityRole="button"
               accessibilityLabel={content.preview.enlarge}
               onPress={() => setFullscreen(true)}
-              style={StyleSheet.absoluteFill}
-            />
-          ) : null}
-          <ReadabilityScrim style={styles.scrim} />
-          <View pointerEvents="none" style={styles.liveLabel}>
-            <Text style={[typeScale.subhead, { color: photoLabel }]}>{content.preview.liveAria}</Text>
+              style={styles.fullBtn}
+            >
+              <View style={styles.corners}>
+                <View style={[styles.corner, styles.cTL]} />
+                <View style={[styles.corner, styles.cTR]} />
+                <View style={[styles.corner, styles.cBL]} />
+                <View style={[styles.corner, styles.cBR]} />
+              </View>
+            </Pressable>
+          </>
+        ) : (
+          <View style={styles.guide}>
+            <Text style={[roles.titleBold, styles.white]}>{content.preview.guideTitle}</Text>
+            <View
+              accessible
+              accessibilityRole="image"
+              accessibilityLabel={`Menu máy ảnh: ${content.preview.diagram.join(", ")}`}
+              style={styles.menuPick}
+            >
+              <Text style={[roles.captionStrong, styles.white]}>{content.preview.diagram[0]}</Text>
+              <Text style={[roles.captionStrong, styles.white]}>{content.preview.diagram[1]}</Text>
+            </View>
+            <Pressable
+              accessibilityRole="button"
+              onPress={attempt}
+              disabled={link === "connecting" || liveState === "checking"}
+              style={({ pressed }) => [styles.recheck, pressed && styles.recheckPressed]}
+            >
+              {link === "connecting" || liveState === "checking" ? <ActivityIndicator size="small" color="#0b0d12" /> : null}
+              <Text style={[roles.title, styles.ink]}>{content.common.recheck}</Text>
+            </Pressable>
           </View>
-        </View>
-      ) : (
-        <View style={{ height: toolbarRoom }} />
-      )}
-
-      <Text accessibilityRole="header" style={[typeScale.title2, { color: theme.label }]}>
-        {content.preview.title}
-      </Text>
-
-      <SlotChips slots={slotItems} value={String(pv)} onChange={(id) => setPicked(Number(id))} />
+        )}
+      </View>
 
       {liveState === "none" ? (
-        <Card>
-          <Text style={[typeScale.title3, { color: theme.label }]}>{content.preview.guideTitle}</Text>
-          <View style={styles.row}>
-            {content.preview.diagram.map((item) => (
-              <StatusChip key={item} label={item} />
-            ))}
-          </View>
-          {hint === "pcRemoteOn" ? <Text style={[typeScale.callout, { color: theme.label }]}>{content.preview.usb.pcRemoteOn}</Text> : null}
+        <>
           {notice ? <Text style={[typeScale.subhead, { color: theme.danger }]}>{notice}</Text> : null}
           {liveError ? <Text style={[typeScale.subhead, { color: theme.danger }]}>{liveError}</Text> : null}
           {fallback ? <Text style={[typeScale.subhead, { color: theme.secondary }]}>{content.preview.usb.replugFallback}</Text> : null}
-          {link === "connecting" ? (
-            <Loading label={content.preview.connecting} />
-          ) : (
-            <Button label={content.common.recheck} onPress={attempt} variant="secondary" />
-          )}
-        </Card>
+        </>
       ) : null}
 
-      {link === "connected" ? (
-        <Card>
-          {ready ? (
-            <>
-              <View style={styles.statusRow}>
-                {matched !== null ? <CheckIcon color={theme.success} size={14} /> : null}
-                <Text
-                  style={[
-                    typeScale.callout,
-                    styles.statusText,
-                    {
-                      color: matched !== null ? theme.success : theme.warning,
-                      fontFamily: fontFamily.semibold,
-                    },
-                  ]}
-                >
-                  {statusText}
-                </Text>
-              </View>
-              <View style={styles.settings}>
-                {settingsSegments.map((segment, i) => (
-                  <View key={i} style={styles.settingsItem}>
-                    {i > 0 ? <Text style={[typeScale.subhead, { color: theme.label }]}>{" · "}</Text> : null}
-                    {segment.warn ? <WarningIcon color={theme.warning} size={12} /> : null}
-                    <Text style={[typeScale.subhead, { color: segment.warn ? theme.warning : theme.label }]}>{segment.text}</Text>
-                  </View>
-                ))}
-              </View>
-              {summary ? (
-                <>
-                  <StatusChip label={content.preview.mismatch} tone="warning" />
-                  <Text style={[typeScale.subhead, { color: theme.label }]}>{summary}</Text>
-                </>
-              ) : null}
-            </>
-          ) : (
-            <Loading label={target === undefined ? content.home.reading : content.preview.readingCamera} />
-          )}
-        </Card>
+      {link === "connected" && ready ? (
+        <View style={styles.settings}>
+          {settingsSegments.map((segment, i) => (
+            <View key={i} style={styles.settingsItem}>
+              {i > 0 ? <Text style={[typeScale.subhead, { color: theme.secondary }]}>·</Text> : null}
+              {segment.warn ? <WarningIcon color={theme.warning} size={15} /> : null}
+              <Text
+                style={[
+                  typeScale.subhead,
+                  { color: segment.warn ? theme.warning : theme.label, fontFamily: segment.warn ? fontFamily.semibold : fontFamily.regular },
+                ]}
+              >
+                {segment.text}
+              </Text>
+            </View>
+          ))}
+        </View>
       ) : null}
+      {link === "connected" && !ready ? (
+        <Loading label={target === undefined ? content.home.reading : content.preview.readingCamera} />
+      ) : null}
+      {summary ? <Text style={[typeScale.subhead, { color: theme.label }]}>{summary}</Text> : null}
 
-      <Card>
-        <Text style={[typeScale.title3, { color: theme.label }]}>{content.preview.snapshotsTitle}</Text>
-        <View style={styles.strip}>
+      <View style={[styles.shots, { backgroundColor: theme.card }]}>
+        <View style={styles.shotsHead}>
+          <Text style={[roles.title, styles.shotsTitle, { color: theme.label }]}>{content.preview.snapshotsTitle}</Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ disabled: !liveOn || saving !== null }}
+            disabled={!liveOn || saving !== null}
+            onPress={() => void save(pv)}
+            style={({ pressed }) => [
+              styles.shoot,
+              { borderColor: theme.outline, backgroundColor: !liveOn ? theme.fill : pressed ? theme.fill : "transparent" },
+            ]}
+          >
+            <CameraIcon color={liveOn ? theme.label : theme.secondary} size={18} />
+            <Text style={[roles.labelSm, { color: liveOn ? theme.label : theme.secondary }]}>{content.preview.shoot(pv)}</Text>
+          </Pressable>
+        </View>
+        <View style={styles.grid}>
           {SLOTS.map((n) => {
             const uri = shots[n];
+            const on = n === pv;
             return (
-              <View key={n} style={styles.slot}>
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel={`M${n}`}
-                  onPress={() => {
-                    if (uri) setViewer(n);
-                    else void save(n);
-                  }}
-                  style={[styles.thumb, { backgroundColor: theme.fill }]}
-                >
+              <Pressable
+                key={n}
+                accessibilityRole="button"
+                accessibilityState={{ selected: on }}
+                accessibilityLabel={`M${n} · ${slotName(n)}`}
+                onPress={() => {
+                  setPicked(n);
+                  if (uri) setViewer(n);
+                }}
+                style={styles.cell}
+              >
+                <View style={[styles.thumb, on && uri ? { borderWidth: 2, borderColor: theme.label } : null]}>
                   {uri ? (
-                    <Image source={{ uri }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+                    <Image source={{ uri }} style={styles.fill} resizeMode="cover" />
                   ) : (
-                    <Text style={[typeScale.subhead, styles.center, { color: theme.secondary }]}>
-                      {content.preview.snapshotEmpty}
-                    </Text>
+                    <View style={[styles.empty, { borderColor: theme.disabled, backgroundColor: theme.fill }]}>
+                      <Text style={[typeScale.subhead, { color: theme.secondary }]}>{content.preview.snapshotEmpty}</Text>
+                    </View>
                   )}
-                </Pressable>
-                <Text style={[typeScale.subhead, styles.center, { color: theme.secondary }]}>
-                  {`M${n} · ${content.intro.slotScenes[n - 1]}`}
+                </View>
+                <Text style={[typeScale.subhead, styles.cellLabel, { color: theme.label, fontFamily: on ? fontFamily.semibold : fontFamily.regular }]}>
+                  {`M${n} · ${slotName(n)}`}
                 </Text>
-              </View>
+              </Pressable>
             );
           })}
         </View>
@@ -494,7 +476,7 @@ export default function Preview() {
         ) : saveNote ? (
           <Text style={[typeScale.subhead, { color: theme.danger }]}>{saveNote}</Text>
         ) : null}
-      </Card>
+      </View>
 
       <Modal visible={fullscreen} animationType="fade" onRequestClose={() => setFullscreen(false)}>
           <View style={styles.fullscreen}>
@@ -564,13 +546,52 @@ export default function Preview() {
 }
 
 const styles = StyleSheet.create({
-  // Full width, starts at y = 0 so the picture runs under the status bar and Dynamic Island.
-  hero: { marginTop: -spacing.lg, marginHorizontal: -spacing.lg, overflow: "hidden", backgroundColor: photoScrim },
-  cover: { ...StyleSheet.absoluteFill, alignItems: "center", justifyContent: "center" },
-  // Dark fade only over the lower half of the picture, under the label.
+  white: { color: "#ffffff" },
+  ink: { color: "#0b0d12" },
+  seg: { flexDirection: "row", borderRadius: radii.pill },
+  segHit: { flex: 1, minWidth: 0, height: 48, padding: 4 },
+  segPill: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 4, borderRadius: radii.pill },
+  segOn: { boxShadow: "0 1px 2px rgba(11, 13, 18, 0.14)" },
+  // Live frame (AlphaApp screen 6): 16:9, radius 24, near-black with a faint inner line.
+  live: {
+    width: "100%",
+    aspectRatio: 16 / 9,
+    borderRadius: 24,
+    backgroundColor: "#0b0d12",
+    boxShadow: "inset 0 0 0 1px rgba(255, 255, 255, 0.08)",
+    overflow: "hidden",
+  },
   scrim: { top: "50%" },
-  liveLabel: { position: "absolute", left: spacing.md, right: spacing.md, bottom: spacing.md },
-  toolbar: { position: "absolute", left: spacing.lg, right: spacing.lg },
+  gridV: { position: "absolute", top: 0, bottom: 0, width: 1, backgroundColor: "rgba(255, 255, 255, 0.18)" },
+  gridH: { position: "absolute", left: 0, right: 0, height: 1, backgroundColor: "rgba(255, 255, 255, 0.18)" },
+  mr: { position: "absolute", left: 16, bottom: 12, color: "#ffffff", textShadowColor: "rgba(0, 0, 0, 0.5)", textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 },
+  fullBtn: { position: "absolute", right: 8, bottom: 8, width: 48, height: 48, borderRadius: 24, backgroundColor: "rgba(255, 255, 255, 0.18)", alignItems: "center", justifyContent: "center" },
+  corners: { width: 18, height: 18 },
+  corner: { position: "absolute", width: 6, height: 6, borderColor: "#ffffff" },
+  cTL: { left: 0, top: 0, borderLeftWidth: 2.2, borderTopWidth: 2.2, borderTopLeftRadius: 2 },
+  cTR: { right: 0, top: 0, borderRightWidth: 2.2, borderTopWidth: 2.2, borderTopRightRadius: 2 },
+  cBL: { left: 0, bottom: 0, borderLeftWidth: 2.2, borderBottomWidth: 2.2, borderBottomLeftRadius: 2 },
+  cBR: { right: 0, bottom: 0, borderRightWidth: 2.2, borderBottomWidth: 2.2, borderBottomRightRadius: 2 },
+  guide: { flex: 1, paddingVertical: spacing.lg, paddingHorizontal: spacing.xl, justifyContent: "center", gap: 10 },
+  menuPick: { height: 44, borderRadius: 8, backgroundColor: "#c2410c", flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: spacing.sm, paddingHorizontal: spacing.md },
+  recheck: { alignSelf: "flex-start", height: 48, paddingHorizontal: 18, borderRadius: radii.pill, backgroundColor: "#ffffff", flexDirection: "row", alignItems: "center", gap: spacing.sm },
+  recheckPressed: { backgroundColor: "#e3e6eb" },
+  settings: { flexDirection: "row", flexWrap: "wrap", alignItems: "center", columnGap: 5, rowGap: 4, paddingHorizontal: 2 },
+  settingsItem: { flexDirection: "row", alignItems: "center", gap: 4 },
+  shots: { borderRadius: 24, paddingTop: spacing.md, paddingHorizontal: spacing.md, paddingBottom: spacing.lg, gap: spacing.md },
+  shotsHead: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: spacing.sm, paddingLeft: spacing.sm },
+  shotsTitle: { lineHeight: 26 },
+  shoot: { height: 48, paddingHorizontal: spacing.lg, borderRadius: radii.pill, borderWidth: 1, flexDirection: "row", alignItems: "center", gap: spacing.s6 },
+  grid: { flexDirection: "row", flexWrap: "wrap", gap: spacing.md },
+  // Two per row: (100% − 12) / 2.
+  cell: { width: "47%", flexGrow: 1, gap: spacing.s6 },
+  thumb: { width: "100%", aspectRatio: 3 / 2, borderRadius: 14, overflow: "hidden", backgroundColor: "#2a2f38" },
+  fill: { width: "100%", height: "100%" },
+  empty: { flex: 1, borderRadius: 14, borderWidth: 1.5, borderStyle: "dashed", alignItems: "center", justifyContent: "center" },
+  cellLabel: { lineHeight: 22 },
+  actions: { flexDirection: "row", gap: spacing.md },
+  grow: { flex: 1 },
+  fullscreen: { flex: 1, backgroundColor: photoScrim },
   closeAnchor: { position: "absolute", right: spacing.lg },
   closeGlass: {
     borderRadius: radii.pill,
@@ -579,24 +600,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
   },
-  row: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
-  statusRow: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
-  statusText: { flexShrink: 1 },
-  settings: { flexDirection: "row", flexWrap: "wrap", alignItems: "center" },
-  settingsItem: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
-  center: { textAlign: "center" },
-  strip: { flexDirection: "row", gap: spacing.sm },
-  slot: { flex: 1, gap: spacing.xs },
-  thumb: {
-    width: "100%",
-    aspectRatio: 16 / 9,
-    borderRadius: radii.control,
-    overflow: "hidden",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  fullscreen: { flex: 1, backgroundColor: photoScrim },
   closeText: { ...typeScale.button, color: photoLabel },
+  center: { textAlign: "center" },
   viewer: { flex: 1, padding: spacing.lg, gap: spacing.md },
   pager: { flex: 1 },
   page: { flex: 1, alignItems: "center", justifyContent: "center" },
