@@ -145,7 +145,9 @@ Mỗi tham số: **Đặt** / **Giữ nguyên** ("keep" như web). Validate bằ
 
 ## 4. Giao diện (design language web, bản thực chiến)
 
-Token từ `AlphaColorLab/DESIGN.md` + `app/globals.css`:
+> Cập nhật 2026-11-20: hướng thiết kế hiện hành là **Living Glass** (`Web.AlphaColorLab/design/living-glass.md`, `PRODUCT.md`). Thích ứng theo OS: iOS theo Liquid Glass iOS 27, Android theo ColorOS 17 trên nền Material, console web sáng. Accent nền nút là `#c2410c` chữ trắng. Token lấy từ `Web.AlphaColorLab/design/tokens/` (bản sinh ở `design/tokens/out/tokens.ts`). Các giá trị dưới đây là bản gốc 17/11, chỉ để tham khảo lịch sử.
+
+Token từ `AlphaColorLab/DESIGN.md` + `app/globals.css` (bản gốc):
 - Nền `#f3f4f6`, card `#ffffff`, chữ `#0b0d12`, phụ `#4a5260`, viền `#e3e6eb`. Accent `#f05a14` (chữ trên accent `#0b0d12`). Success `#127a3a`, warning `#a84e00`, danger `#c8261b`.
 - Noto Sans; body 17/27, callout 16/24, footnote 13/19, title2 24/32.
 - Bo góc: card 24, control 14, badge 8. Nút cao 44, pill. Ease `cubic-bezier(0.16,1,0.3,1)`.
