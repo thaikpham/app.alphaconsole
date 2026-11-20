@@ -5,9 +5,10 @@ import Reanimated, { useAnimatedStyle, useSharedValue, withSpring } from "react-
 import { scheduleOnRN } from "react-native-worklets";
 import { haptic } from "./haptics";
 import { springs, usePressScale } from "./motion";
-import { glass, gesture, typeScale } from "./tokens";
+import { gesture, typeScale } from "./tokens";
 import { controlHeight, radii, spacing, useTheme } from "./theme";
 import { useReduceMotion } from "./useReduceMotion";
+import { fontFamily } from "./v21";
 
 export type SegmentOption<T extends string> = { value: T; label: string };
 
@@ -19,8 +20,8 @@ export type SegmentedControlProps<T extends string> = {
   emphasizeSelected?: boolean;
 };
 
-// Track padding (SPEC-IOS §2): the thumb sits this far inside the track on every side.
-const PAD = 3;
+// Track padding (AlphaApp tabs, 4 px): the thumb sits this far inside the track on every side.
+const PAD = 4;
 
 /**
  * Single-select track with a knob (SPEC-IOS §2). The knob follows the finger while dragging. On release it snaps to the
@@ -107,7 +108,7 @@ export function SegmentedControl<T extends string>({
       <View
         accessibilityRole="radiogroup"
         onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
-        style={[styles.track, { backgroundColor: theme.fill }]}
+        style={[styles.track, { backgroundColor: theme.separator }]}
       >
         <Reanimated.View pointerEvents="none" style={[styles.thumb, { backgroundColor: theme.segmentOn }, knob]} />
         {options.map((option, i) => (
@@ -149,7 +150,10 @@ function Segment({
     >
       <Reanimated.View style={pressScale.style}>
         <Text
-          style={[emphasized && selected ? styles.labelOn : styles.label, { color: selected ? theme.label : theme.secondary }]}
+          style={[
+            selected ? (emphasized ? styles.labelOnEmphasized : styles.labelOn) : styles.label,
+            { color: selected ? theme.label : theme.secondary },
+          ]}
         >
           {label}
         </Text>
@@ -164,23 +168,21 @@ const styles = StyleSheet.create({
     borderRadius: radii.pill,
     padding: PAD,
   },
-  // Inset highlight: a hairline light edge on the thumb (glass.highlightTop).
   thumb: {
     position: "absolute",
     left: PAD,
     top: PAD,
     bottom: PAD,
     borderRadius: radii.pill,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: `rgba(255, 255, 255, ${glass.highlightTop})`,
   },
   segment: {
     flex: 1,
-    minHeight: controlHeight,
+    minHeight: controlHeight - PAD * 2,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: spacing.sm,
   },
-  label: { ...typeScale.subhead },
-  labelOn: { ...typeScale.fieldLabel },
+  label: { ...typeScale.subhead, fontFamily: fontFamily.medium },
+  labelOn: { ...typeScale.subhead, fontFamily: fontFamily.semibold },
+  labelOnEmphasized: { ...typeScale.fieldLabel },
 });

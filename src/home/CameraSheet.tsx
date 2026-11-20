@@ -6,7 +6,7 @@ import { Text } from "react-native";
 import type { ModelId } from "@/core/web/lib/app-core/models";
 import { content } from "@/content";
 import { saveCameraSelection } from "@/storage/cameraFile";
-import { BottomSheet, HeaderAction } from "@/ui/BottomSheet";
+import { BottomSheet } from "@/ui/BottomSheet";
 import { CameraList } from "@/ui/CameraList";
 import { typeScale } from "@/ui/tokens";
 import { useTheme } from "@/ui/theme";
@@ -44,8 +44,7 @@ export function CameraSheet({ visible, selected, onClose, onChanged }: Props) {
       visible={visible}
       title={content.camera.sheetTitle}
       onClose={close}
-      detent="medium"
-      trailing={<HeaderAction label={content.common.done} onPress={close} />}
+      detent={600}
     >
       <CameraList selected={selected} onSelect={(id) => void choose(id)} searchPlaceholder={content.camera.sheetSearchPlaceholder} />
       {failed ? <Text style={[typeScale.subhead, { color: theme.danger }]}>{content.camera.saveFailed}</Text> : null}

@@ -105,6 +105,7 @@ export const radii = {
   card: 24,
   sheet: 24,
   toast: 14,
+  field: 14,
   menu: 16,
   tile: 12,
   control: 8,

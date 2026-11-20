@@ -15,13 +15,23 @@ test("the tab param selects Của tôi only for 'mine'; anything else is recomme
   assert.equal(parseHomeTab("mine"), "mine");
   assert.equal(parseHomeTab(["mine", "x"]), "mine");
   assert.equal(parseHomeTab("recommended"), "recommended");
-  assert.equal(parseHomeTab("kol"), "recommended");
+  assert.equal(parseHomeTab("kol"), "kol");
   assert.equal(parseHomeTab(undefined), "recommended");
   assert.equal(parseHomeTab([]), "recommended");
 });
 
-test("Khuyên dùng lists the bundled sets that are not unlisted", () => {
+test("Khuyên dùng lists the listed bundled sets with no author, or the recommended one", () => {
   assert.deepEqual(tabSets("recommended", bundled, mine).map((set) => set.id), ["p1", "p2"]);
+});
+
+test("KOL lists the listed bundled sets that have an author and are not recommended", () => {
+  const authored = [
+    { id: "rec", recommended: true, author: { name: "A" } },
+    { id: "kol-1", author: { name: "B" } },
+    { id: "kol-hidden", unlisted: true, author: { name: "C" } },
+    { id: "plain" },
+  ];
+  assert.deepEqual(tabSets("kol", authored, mine).map((set) => set.id), ["kol-1"]);
 });
 
 test("Của tôi lists the user's sets and does not return the caller's array", () => {

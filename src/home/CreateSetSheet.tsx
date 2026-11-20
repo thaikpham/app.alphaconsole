@@ -1,5 +1,5 @@
 // iOS "Bộ mới" sheet (SPEC-IOS §9.2, canvas 2ca). Same props as CreateSetSheet.tsx.
-// Large detent. Hủy leading, Tạo trailing (primary, disabled while the name is empty).
+// Fixed 860 px detent (Android, SPEC §2.5). Hủy leading, Tạo trailing (primary, disabled while the name is empty).
 // A copy of a base set with the user's name and slot labels, saved as a new set in "Của tôi".
 import { useState, type ReactNode } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
@@ -75,7 +75,7 @@ export function CreateSetSheet({ visible, bases, initialBaseId, onClose, onCreat
       visible={visible}
       title={content.createSet.title}
       onClose={onClose}
-      detent="large"
+      detent={860}
       leading={<HeaderAction label={content.sets.cancel} onPress={onClose} />}
       trailing={<HeaderAction label={content.createSet.submit} onPress={() => void submit()} primary disabled={!canSubmit} />}
     >

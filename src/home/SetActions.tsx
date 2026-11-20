@@ -1,8 +1,7 @@
-// Actions of the selected set card (SPEC-IOS §4.4). Edit is a glass secondary button (Button);
-// rename and remove show only for the user's own sets. The rename field uses the fill and control radius.
+// Actions of the selected set card, for the user's own sets only (SPEC §2.4.2). Edit lives in the footer ("Chỉnh slot").
+// The rename field uses the fill and control radius.
 import { useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
-import { useRouter } from "expo-router";
 
 import { content } from "@/content";
 import { PRESET_LIMITS, type PresetSet } from "@/core/web/lib/presetSets";
@@ -15,14 +14,12 @@ import { controlHeight, radii, spacing, useTheme } from "@/ui/theme";
 
 type Props = {
   set: PresetSet;
-  own: boolean;
   onChanged: () => void;
 };
 
 const messageOf = (e: unknown) => (e instanceof StoreError ? e.message : content.sets.actionFailed);
 
-export function SetActions({ set, own, onChanged }: Props) {
-  const router = useRouter();
+export function SetActions({ set, onChanged }: Props) {
   const theme = useTheme();
   const [renaming, setRenaming] = useState(false);
   const [draft, setDraft] = useState(set.name);
@@ -83,13 +80,8 @@ export function SetActions({ set, own, onChanged }: Props) {
         </>
       ) : (
         <>
-          <Button label={content.presets.edit} onPress={() => router.push({ pathname: "/sets/[id]/edit", params: { id: set.id } })} variant="secondary" />
-          {own ? (
-            <>
-              <Button label={content.sets.rename} onPress={startRename} variant="plain" />
-              <Button label={content.sets.remove} onPress={confirmRemove} variant="plain" />
-            </>
-          ) : null}
+          <Button label={content.sets.rename} onPress={startRename} variant="plain" />
+          <Button label={content.sets.remove} onPress={confirmRemove} variant="plain" />
         </>
       )}
       {error ? <Text style={[typeScale.subhead, { color: theme.danger }]}>{error}</Text> : null}

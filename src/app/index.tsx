@@ -1,4 +1,4 @@
-// Preset home (SPEC 5.1, 9.3): pick a set, see the camera it is written to, and the card status.
+// Preset home (SPEC §2.4.2, 9.3): pick a set, see the camera it is written to, and the card status.
 import { useCallback, useState } from "react";
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
@@ -9,6 +9,7 @@ import { defaultSet, listedSets, type PresetSet } from "@/core/web/lib/presetSet
 import { CameraSheet } from "@/home/CameraSheet";
 import { CreateSetSheet } from "@/home/CreateSetSheet";
 import { type HomeTab, parseHomeTab, tabSets } from "@/home/homeTabs";
+import { LocalAvatar } from "@/home/LocalAvatar";
 import { MoreSheet } from "@/home/MoreSheet";
 import { PresetCard } from "@/home/PresetCard";
 import { SetActions } from "@/home/SetActions";
@@ -16,15 +17,14 @@ import { loadCameraSelection } from "@/storage/cameraFile";
 import { setStore } from "@/storage/userSetsFile";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
-import { Glass } from "@/ui/Glass";
+import { BookmarkIcon, CameraIcon, ChevronDownIcon, PlusIcon } from "@/ui/Glyphs";
 import { InstallHint } from "@/ui/InstallHint";
 import { PinnedBar } from "@/ui/PinnedBar";
 import { Screen } from "@/ui/Screen";
 import { SegmentedTabs } from "@/ui/SegmentedTabs";
 import { Snackbar, useSnackbar } from "@/ui/Snackbar";
-import { ValueRow } from "@/ui/ValueRow";
 import { navHeader } from "@/ui/navHeader";
-import { useTheme } from "@/ui/theme";
+import { radii, spacing, useTheme } from "@/ui/theme";
 import { press, typeScale } from "@/ui/tokens";
 
 const noop = () => undefined;
@@ -41,6 +41,7 @@ export default function Home() {
   const [mine, setMine] = useState<PresetSet[]>([]);
   const [cameraId, setCameraId] = useState<ModelId | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [moreOpen, setMoreOpen] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
@@ -57,10 +58,11 @@ export default function Home() {
       setBundled(listedSets(data.bundled));
       setMine(data.user);
       setLoadError(null);
+      setLoaded(true);
     } catch {
       setLoadError(content.sets.loadFailed);
     }
-  }, [setCameraId, setBundled, setMine, setLoadError]);
+  }, [setCameraId, setBundled, setMine, setLoaded, setLoadError]);
 
   useFocusEffect(
     useCallback(() => {
@@ -81,23 +83,33 @@ export default function Home() {
 
   const tabs: { value: HomeTab; label: string }[] = [
     { value: "recommended", label: content.presets.tabRecommended },
+    { value: "kol", label: content.presets.tabKol },
     { value: "mine", label: content.presets.tabMine(mine.length) },
   ];
 
-  // The bar carries the create action too (SPEC-IOS §4.4). Hidden in the empty Của tôi state, which offers it in the card.
-  // An unwritable camera takes precedence over the selection state.
+  // Footer (SPEC §2.4.2): with a set picked, Chỉnh slot and Ghi bộ này share the row. An unwritable camera greys the write slot.
   const footer = (
     <PinnedBar>
-      {!(own && mine.length === 0) ? (
-        <Button label={content.presets.create} onPress={() => setCreateOpen(true)} variant="secondary" />
-      ) : null}
-      {!model.capabilities.write ? (
-        <Button label={content.presets.unwritable(model.name)} onPress={noop} disabled />
-      ) : selected ? (
-        <Button label={content.presets.write} onPress={() => router.push({ pathname: "/write", params: { id: selected.id } })} />
-      ) : (
-        <Button label={own && mine.length === 0 ? content.presets.noMineToWrite : content.presets.pickOne} onPress={noop} disabled />
-      )}
+      <View style={styles.actions}>
+        {selected ? (
+          <View style={styles.grow}>
+            <Button
+              label={content.presets.edit}
+              onPress={() => router.push({ pathname: "/sets/[id]/edit", params: { id: selected.id } })}
+              variant="secondary"
+            />
+          </View>
+        ) : null}
+        <View style={styles.grow}>
+          {!selected ? (
+            <Button label={own && mine.length === 0 ? content.presets.noMineToWrite : content.presets.pickOne} onPress={noop} disabled />
+          ) : !model.capabilities.write ? (
+            <Button label={content.presets.unwritable(model.name)} onPress={noop} disabled />
+          ) : (
+            <Button label={content.presets.write} onPress={() => router.push({ pathname: "/write", params: { id: selected.id } })} />
+          )}
+        </View>
+      </View>
     </PinnedBar>
   );
 
@@ -111,13 +123,9 @@ export default function Home() {
               onPress={() => setMoreOpen(true)}
               accessibilityRole="button"
               accessibilityLabel={content.more.title}
-              hitSlop={8}
-              style={({ pressed }) => (pressed ? styles.pressedScale : undefined)}
+              style={({ pressed }) => [styles.avatarHit, pressed && styles.pressedScale]}
             >
-              <Glass style={styles.avatar}>
-                <View style={[styles.head, { backgroundColor: theme.label }]} />
-                <View style={[styles.shoulders, { backgroundColor: theme.label }]} />
-              </Glass>
+              <LocalAvatar diameter={32} glyph={20} color={theme.secondary} />
             </Pressable>
           ),
         }}
@@ -125,21 +133,43 @@ export default function Home() {
       <Screen footer={footer} scrollEdge overlay={<Snackbar state={snack.state} onDismiss={snack.hide} />}>
         {Platform.OS === "web" ? <InstallHint /> : null}
 
-        <Pressable onPress={() => setCameraOpen(true)} accessibilityRole="button" style={({ pressed }) => (pressed ? styles.pressedScale : undefined)}>
-          <Card>
-            <ValueRow label={content.presets.cameraRow} value={model.name} />
-          </Card>
+        <Pressable
+          onPress={() => setCameraOpen(true)}
+          accessibilityRole="button"
+          accessibilityLabel={`${content.presets.cameraRow}, ${model.name}`}
+          style={({ pressed }) => [styles.camera, { borderColor: theme.outline, backgroundColor: pressed ? theme.fill2 : "transparent" }]}
+        >
+          <CameraIcon color={theme.label} size={24} />
+          <Text style={[typeScale.body, styles.cameraLabel, { color: theme.secondary }]}>{content.presets.cameraRow}</Text>
+          <Text style={[typeScale.title, { color: theme.label }]}>{model.name}</Text>
+          <ChevronDownIcon color={theme.label} size={24} />
         </Pressable>
 
         <SegmentedTabs options={tabs} value={tab} onChange={changeTab} />
 
         {loadError ? <Text style={[typeScale.subhead, { color: theme.danger }]}>{loadError}</Text> : null}
 
-        {own && mine.length === 0 ? (
+        {mine.length > 0 ? (
+          <Pressable
+            onPress={() => setCreateOpen(true)}
+            accessibilityRole="button"
+            style={({ pressed }) => [styles.dashed, { borderColor: theme.outline, backgroundColor: pressed ? theme.fill2 : "transparent" }]}
+          >
+            <PlusIcon color={theme.label} size={20} />
+            <Text style={[typeScale.title, { color: theme.label }]}>{content.presets.create}</Text>
+          </Pressable>
+        ) : null}
+
+        {loaded && sets.length === 0 ? (
           <Card>
-            <Text style={[typeScale.title3, { color: theme.label }]}>{content.presets.mineEmpty}</Text>
-            <Button label={content.presets.create} onPress={() => setCreateOpen(true)} variant="secondary" />
-            <Button label={content.presets.browseRecommended} onPress={() => changeTab("recommended")} variant="plain" />
+            <View style={[styles.emptyIcon, { backgroundColor: theme.fill }]}>
+              <BookmarkIcon color={theme.label} size={34} />
+            </View>
+            <Text style={[typeScale.title3, styles.center, { color: theme.label }]}>{content.presets.mineEmpty}</Text>
+            {own ? <Button label={content.presets.create} onPress={() => setCreateOpen(true)} /> : null}
+            {tab !== "recommended" ? (
+              <Button label={content.presets.browseRecommended} onPress={() => changeTab("recommended")} variant="secondary" />
+            ) : null}
           </Card>
         ) : null}
 
@@ -147,11 +177,11 @@ export default function Home() {
           <PresetCard
             key={set.id}
             set={set}
-            byline={own ? content.presets.byMe : set.author?.name}
+            byline={tab === "kol" ? set.author?.name : undefined}
             selected={selected?.id === set.id}
             onPress={() => setSelectedId(set.id)}
           >
-            <SetActions set={set} own={own} onChanged={() => void reload()} />
+            {own ? <SetActions set={set} onChanged={() => void reload()} /> : null}
           </PresetCard>
         ))}
       </Screen>
@@ -176,8 +206,31 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   pressedScale: { transform: [{ scale: press.button }] },
-  // Person glyph for the signed-out avatar (drawn with Views; no icon library).
-  avatar: { width: 36, height: 36, borderRadius: 18, alignItems: "center", justifyContent: "center", gap: 2 },
-  head: { width: 12, height: 12, borderRadius: 6 },
-  shoulders: { width: 20, height: 9, borderTopLeftRadius: 10, borderTopRightRadius: 10 },
+  avatarHit: { width: 48, height: 48, alignItems: "center", justifyContent: "center" },
+  camera: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+    minHeight: 56,
+    paddingLeft: spacing.lg,
+    paddingRight: spacing.s10,
+    borderRadius: radii.field,
+    borderWidth: 1,
+  },
+  cameraLabel: { flex: 1 },
+  dashed: {
+    minHeight: 56,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.sm,
+    paddingHorizontal: spacing.xl,
+    borderRadius: radii.card,
+    borderWidth: 1,
+    borderStyle: "dashed",
+  },
+  emptyIcon: { width: 72, height: 72, borderRadius: 36, alignItems: "center", justifyContent: "center" },
+  center: { textAlign: "center" },
+  actions: { flexDirection: "row", gap: spacing.md },
+  grow: { flex: 1 },
 });

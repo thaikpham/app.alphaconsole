@@ -415,6 +415,7 @@ export const content = {
     cameraRow: "Máy ảnh",
     more: "Thêm",
     tabRecommended: "Khuyên dùng",
+    tabKol: "KOL",
     tabMine: (n: number) => `Của tôi · ${n}`,
     create: "Tạo bộ mới",
     edit: "Chỉnh slot",
@@ -441,6 +442,8 @@ export const content = {
     intro: "Xem giới thiệu M1–M4",
     camera: "Đổi máy ảnh",
     setCount: (n: number) => `${n} bộ`,
+    profileName: "Hồ sơ trên máy",
+    profileSub: "Bộ màu lưu trên điện thoại này",
   },
 } as const;
 

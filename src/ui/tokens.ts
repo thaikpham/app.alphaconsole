@@ -47,6 +47,8 @@ export const radii = {
   pill: v21Radii.pill,
   sheet: v21Radii.sheet,
   toast: v21Radii.toast,
+  field: v21Radii.field,
+  menu: v21Radii.menu,
   tile: v21Radii.tile,
   media: v21Radii.media,
 } as const;
