@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { content } from "@/content";
 import { haptic } from "./haptics";
-import { radii, rowMinHeight, spacing, useTheme } from "./theme";
+import { radii, useTheme } from "./theme";
 import { fontFamily } from "./v21";
 
 type Props = {
@@ -12,24 +12,21 @@ type Props = {
   canIncrease?: boolean;
 };
 
-const CAPSULE_HEIGHT = 44;
-const STEP_WIDTH = 56;
-const GLYPH = 20;
+// Android stepper (AlphaApp shStep): one 72 dp row on the fill colour, Giảm left, the value centred, Tăng right.
+const ROW = 72;
+const GLYPH = 28;
 const STROKE = 2.4;
 
-/** Value on the left, then one 44px fill capsule holding Giảm, a divider, and Tăng. */
+/** Row sheet control for option lists longer than SEGMENT_LIMIT. */
 export function Stepper({ value, onDecrease, onIncrease, canDecrease = true, canIncrease = true }: Props) {
   const theme = useTheme();
   return (
-    <View style={styles.row}>
+    <View style={[styles.row, { backgroundColor: theme.fill }]}>
+      <Step label={content.edit.decrease} glyph="minus" enabled={canDecrease} onPress={onDecrease} />
       <Text numberOfLines={1} style={[styles.value, { color: theme.label }]}>
         {value}
       </Text>
-      <View style={[styles.capsule, { backgroundColor: theme.fill }]}>
-        <Step label={content.edit.decrease} glyph="minus" enabled={canDecrease} onPress={onDecrease} />
-        <View style={[styles.divider, { backgroundColor: theme.fill2 }]} />
-        <Step label={content.edit.increase} glyph="plus" enabled={canIncrease} onPress={onIncrease} />
-      </View>
+      <Step label={content.edit.increase} glyph="plus" enabled={canIncrease} onPress={onIncrease} />
     </View>
   );
 }
@@ -69,29 +66,22 @@ function Step({
 
 const styles = StyleSheet.create({
   row: {
-    minHeight: rowMinHeight,
+    height: ROW,
+    borderRadius: radii.field,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    gap: spacing.md,
-  },
-  value: {
-    flexShrink: 1,
-    fontSize: 40,
-    lineHeight: 48,
-    fontFamily: fontFamily.bold,
-    letterSpacing: -0.8,
-    fontVariant: ["tabular-nums"],
-  },
-  capsule: {
-    height: CAPSULE_HEIGHT,
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: radii.pill,
     overflow: "hidden",
   },
-  step: { width: STEP_WIDTH, height: CAPSULE_HEIGHT, alignItems: "center", justifyContent: "center" },
-  divider: { width: 1, height: 20 },
+  step: { width: ROW, height: ROW, alignItems: "center", justifyContent: "center" },
+  value: {
+    flex: 1,
+    minWidth: 0,
+    textAlign: "center",
+    fontSize: 30,
+    lineHeight: 40,
+    fontFamily: fontFamily.bold,
+    fontVariant: ["tabular-nums"],
+  },
   glyph: { width: GLYPH, height: GLYPH },
   bar: { position: "absolute", borderRadius: STROKE / 2 },
   horizontal: { left: 0, right: 0, top: (GLYPH - STROKE) / 2, height: STROKE },

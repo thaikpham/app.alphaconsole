@@ -3,7 +3,8 @@ import { content } from "@/content";
 import { ModifiedDot } from "./ModifiedDot";
 import { ToggleSwitch } from "./ToggleSwitch";
 import { typeScale } from "./tokens";
-import { rowMinHeight, spacing, useTheme } from "./theme";
+import { spacing, useTheme } from "./theme";
+import { fontFamily } from "./v21";
 
 type Props = {
   label: string;
@@ -14,7 +15,7 @@ type Props = {
   modified?: boolean;
 };
 
-/** Native switch row. The row is the control: tapping anywhere flips the value. Role switch. */
+/** Native switch row (AlphaApp: min 56, label semibold). The row is the control: tapping anywhere flips the value. Role switch. */
 export function Toggle({ label, value, onChange, detail, modified = false }: Props) {
   const theme = useTheme();
   return (
@@ -39,7 +40,7 @@ export function Toggle({ label, value, onChange, detail, modified = false }: Pro
 
 const styles = StyleSheet.create({
   row: {
-    minHeight: rowMinHeight,
+    minHeight: 56,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -47,6 +48,6 @@ const styles = StyleSheet.create({
   },
   text: { flex: 1, gap: spacing.xs },
   labelRow: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
-  label: { ...typeScale.body },
+  label: { ...typeScale.body, fontFamily: fontFamily.semibold },
   detail: { ...typeScale.subhead },
 });
