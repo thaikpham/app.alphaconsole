@@ -3,6 +3,7 @@ import { Animated, Platform, Pressable, StyleSheet, Text, View } from "react-nat
 import { useLocalSearchParams, useRouter } from "expo-router";
 
 import { beginWrite, endWrite, readCard, userMessage, type CardReading } from "@/card/session";
+import { restoreCardBackup } from "@/card/restore";
 import { useCardDriver } from "@/card/useCardDriver";
 import { canPickCardFolder } from "@/card/webAccess";
 import { content } from "@/content";
@@ -15,6 +16,7 @@ import { dropPending, updateWriteState } from "@/storage/writeState";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
 import { CardStatusPanel } from "@/ui/CardStatusPanel";
+import { confirmDestructive } from "@/ui/confirm";
 import { GlassToolbar, GlassToolbarButton, GlassToolbarGroup, ToolbarSpacer } from "@/ui/GlassToolbar";
 import { haptic } from "@/ui/haptics";
 import { Loading } from "@/ui/Loading";
@@ -106,6 +108,7 @@ export default function Write() {
   const [nonce, setNonce] = useState(0);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [recallOpen, setRecallOpen] = useState(false);
+  const [restoring, setRestoring] = useState(false);
   const [checked, setChecked] = useState<boolean[]>(() => content.write.recallChecklist.map(() => false));
   const usbMode = usb === "checking" || usb === null ? usb : usb.mode;
   const [seenUsbMode, setSeenUsbMode] = useState(usbMode);
@@ -215,6 +218,33 @@ export default function Write() {
     );
   };
 
+  // Recall "Khôi phục": puts back the backup this write made, after the user confirms.
+  const restoreNow = () => {
+    if (!backupId) return;
+    const id = backupId;
+    confirmDestructive({
+      title: content.write.restoreTitle,
+      message: content.write.restoreBody,
+      cancel: content.sets.cancel,
+      action: content.write.restore,
+      onConfirm: () => {
+        setRestoring(true);
+        setMessage(null);
+        void restoreCardBackup(id)
+          .then((outcome) =>
+            setMessage(
+              outcome === "restored"
+                ? content.backups.restored
+                : outcome === "noCard"
+                  ? content.backups.noCard
+                  : content.backups.restoreFailed,
+            ),
+          )
+          .finally(() => setRestoring(false));
+      },
+    });
+  };
+
   const checkCable = () => {
     setStatuses({});
     setMessage(null);
@@ -312,7 +342,12 @@ export default function Write() {
   } else {
     actions = (
       <>
-        <Button label={content.write.restore} onPress={() => router.push("/backups")} variant="secondary" />
+        <Button
+          label={content.write.restore}
+          onPress={restoreNow}
+          variant="secondary"
+          disabled={restoring || !backupId}
+        />
         <Button label={content.write.preview} onPress={() => router.push("/preview")} />
         <Text style={[styles.note, { color: theme.secondary }]}>{content.write.previewHint}</Text>
       </>

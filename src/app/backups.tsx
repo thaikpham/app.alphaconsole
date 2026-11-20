@@ -3,14 +3,12 @@ import { Platform, StyleSheet, Text, View } from "react-native";
 import { useFocusEffect } from "expo-router";
 
 import { useCardDriver } from "@/card/useCardDriver";
-import { beginWrite, endWrite, readCard, type CardReading } from "@/card/session";
+import { restoreCardBackup } from "@/card/restore";
 import { canPickCardFolder } from "@/card/webAccess";
 import { content } from "@/content";
 import { describeCard, toCardState, type CardView } from "@/core/web/lib/app-core/card/view";
-import { recordHolds } from "@/core/web/lib/app-core/transfer/state";
 import { listedSets } from "@/core/web/lib/presetSets";
 import { setStore } from "@/storage/userSetsFile";
-import { dropLastWritten, dropPending, loadWriteState, updateWriteState } from "@/storage/writeState";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
 import { confirmDestructive } from "@/ui/confirm";
@@ -18,12 +16,7 @@ import { Loading } from "@/ui/Loading";
 import { Screen } from "@/ui/Screen";
 import { ScreenHeader } from "@/ui/ScreenHeader";
 import { colors, spacing, typeScale } from "@/ui/tokens";
-import {
-  listBackups,
-  readBackup,
-  restoreBackup,
-  type BackupInfo,
-} from "../../modules/usb-volume";
+import { listBackups, readBackup, type BackupInfo } from "../../modules/usb-volume";
 import { fontFamily } from "@/ui/v21";
 
 type Row = { info: BackupInfo; view: CardView | null };
@@ -89,38 +82,14 @@ export default function Backups() {
     setRestoring(true);
     setNotice(null);
     setCardMissing(false);
-    let target: string | null = null;
-    try {
-      const reading: CardReading = await readCard();
-      if (reading.kind !== "ready") {
-        setNotice(content.backups.noCard);
-        setCardMissing(true);
-        return;
-      }
-      const uuid = reading.card.uuid;
-      target = uuid;
-      beginWrite(uuid);
-      const report = await restoreBackup(id);
-      if (!report.ok) {
-        setNotice(content.backups.restoreFailed);
-        return;
-      }
-      // The restore replaces whatever the card held, so an unconfirmed write no longer applies.
-      // The last-write record stays only if the restored files are the ones the app wrote.
-      const backup = await readBackup(id);
-      const record = (await loadWriteState()).lastWritten[uuid] ?? null;
-      const keepRecord = record !== null && recordHolds(toCardState({ sonyCard: true, settingDir: true, files: backup.files }), record);
-      await updateWriteState((s) => {
-        const next = dropPending(s, uuid);
-        return keepRecord ? next : dropLastWritten(next, uuid);
-      });
-      setNotice(content.backups.restored);
-    } catch {
-      setNotice(content.backups.restoreFailed);
-    } finally {
-      if (target) endWrite(target);
-      setRestoring(false);
+    const outcome = await restoreCardBackup(id);
+    if (outcome === "noCard") {
+      setNotice(content.backups.noCard);
+      setCardMissing(true);
+    } else {
+      setNotice(outcome === "restored" ? content.backups.restored : content.backups.restoreFailed);
     }
+    setRestoring(false);
   };
 
   // Web: folder access is asked for on this tap, after a restore finds no card.

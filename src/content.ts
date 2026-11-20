@@ -195,6 +195,8 @@ export const content = {
     recallChecklist: ["Rút cáp", "Tắt rồi bật máy", "Chọn Gọi lại, đừng chọn Lưu"],
     recallCaption: "Bấm MODE, chọn MR",
     restore: "Khôi phục",
+    restoreTitle: "Khôi phục bản trước?",
+    restoreBody: "Bộ trên máy sẽ thay bằng bản đã sao lưu.",
     preview: "Xem thử",
     previewHint: "PC Remote: Bật",
     blocked: {
