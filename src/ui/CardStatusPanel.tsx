@@ -1,4 +1,4 @@
-// Card status on the preset home (D9 card block). Rows are inline; weights come from fontWeight (system font).
+// Card status on the preset home (D9 card block). Rows are inline; weights come from fontFamily (Noto Sans).
 import { useCallback, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -15,6 +15,7 @@ import { Card } from "./Card";
 import { StatusChip, type ChipTone } from "./StatusChip";
 import { spacing, useTheme } from "./theme";
 import { typeScale } from "./tokens";
+import { fontFamily } from "./v21";
 
 function statusChip(line: CardLine): { label: string; tone: ChipTone } {
   switch (line.kind) {
@@ -224,13 +225,13 @@ export function CardStatusPanel() {
 }
 
 const styles = StyleSheet.create({
-  strong: { fontWeight: "500" },
+  strong: { fontFamily: fontFamily.medium },
   details: { gap: spacing.md },
   block: { gap: spacing.sm },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
   slot: { gap: spacing.xs, paddingTop: spacing.sm, borderTopWidth: 1 },
-  slotTitle: { fontWeight: "600" },
+  slotTitle: { fontFamily: fontFamily.semibold },
   row: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", gap: spacing.md },
   rowLabel: { flexShrink: 1 },
-  rowValue: { fontWeight: "500", flexShrink: 1, textAlign: "right" },
+  rowValue: { fontFamily: fontFamily.medium, flexShrink: 1, textAlign: "right" },
 });

@@ -24,6 +24,7 @@ import {
   restoreBackup,
   type BackupInfo,
 } from "../../modules/usb-volume";
+import { fontFamily } from "@/ui/v21";
 
 type Row = { info: BackupInfo; view: CardView | null };
 
@@ -186,7 +187,7 @@ export default function Backups() {
 const styles = StyleSheet.create({
   cardTitle: { ...typeScale.title3, color: colors.label },
   note: { ...typeScale.footnote, color: colors.secondary },
-  danger: { ...typeScale.footnote, fontWeight: "500", color: colors.danger },
+  danger: { ...typeScale.footnote, fontFamily: fontFamily.medium, color: colors.danger },
   line: { ...typeScale.footnote, color: colors.label, paddingTop: spacing.xs },
   row: { gap: spacing.md },
   separated: { borderTopWidth: 1, borderTopColor: colors.separator, paddingTop: spacing.md },

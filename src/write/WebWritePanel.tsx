@@ -15,6 +15,7 @@ import { Card } from "@/ui/Card";
 import { downloadFile } from "@/ui/download";
 import { useTheme } from "@/ui/theme";
 import { typeScale } from "@/ui/tokens";
+import { fontFamily } from "@/ui/v21";
 
 type Props = {
   files: PlannedFile[];
@@ -97,5 +98,5 @@ export function WebWritePanel({ files, family, setId, uuid }: Props) {
 }
 
 const styles = StyleSheet.create({
-  strong: { fontWeight: "600" },
+  strong: { fontFamily: fontFamily.semibold },
 });

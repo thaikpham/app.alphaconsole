@@ -1,4 +1,5 @@
 import type { NativeStackNavigationOptions } from "expo-router";
+import { typeScale } from "./tokens";
 
 type Options = { title?: string; largeTitle?: boolean; transparent?: boolean };
 
@@ -11,6 +12,7 @@ export function navHeader({ title, largeTitle = false, transparent = false }: Op
     headerLargeTitleEnabled: largeTitle,
     headerTransparent: transparent,
     headerBackButtonDisplayMode: "minimal",
+    headerTitleStyle: typeScale.toolbarTitle,
     ...(title !== undefined ? { headerTitle: title } : {}),
   };
 }

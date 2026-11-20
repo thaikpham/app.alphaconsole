@@ -1,100 +1,99 @@
 import { Platform, useColorScheme } from "react-native";
-import * as generated from "../../design/tokens/out/tokens";
 import { controlHeight, radii, rowMinHeight, spacing as tokenSpacing } from "./tokens";
+import { v21 } from "./v21";
 
-// Unified theme (SPEC-IOS §1.1, §1.2): one palette, one set of shape values for Android and iOS.
-// Colors come from the generated tokens. Keys the generator does not have are literals, marked "gap" (see tokens.ts).
+// One palette for Android and web, from the v21 Android set (design/v21/SPEC.md §1.2). Keys keep their names.
 
 export { controlHeight, radii, rowMinHeight };
 
-const L = generated.colors.light;
-const D = generated.colors.dark;
+const L = v21.light;
+const D = v21.dark;
 
 export const lightPalette = {
   bg: L.bg,
-  card: L.card,
-  sheet: L.cardElevated,
-  label: L.label,
-  secondary: L.secondary,
-  separator: L.separator,
-  fill: L.fill,
-  fill2: L.fillStrong,
-  accent: L.accent,
-  accentText: L.accentText,
-  accentPressed: "#9a3412", // gap
-  accentWash: "#f7e4dc", // gap
-  pro: L.accentText,
-  prime: L.accent,
-  onPrime: L.onAccent,
-  onAccent: L.onAccent,
-  success: L.success,
-  warning: L.warning,
-  danger: L.danger,
-  neutralTint: "#e5e8ee", // gap
-  successTint: L.successFill,
-  warningTint: L.warningFill,
-  dangerTint: L.dangerFill,
-  outline: "#c9ced6", // gap
-  disabled: "#b8bec7", // gap
-  segmentOn: L.card,
-  high: L.label,
-  chip: L.label,
-  onHigh: L.onAccent,
-  chipfg: L.onAccent,
-  highHover: "#2a2f38", // gap
-  inverse: L.label,
-  onInverse: L.onAccent,
-  inverseAccent: "#ff8a3d", // gap
-  scrim: "rgba(0, 0, 0, 0.22)", // gap
-  press: "#e5e5ea", // gap
-  cell: L.card,
+  card: L.sf,
+  sheet: L.sh,
+  label: L.tx,
+  secondary: L.tx2,
+  separator: L.ln,
+  fill: L.sf2,
+  fill2: L.sfh,
+  accent: L.aci,
+  accentText: L.acx,
+  accentPressed: v21.primaryActive,
+  accentWash: L.acw,
+  pro: L.acx,
+  prime: v21.primary,
+  onPrime: v21.white,
+  onAccent: v21.white,
+  success: L.ok,
+  warning: L.warn,
+  danger: L.err,
+  neutralTint: L.sf2,
+  successTint: L.okTint,
+  warningTint: L.warnTint,
+  dangerTint: L.errTint,
+  outline: L.ol,
+  disabled: L.dis,
+  segmentOn: L.segon,
+  high: L.hi,
+  chip: L.hi,
+  onHigh: L.hitx,
+  chipfg: L.hitx,
+  highHover: L.hih,
+  inverse: L.inv,
+  onInverse: L.invtx,
+  inverseAccent: L.invac,
+  scrim: L.scrim,
+  press: L.sf2,
+  cell: L.sf,
   edge: L.bg,
-  tog: L.separator,
+  tog: L.ln,
 };
 
 export type Palette = { [K in keyof typeof lightPalette]: string };
 
-// O2 override: prime stays #c2410c in dark, with white text. #ff8a3d is text, icon, and selection only.
+// Prime (#c2410c) stays the primary fill in dark, with white text. #ff8a3d is text, icon, and selection only.
 export const darkPalette: Palette = {
   bg: D.bg,
-  card: D.card,
-  sheet: D.cardElevated,
-  label: D.label,
-  secondary: D.secondary,
-  separator: D.separator,
-  fill: D.fill,
-  fill2: D.fillStrong,
-  accent: D.accent,
-  accentText: D.accentText,
-  accentPressed: "#e8772f", // gap
-  accentWash: "rgba(255, 138, 61, 0.16)", // gap
-  pro: D.accentText,
-  prime: D.accent,
-  onPrime: D.onAccent,
-  onAccent: D.onAccent,
-  success: D.success,
-  warning: D.warning,
-  danger: D.danger,
-  neutralTint: "#2b2f37", // gap
-  successTint: D.successFill,
-  warningTint: D.warningFill,
-  dangerTint: D.dangerFill,
-  outline: "#6b7280", // gap
-  disabled: "#626975", // gap
-  segmentOn: "#636366", // gap
-  high: D.label,
-  chip: D.label,
-  onHigh: "#0b0d12", // gap
-  chipfg: "#0b0d12", // gap
-  highHover: "#c9ced6", // gap
-  inverse: "#e3e6eb", // gap
-  onInverse: "#0b0d12", // gap
-  inverseAccent: "#a8380a", // gap
-  scrim: "rgba(0, 0, 0, 0.5)", // gap
-  press: "#2c2c2e", // gap
-  cell: "#333336", // gap
+  card: D.sf,
+  sheet: D.sh,
+  label: D.tx,
+  secondary: D.tx2,
+  separator: D.ln,
+  fill: D.sf2,
+  fill2: D.sfh,
+  accent: D.aci,
+  accentText: D.acx,
+  accentPressed: v21.primaryActive,
+  accentWash: D.acw,
+  pro: D.acx,
+  prime: v21.primary,
+  onPrime: v21.white,
+  onAccent: v21.white,
+  success: D.ok,
+  warning: D.warn,
+  danger: D.err,
+  neutralTint: D.sf2,
+  successTint: D.okTint,
+  warningTint: D.warnTint,
+  dangerTint: D.errTint,
+  outline: D.ol,
+  disabled: D.dis,
+  segmentOn: D.segon,
+  high: D.hi,
+  chip: D.hi,
+  onHigh: D.hitx,
+  chipfg: D.hitx,
+  highHover: D.hih,
+  inverse: D.inv,
+  onInverse: D.invtx,
+  inverseAccent: D.invac,
+  scrim: D.scrim,
+  press: D.sf2,
+  cell: D.sf,
   edge: D.bg,
-  tog: "#39393d", // gap
+  tog: D.ln,
 };
 
 export const spacing = { ...tokenSpacing, s6: 6, s10: 10, s14: 14, xxl: 24 } as const;

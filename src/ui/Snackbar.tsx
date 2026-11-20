@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Animated, Pressable, StyleSheet, Text } from "react-native";
+import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
 import Reanimated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Glass } from "./Glass";
 import { animatedSpring, usePressScale } from "./motion";
 import { distance, timing, typeScale } from "./tokens";
 import { controlHeight, radii, spacing, useTheme } from "./theme";
@@ -43,7 +42,7 @@ export function Snackbar({ state, onDismiss }: { state: SnackbarState | null; on
   return <SnackbarBar key={state.id} message={state.message} action={state.action} onDismiss={onDismiss} />;
 }
 
-/** Glass capsule above the bottom bar. Enters by a transform-only smooth spring; no opacity on glass. */
+/** Android toast (SPEC §3.1): inverse fill, 16/24 text, radius 14, min height 48, elevation 6. Enters by a transform-only spring. */
 function SnackbarBar({ message, action, onDismiss }: { message: string; action?: SnackbarAction; onDismiss: () => void }) {
   const theme = useTheme();
   const reduce = useReduceMotion();
@@ -69,10 +68,10 @@ function SnackbarBar({ message, action, onDismiss }: { message: string; action?:
         },
       ]}
     >
-      <Glass style={styles.surface}>
-        <Text style={[styles.message, { color: theme.label }]}>{message}</Text>
+      <View style={[styles.surface, { backgroundColor: theme.inverse }]}>
+        <Text style={[styles.message, { color: theme.onInverse }]}>{message}</Text>
         {action ? <SnackbarActionButton action={action} onDismiss={onDismiss} /> : null}
-      </Glass>
+      </View>
     </Animated.View>
   );
 }
@@ -92,7 +91,7 @@ function SnackbarActionButton({ action, onDismiss }: { action: SnackbarAction; o
       onPressOut={pressScale.onPressOut}
     >
       <Reanimated.View style={[styles.action, pressScale.style]}>
-        <Text style={[styles.actionLabel, { color: theme.accentText }]}>{action.label}</Text>
+        <Text style={[styles.actionLabel, { color: theme.inverseAccent }]}>{action.label}</Text>
       </Reanimated.View>
     </Pressable>
   );
@@ -106,15 +105,16 @@ const styles = StyleSheet.create({
   },
   surface: {
     minHeight: controlHeight,
-    borderRadius: radii.control,
+    borderRadius: radii.toast,
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.md,
     paddingLeft: spacing.lg,
     paddingRight: spacing.sm,
     paddingVertical: spacing.sm,
+    elevation: 6,
   },
-  message: { ...typeScale.subhead, flex: 1 },
+  message: { ...typeScale.callout, flex: 1 },
   action: {
     minHeight: controlHeight,
     minWidth: controlHeight,

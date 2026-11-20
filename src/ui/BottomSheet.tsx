@@ -6,16 +6,12 @@ import Reanimated, { cancelAnimation, useAnimatedStyle, useSharedValue, withSpri
 import { scheduleOnRN } from "react-native-worklets";
 import { content } from "@/content";
 import { detentHeight, type Detent } from "./detent";
-import { Glass, ModalScope } from "./Glass";
 import { haptic } from "./haptics";
 import { exitEasing, springs, usePressScale } from "./motion";
 import { CrossIcon } from "./StatusIcons";
 import { durations, gesture, radii, typeScale } from "./tokens";
 import { spacing, useTheme } from "./theme";
 import { useReduceMotion } from "./useReduceMotion";
-
-// A medium (floating) sheet is inset from the left, right and bottom edges. Both detents round at radii.sheet.
-const FLOAT_INSET = 8;
 
 type Props = {
   visible: boolean;
@@ -44,10 +40,8 @@ export function BottomSheet({ visible, title, onClose, children, detent = "mediu
   const reduce = useReduceMotion();
   const [shown, setShown] = useState(visible);
   const height = detentHeight(detent, windowHeight, insets.top);
-  // Medium floats inset from the edges. Large is flush to the bottom.
-  const floating = detent === "medium";
-  // Slide-in starts fully below the screen, including the float inset.
-  const slide = floating ? height + FLOAT_INSET : height;
+  // Slide-in starts fully below the screen.
+  const slide = height;
   // Share of the window the sheet covers. The scrim darkens with it, so a full-height sheet sits on a more opaque scrim.
   const coverage = windowHeight > 0 ? Math.min(1, height / windowHeight) : 0;
 
@@ -133,7 +127,6 @@ export function BottomSheet({ visible, title, onClose, children, detent = "mediu
 
   return (
     <Modal visible={shown} transparent animationType="none" presentationStyle="overFullScreen" onRequestClose={onClose}>
-      <ModalScope>
         <GestureHandlerRootView style={styles.fill}>
           <KeyboardAvoidingView behavior="padding" style={styles.root}>
             <Reanimated.View style={[StyleSheet.absoluteFill, { backgroundColor: theme.scrim }, scrimStyle]} />
@@ -141,7 +134,6 @@ export function BottomSheet({ visible, title, onClose, children, detent = "mediu
             <Reanimated.View
               style={[
                 styles.sheet,
-                floating ? styles.floating : null,
                 { height, backgroundColor: theme.sheet, paddingBottom: insets.bottom },
                 sheetStyle,
               ]}
@@ -149,7 +141,7 @@ export function BottomSheet({ visible, title, onClose, children, detent = "mediu
               <GestureDetector gesture={drag}>
                 <View>
                   <View style={styles.grabberBox}>
-                    <View style={[styles.grabber, { backgroundColor: theme.fill2 }]} />
+                    <View style={[styles.grabber, { backgroundColor: theme.outline }]} />
                   </View>
                   <View style={styles.header}>
                     <View style={styles.side}>{leading}</View>
@@ -166,7 +158,6 @@ export function BottomSheet({ visible, title, onClose, children, detent = "mediu
             </Reanimated.View>
           </KeyboardAvoidingView>
         </GestureHandlerRootView>
-      </ModalScope>
     </Modal>
   );
 }
@@ -222,9 +213,7 @@ function CloseButton({ onPress }: { onPress: () => void }) {
   const theme = useTheme();
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={content.common.close} onPress={onPress} style={styles.closeHit}>
-      <Glass interactive style={styles.closeGlass}>
-        <CrossIcon color={theme.label} size={14} />
-      </Glass>
+      <CrossIcon color={theme.label} size={22} />
     </Pressable>
   );
 }
@@ -239,22 +228,16 @@ const styles = StyleSheet.create({
     borderTopRightRadius: radii.sheet,
     overflow: "hidden",
   },
-  floating: {
-    marginHorizontal: FLOAT_INSET,
-    marginBottom: FLOAT_INSET,
-    borderBottomLeftRadius: radii.sheet,
-    borderBottomRightRadius: radii.sheet,
-  },
-  grabberBox: { height: 20, paddingTop: 7, alignItems: "center" },
-  grabber: { width: 36, height: 5, borderRadius: 3 },
-  header: { flexDirection: "row", alignItems: "center", minHeight: 44, paddingHorizontal: spacing.lg },
-  side: { flex: 1, minWidth: 44, alignItems: "flex-start" },
+  // Grabber 36x4 at 12 px from the top edge (design/v21/AlphaApp.stripped.html, sheets).
+  grabberBox: { paddingTop: spacing.md, alignItems: "center" },
+  grabber: { width: 36, height: 4, borderRadius: 2 },
+  header: { flexDirection: "row", alignItems: "center", minHeight: 48, paddingHorizontal: spacing.lg },
+  side: { flex: 1, minWidth: 48, alignItems: "flex-start" },
   sideEnd: { alignItems: "flex-end" },
-  title: { ...typeScale.headline, flex: 2, textAlign: "center" },
+  title: { ...typeScale.title2, flex: 2, textAlign: "center" },
   body: { flex: 1 },
   bodyContent: { paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: spacing.xl, gap: spacing.lg },
-  closeHit: { width: 44, height: 44, alignItems: "center", justifyContent: "center" },
-  closeGlass: { width: 36, height: 36, borderRadius: 18, alignItems: "center", justifyContent: "center" },
+  closeHit: { width: 48, height: 48, borderRadius: radii.pill, alignItems: "center", justifyContent: "center" },
   textHit: { minHeight: 44, justifyContent: "center" },
   capsule: {
     height: 36,

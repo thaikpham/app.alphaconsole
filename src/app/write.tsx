@@ -34,6 +34,7 @@ import { ringCount, stageOf, stepIndex, type WritePhase } from "@/write/progress
 import { usbHint } from "@/write/usbHint";
 import { WebWritePanel } from "@/write/WebWritePanel";
 import { subscribeWriteProgress, writeFilesVerified, type WriteReport, type WriteStatus } from "../../modules/usb-volume";
+import { fontFamily } from "@/ui/v21";
 
 type Loaded = { reading: CardReading; set: PresetSet | null };
 
@@ -497,8 +498,8 @@ export default function Write() {
 const styles = StyleSheet.create({
   title: { ...typeScale.title3 },
   note: { ...typeScale.subhead },
-  strong: { ...typeScale.subhead, fontWeight: "600" },
-  danger: { ...typeScale.subhead, fontWeight: "500" },
+  strong: { ...typeScale.subhead, fontFamily: fontFamily.semibold },
+  danger: { ...typeScale.subhead, fontFamily: fontFamily.medium },
   ring: { alignItems: "center", paddingVertical: spacing.md },
   step:{ gap: spacing.xs, paddingTop: spacing.sm, borderTopWidth: StyleSheet.hairlineWidth },
   slotRow: {

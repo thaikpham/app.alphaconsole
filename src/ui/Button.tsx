@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View, type ViewStyle } from "react-native";
 import Reanimated from "react-native-reanimated";
-import { Glass } from "./Glass";
 import { haptic } from "./haptics";
 import { usePressScale } from "./motion";
-import { durations, typeScale } from "./tokens";
+import { typeScale } from "./tokens";
 import { controlHeight, radii, spacing, useTheme, type Palette } from "./theme";
-import { useReduceMotion } from "./useReduceMotion";
+import { v21 } from "./v21";
 
 export type ButtonVariant = "primary" | "secondary" | "plain";
 
@@ -18,32 +17,20 @@ type Props = {
 };
 
 /**
- * Primary is a solid `prime` capsule, secondary is Liquid Glass, plain is `accent` text.
- * Press feedback scales to `press.button` (snappy in, bouncy out). Primary also gives a light impact haptic. Glass also
- * lights a soft glow on the non-native fallback. Reduce Motion drops the animation and keeps the end state.
+ * Android v21 buttons (design/v21/SPEC.md §1.8, §2.4). 48 px tall, pill radius, label `title` 17/24 semibold.
+ * Primary is a solid `prime` fill with white text: hover `primaryHover`, pressed `primaryActive`. Secondary is an outline
+ * pill on the card fill. Plain is `accentText` text. Press feedback scales to `press.button`. Primary also gives a light
+ * impact haptic.
  */
 export function Button({ label, onPress, variant = "primary", disabled = false }: Props) {
   const theme = useTheme();
-  const reduce = useReduceMotion();
   const { style, onPressIn, onPressOut } = usePressScale("button");
-  const [glow] = useState(() => new Animated.Value(0));
+  const [hovered, setHovered] = useState(false);
 
   const handlePress = () => {
     if (variant === "primary") haptic("impactLight");
     onPress();
   };
-
-  const pressIn = () => {
-    onPressIn();
-    Animated.timing(glow, { toValue: 1, duration: reduce ? 0 : durations.micro, useNativeDriver: true }).start();
-  };
-
-  const pressOut = () => {
-    onPressOut();
-    Animated.timing(glow, { toValue: 0, duration: reduce ? 0 : durations.short, useNativeDriver: true }).start();
-  };
-
-  const text = <Text style={[styles.label, { color: labelColor(variant, disabled, theme) }]}>{label}</Text>;
 
   return (
     <Pressable
@@ -51,22 +38,29 @@ export function Button({ label, onPress, variant = "primary", disabled = false }
       accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={handlePress}
-      onPressIn={pressIn}
-      onPressOut={pressOut}
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
+      onHoverIn={() => setHovered(true)}
+      onHoverOut={() => setHovered(false)}
     >
-      <Reanimated.View style={style}>
-        {variant === "primary" ? (
-          <View style={[styles.capsule, { backgroundColor: disabled ? theme.disabled : theme.prime }]}>{text}</View>
-        ) : variant === "secondary" ? (
-          <Glass interactive={!disabled} glow={glow} style={styles.capsule}>
-            {text}
-          </Glass>
-        ) : (
-          <View style={styles.plain}>{text}</View>
-        )}
-      </Reanimated.View>
+      {({ pressed }) => (
+        <Reanimated.View style={style}>
+          <View style={[styles.base, surface(variant, disabled, pressed, hovered, theme)]}>
+            <Text style={[styles.label, { color: labelColor(variant, disabled, theme) }]}>{label}</Text>
+          </View>
+        </Reanimated.View>
+      )}
     </Pressable>
   );
+}
+
+function surface(variant: ButtonVariant, disabled: boolean, pressed: boolean, hovered: boolean, theme: Palette): ViewStyle {
+  if (variant === "primary") {
+    if (disabled) return { backgroundColor: theme.disabled };
+    return { backgroundColor: pressed ? v21.primaryActive : hovered ? v21.primaryHover : v21.primary };
+  }
+  if (variant === "secondary") return { backgroundColor: theme.card, borderWidth: 1, borderColor: theme.outline };
+  return {};
 }
 
 function labelColor(variant: ButtonVariant, disabled: boolean, theme: Palette): string {
@@ -76,16 +70,9 @@ function labelColor(variant: ButtonVariant, disabled: boolean, theme: Palette): 
 }
 
 const styles = StyleSheet.create({
-  capsule: {
+  base: {
     minHeight: controlHeight,
     borderRadius: radii.pill,
-    paddingHorizontal: spacing.xl,
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
-  },
-  plain: {
-    minHeight: 44,
     paddingHorizontal: spacing.xl,
     alignItems: "center",
     justifyContent: "center",

@@ -7,6 +7,7 @@ import { animatedSpring } from "./motion";
 import { typeScale } from "./tokens";
 import { radii, spacing, useTheme } from "./theme";
 import { useReduceMotion } from "./useReduceMotion";
+import { fontFamily } from "./v21";
 
 /** `name` is optional and only the iOS picker shows it, on the selected pill. */
 export type SlotItem = { id: string; label: string; modified?: boolean; name?: string };
@@ -100,6 +101,6 @@ const styles = StyleSheet.create({
   },
   pressed: { opacity: 0.85 },
   label: { ...typeScale.subhead, flexShrink: 1 },
-  labelOn: { ...typeScale.subhead, fontWeight: "600", flexShrink: 1 },
+  labelOn: { ...typeScale.subhead, fontFamily: fontFamily.semibold, flexShrink: 1 },
   dot: { position: "absolute", top: spacing.s6, right: spacing.s6 },
 });

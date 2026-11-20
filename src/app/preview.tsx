@@ -26,7 +26,7 @@ import { setStore } from "@/storage/userSetsFile";
 import { loadWriteState } from "@/storage/writeState";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
-import { Glass, ModalScope } from "@/ui/Glass";
+import { Glass } from "@/ui/Glass";
 import { GlassToolbar, GlassToolbarButton, GlassToolbarGroup, ToolbarSpacer } from "@/ui/GlassToolbar";
 import { Loading } from "@/ui/Loading";
 import { usePressScale } from "@/ui/motion";
@@ -55,6 +55,7 @@ import {
   type PtpPropRow,
 } from "../../modules/usb-ptp";
 import { subscribeUsb } from "../../modules/usb-volume";
+import { fontFamily } from "@/ui/v21";
 
 type Link = "connecting" | "connected" | "off";
 
@@ -308,7 +309,6 @@ export default function Preview() {
   // The live picture is the hero: full width, from the top of the screen under the status bar. The toolbar floats over it.
   // Without a picture, the toolbar floats over the content and the content starts below it.
   const onPhoto = link === "connected";
-  const glassLuminance = onPhoto ? 1 : undefined;
   const labelColor = onPhoto ? photoLabel : theme.label;
   const toolbarTop = insets.top + spacing.sm;
   const toolbarRoom = toolbarTop + (Platform.OS === "android" ? 48 : 44) + spacing.md;
@@ -332,7 +332,7 @@ export default function Preview() {
       overlay={
         <>
           <GlassToolbar style={[styles.toolbar, { top: toolbarTop }]}>
-            <GlassToolbarGroup luminance={glassLuminance} overPhoto={onPhoto}>
+            <GlassToolbarGroup overPhoto={onPhoto}>
               <GlassToolbarButton
                 accessibilityLabel={content.common.back}
                 onPress={() => (router.canGoBack() ? router.back() : router.navigate("/"))}
@@ -341,7 +341,7 @@ export default function Preview() {
               </GlassToolbarButton>
             </GlassToolbarGroup>
             <ToolbarSpacer />
-            <GlassToolbarGroup luminance={glassLuminance} overPhoto={onPhoto}>
+            <GlassToolbarGroup overPhoto={onPhoto}>
               <GlassToolbarButton
                 accessibilityLabel={content.preview.shoot(pv)}
                 disabled={!liveOn || saving !== null}
@@ -424,7 +424,7 @@ export default function Preview() {
                     styles.statusText,
                     {
                       color: matched !== null ? theme.success : theme.warning,
-                      fontWeight: "600",
+                      fontFamily: fontFamily.semibold,
                     },
                   ]}
                 >
@@ -492,7 +492,6 @@ export default function Preview() {
       </Card>
 
       <Modal visible={fullscreen} animationType="fade" onRequestClose={() => setFullscreen(false)}>
-        <ModalScope>
           <View style={styles.fullscreen}>
             <LiveView style={StyleSheet.absoluteFill} />
             <Pressable
@@ -503,17 +502,15 @@ export default function Preview() {
               style={[styles.closeAnchor, { top: insets.top + spacing.md }]}
             >
               <Reanimated.View style={closePress.style}>
-                <Glass luminance={1} style={styles.closeGlass}>
+                <Glass overPhoto style={styles.closeGlass}>
                   <Text style={styles.closeText}>{content.preview.close}</Text>
                 </Glass>
               </Reanimated.View>
             </Pressable>
           </View>
-        </ModalScope>
       </Modal>
 
       <Modal visible={viewer !== null} animationType="slide" onRequestClose={() => setViewer(null)}>
-        <ModalScope>
           <View
             style={[
               styles.viewer,
@@ -555,7 +552,6 @@ export default function Preview() {
               <Button label={content.preview.close} onPress={() => setViewer(null)} />
             </View>
           </View>
-        </ModalScope>
       </Modal>
     </Screen>
   );

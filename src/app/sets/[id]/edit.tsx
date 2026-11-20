@@ -60,6 +60,7 @@ import { controlHeight, radii, spacing, useTheme } from "@/ui/theme";
 import { durations, typeScale } from "@/ui/tokens";
 import { useKeyboardVisible } from "@/ui/useKeyboardVisible";
 import { useReduceMotion } from "@/ui/useReduceMotion";
+import { fontFamily } from "@/ui/v21";
 
 const LAST_SLOT = 3;
 const LAST_STAGE = 3;
@@ -648,11 +649,11 @@ export default function EditSlot() {
 
 const styles = StyleSheet.create({
   cardTitle: { ...typeScale.title3 },
-  setName: { ...typeScale.callout, fontWeight: "600" },
-  subhead: { ...typeScale.subhead, fontWeight: "600" },
-  label: { ...typeScale.subhead, fontWeight: "500" },
+  setName: { ...typeScale.callout, fontFamily: fontFamily.semibold },
+  subhead: { ...typeScale.subhead, fontFamily: fontFamily.semibold },
+  label: { ...typeScale.subhead, fontFamily: fontFamily.medium },
   note: { ...typeScale.subhead },
-  danger: { ...typeScale.subhead, fontWeight: "500" },
+  danger: { ...typeScale.subhead, fontFamily: fontFamily.medium },
   field: { gap: spacing.xs },
   input: {
     ...typeScale.callout,
@@ -667,7 +668,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  disclosureLabel: { ...typeScale.callout, fontWeight: "600" },
+  disclosureLabel: { ...typeScale.callout, fontFamily: fontFamily.semibold },
   disclosureMark: { ...typeScale.callout },
   pressed: { opacity: 0.85 },
   bar: { gap: spacing.sm, padding: spacing.lg, borderTopWidth: 1 },
@@ -683,7 +684,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   capsuleDivider: { width: 1, height: 20 },
-  capsuleText: { ...typeScale.subhead, fontWeight: "600" },
+  capsuleText: { ...typeScale.subhead, fontFamily: fontFamily.semibold },
   fixed: { gap: spacing.sm },
   fixedRow: { gap: spacing.xs },
   path: { ...typeScale.footnote },

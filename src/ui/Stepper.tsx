@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { content } from "@/content";
 import { haptic } from "./haptics";
 import { radii, rowMinHeight, spacing, useTheme } from "./theme";
+import { fontFamily } from "./v21";
 
 type Props = {
   value: string;
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     fontSize: 40,
     lineHeight: 48,
-    fontWeight: "700",
+    fontFamily: fontFamily.bold,
     letterSpacing: -0.8,
     fontVariant: ["tabular-nums"],
   },

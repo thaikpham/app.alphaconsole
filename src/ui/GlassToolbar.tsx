@@ -2,25 +2,20 @@ import type { ReactNode } from "react";
 import { Platform, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
 import Reanimated from "react-native-reanimated";
 import { usePressScale } from "./motion";
-import { Glass, GlassContainer } from "./Glass";
+import { Glass } from "./Glass";
 import { controlHeight, radii, spacing } from "./tokens";
 
 type ChildrenProps = { children?: ReactNode; style?: StyleProp<ViewStyle> };
 
-/** Toolbar row (L3). All groups sit in one GlassContainer, so neighbouring capsules share the `toolbarGroup` spacing. */
+/** Toolbar row (L3). Groups sit side by side at the `toolbarGroup` spacing. */
 export function GlassToolbar({ children, style }: ChildrenProps) {
-  return <GlassContainer style={[styles.row, style]}>{children}</GlassContainer>;
+  return <View style={[styles.row, style]}>{children}</View>;
 }
 
-/** One capsule of related buttons (L3, R2). Keep one kind of content per group: icons only, or text only. `luminance` 1 and `overPhoto` over a photo. */
-export function GlassToolbarGroup({
-  children,
-  style,
-  luminance,
-  overPhoto,
-}: ChildrenProps & { luminance?: number; overPhoto?: boolean }) {
+/** One capsule of related buttons (L3, R2). Keep one kind of content per group: icons only, or text only. `overPhoto` over a photo. */
+export function GlassToolbarGroup({ children, style, overPhoto }: ChildrenProps & { overPhoto?: boolean }) {
   return (
-    <Glass luminance={luminance} overPhoto={overPhoto} style={[styles.group, style]}>
+    <Glass overPhoto={overPhoto} style={[styles.group, style]}>
       {children}
     </Glass>
   );

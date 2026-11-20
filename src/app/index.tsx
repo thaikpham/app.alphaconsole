@@ -114,7 +114,7 @@ export default function Home() {
               hitSlop={8}
               style={({ pressed }) => (pressed ? styles.pressedScale : undefined)}
             >
-              <Glass interactive style={styles.avatar}>
+              <Glass style={styles.avatar}>
                 <View style={[styles.head, { backgroundColor: theme.label }]} />
                 <View style={[styles.shoulders, { backgroundColor: theme.label }]} />
               </Glass>

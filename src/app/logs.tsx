@@ -11,6 +11,7 @@ import { Card } from "@/ui/Card";
 import { Screen } from "@/ui/Screen";
 import { ScreenHeader } from "@/ui/ScreenHeader";
 import { colors, press, spacing, typeScale } from "@/ui/tokens";
+import { fontFamily } from "@/ui/v21";
 
 /** Local time for a list row. Shows the stored text when it is not a date. */
 function rowTime(time: string): string {
@@ -92,9 +93,9 @@ export default function Logs() {
 
 const styles = StyleSheet.create({
   note: { ...typeScale.footnote, color: colors.secondary },
-  detail: { ...typeScale.footnote, fontWeight: "400", color: colors.label },
+  detail: { ...typeScale.footnote, fontFamily: fontFamily.regular, color: colors.label },
   row: { gap: spacing.xs, paddingTop: spacing.sm, borderTopWidth: 1, borderTopColor: colors.separator },
   pressed: { transform: [{ scale: press.card }] },
-  rowTime: { ...typeScale.footnote, fontWeight: "500", color: colors.secondary },
+  rowTime: { ...typeScale.footnote, fontFamily: fontFamily.medium, color: colors.secondary },
   rowMessage: { ...typeScale.subhead, color: colors.label },
 });

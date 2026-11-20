@@ -68,9 +68,11 @@ test("light and dark palettes have the same keys", () => {
   assert.deepEqual(Object.keys(darkPalette).sort(), Object.keys(lightPalette).sort());
 });
 
-test("accent vs white is at least 4.5:1 in light, and onAccent vs accent in both palettes", () => {
-  assert.ok(contrast(lightPalette.accent, "#ffffff") >= 4.5);
-  for (const p of [lightPalette, darkPalette]) assert.ok(contrast(p.onAccent, p.accent) >= 4.5);
+test("primary fill vs white and onPrime vs prime are at least 4.5:1 in both palettes", () => {
+  for (const p of [lightPalette, darkPalette]) {
+    assert.ok(contrast(p.prime, "#ffffff") >= 4.5, "prime vs white");
+    assert.ok(contrast(p.onPrime, p.prime) >= 4.5, "onPrime vs prime");
+  }
 });
 
 test("text on its surface is at least 4.5:1 in both palettes", () => {

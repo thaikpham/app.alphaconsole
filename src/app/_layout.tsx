@@ -3,8 +3,15 @@ import { Stack, type ErrorBoundaryProps } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
+import { useFonts } from "expo-font";
 import { StyleSheet, Text } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import {
+  NotoSans_400Regular,
+  NotoSans_500Medium,
+  NotoSans_600SemiBold,
+  NotoSans_700Bold,
+} from "@expo-google-fonts/noto-sans";
 
 import { CardDriverProvider } from "@/card/useCardDriver";
 import { installCrashLog, recordCrash } from "@/crash/install";
@@ -49,12 +56,22 @@ const styles = StyleSheet.create({
 });
 
 export default function RootLayout() {
-  // The system font needs no load step, so the splash hides as soon as the layout mounts.
+  // Noto Sans (v21) loads before the first frame. If loading fails, the app still starts on the system font.
+  const [fontsLoaded, fontError] = useFonts({
+    NotoSans_400Regular,
+    NotoSans_500Medium,
+    NotoSans_600SemiBold,
+    NotoSans_700Bold,
+  });
+  const ready = fontsLoaded || fontError != null;
+
   useEffect(() => {
-    SplashScreen.hideAsync();
-  }, []);
+    if (ready) SplashScreen.hideAsync();
+  }, [ready]);
 
   const theme = useTheme();
+
+  if (!ready) return null;
 
   return (
     <GestureHandlerRootView style={styles.root}>
