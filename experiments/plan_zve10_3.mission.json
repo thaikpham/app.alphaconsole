@@ -1,0 +1,88 @@
+{
+  "id": "plan_zve10_3",
+  "model": "zve10",
+  "seed": 3,
+  "createdAt": 1795147477021,
+  "slots": [
+    {
+      "slot": 1,
+      "steps": [
+        {
+          "settingId": "metering",
+          "valueId": "entire",
+          "role": "control"
+        },
+        {
+          "settingId": "flash-mode",
+          "valueId": "rear-sync",
+          "role": "control"
+        },
+        {
+          "settingId": "wb",
+          "valueId": "fluorescent-3",
+          "role": "target"
+        }
+      ]
+    },
+    {
+      "slot": 2,
+      "steps": [
+        {
+          "settingId": "metering",
+          "valueId": "spot-standard",
+          "role": "control"
+        },
+        {
+          "settingId": "e-front-curtain",
+          "valueId": "off",
+          "role": "control"
+        },
+        {
+          "settingId": "isoMin",
+          "valueId": "400",
+          "role": "target"
+        }
+      ]
+    },
+    {
+      "slot": 3,
+      "steps": [
+        {
+          "settingId": "flash-mode",
+          "valueId": "rear-sync",
+          "role": "control"
+        },
+        {
+          "settingId": "wb",
+          "valueId": "cloudy",
+          "role": "control"
+        },
+        {
+          "settingId": "isoMin",
+          "valueId": "100",
+          "role": "target"
+        }
+      ]
+    },
+    {
+      "slot": 4,
+      "steps": [
+        {
+          "settingId": "softSkin",
+          "valueId": "low",
+          "role": "control"
+        },
+        {
+          "settingId": "isoMax",
+          "valueId": "3200",
+          "role": "control"
+        },
+        {
+          "settingId": "wb",
+          "valueId": "daylight",
+          "role": "target"
+        }
+      ]
+    }
+  ]
+}

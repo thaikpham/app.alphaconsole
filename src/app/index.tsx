@@ -9,13 +9,12 @@ import { listedSets, type PresetSet } from "@/core/web/lib/presetSets";
 import { CameraSheet } from "@/home/CameraSheet";
 import { editedCopies } from "@/home/editedSets";
 import { recommendedSets } from "@/home/homeTabs";
-import { LocalAvatar } from "@/home/LocalAvatar";
-import { MoreSheet } from "@/home/MoreSheet";
+import { SettingsSheet } from "@/home/SettingsSheet";
 import { PresetCard } from "@/home/PresetCard";
 import { loadCameraSelection } from "@/storage/cameraFile";
 import { setStore } from "@/storage/userSetsFile";
 import { Button } from "@/ui/Button";
-import { CameraIcon, ChevronDownIcon } from "@/ui/Glyphs";
+import { CameraIcon, ChevronDownIcon, GearIcon } from "@/ui/Glyphs";
 import { PinnedBar } from "@/ui/PinnedBar";
 import { Screen } from "@/ui/Screen";
 import { navHeader } from "@/ui/navHeader";
@@ -34,7 +33,7 @@ export default function Home() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [edited, setEdited] = useState<Map<string, string>>(new Map());
   const [userSets, setUserSets] = useState<PresetSet[]>([]);
-  const [moreOpen, setMoreOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
 
   const model = (cameraId ? modelById(cameraId) : null) ?? DEFAULT_MODEL;
@@ -98,12 +97,12 @@ export default function Home() {
           ...navHeader({ title: content.presets.title, largeTitle: true }),
           headerRight: () => (
             <Pressable
-              onPress={() => setMoreOpen(true)}
+              onPress={() => setSettingsOpen(true)}
               accessibilityRole="button"
-              accessibilityLabel={content.more.title}
-              style={({ pressed }) => [styles.avatarHit, pressed && styles.pressedScale]}
+              accessibilityLabel={content.settings.title}
+              style={({ pressed }) => [styles.settingsHit, pressed && styles.pressedScale]}
             >
-              <LocalAvatar diameter={32} glyph={20} color={theme.secondary} />
+              <GearIcon color={theme.secondary} size={24} />
             </Pressable>
           ),
         }}
@@ -128,7 +127,7 @@ export default function Home() {
         ))}
       </Screen>
 
-      <MoreSheet visible={moreOpen} onClose={() => setMoreOpen(false)} onChooseCamera={() => setCameraOpen(true)} />
+      <SettingsSheet visible={settingsOpen} onClose={() => setSettingsOpen(false)} onChooseCamera={() => setCameraOpen(true)} />
       <CameraSheet visible={cameraOpen} selected={cameraId} onClose={() => setCameraOpen(false)} onChanged={setCameraId} />
     </>
   );
@@ -136,7 +135,7 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   pressedScale: { transform: [{ scale: press.button }] },
-  avatarHit: { width: 48, height: 48, alignItems: "center", justifyContent: "center" },
+  settingsHit: { width: 48, height: 48, alignItems: "center", justifyContent: "center" },
   camera: {
     flexDirection: "row",
     alignItems: "center",

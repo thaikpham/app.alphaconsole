@@ -104,27 +104,21 @@ export function HelpIcon({ color, size = 22 }: GlyphProps) {
   );
 }
 
-/** Person: a head circle and a shoulder arch, open at the bottom. */
-export function PersonIcon({ color, size = 22 }: GlyphProps) {
+/** Gear: eight teeth around a ring, with a hub hole in the middle. */
+export function GearIcon({ color, size = 22 }: GlyphProps) {
+  const tooth = u(size, 4);
   return (
     <View style={[styles.box, { width: size, height: size }]} importantForAccessibility="no" accessibilityElementsHidden>
+      {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => (
+        <View key={angle} style={[StyleSheet.absoluteFill, { transform: [{ rotate: `${angle}deg` }] }]}>
+          <View style={[styles.abs, { left: (size - tooth) / 2, top: u(size, 1.5), width: tooth, height: tooth, borderRadius: u(size, 1), backgroundColor: color }]} />
+        </View>
+      ))}
       <View
-        style={[styles.abs, outline(size, color), { left: u(size, 7), top: u(size, 3), width: u(size, 10), height: u(size, 10), borderRadius: u(size, 5) }]}
+        style={[styles.abs, outline(size, color), { left: u(size, 5), top: u(size, 5), width: u(size, 14), height: u(size, 14), borderRadius: u(size, 7) }]}
       />
       <View
-        style={[
-          styles.abs,
-          outline(size, color),
-          {
-            borderBottomWidth: 0,
-            left: u(size, 3.5),
-            top: u(size, 14),
-            width: u(size, 17),
-            height: u(size, 7.5),
-            borderTopLeftRadius: u(size, 6.5),
-            borderTopRightRadius: u(size, 6.5),
-          },
-        ]}
+        style={[styles.abs, outline(size, color), { left: u(size, 9), top: u(size, 9), width: u(size, 6), height: u(size, 6), borderRadius: u(size, 3) }]}
       />
     </View>
   );

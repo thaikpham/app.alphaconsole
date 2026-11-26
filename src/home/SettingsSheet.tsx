@@ -1,5 +1,5 @@
-// Account popover under the header avatar (SPEC §2.5(a), AlphaApp account menu). Replaces the iOS "Thêm" sheet.
-// Neutral local profile; no sign-in or sign-out (owner decision A/B). Same base props as before, plus an optional camera opener.
+// Settings popover under the header gear (replaces the account menu of SPEC §2.5(a)). There is no account or sign-in, so no profile block:
+// camera, intro, then the screen links and the app version.
 import { useEffect, useState, type ReactNode } from "react";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
@@ -8,7 +8,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { content } from "@/content";
 import { appVersion } from "@/crash/appInfo";
 import { DEFAULT_MODEL, modelById } from "@/core/web/lib/app-core/models";
-import { LocalAvatar } from "@/home/LocalAvatar";
 import { loadCameraSelection } from "@/storage/cameraFile";
 import { CameraIcon, ChevronDownIcon, HelpIcon } from "@/ui/Glyphs";
 import { timing, typeScale } from "@/ui/tokens";
@@ -26,7 +25,7 @@ type Props = {
 
 type Action = { key: string; label: string; value?: string; icon: ReactNode; run: () => void };
 
-export function MoreSheet({ visible, onClose, onChooseCamera }: Props) {
+export function SettingsSheet({ visible, onClose, onChooseCamera }: Props) {
   const router = useRouter();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
@@ -48,11 +47,11 @@ export function MoreSheet({ visible, onClose, onChooseCamera }: Props) {
 
   const primary: (Action | null)[] = [
     onChooseCamera
-      ? { key: "camera", label: content.more.camera, value: cameraName, icon: <CameraIcon color={theme.label} size={22} />, run: onChooseCamera }
+      ? { key: "camera", label: content.settings.camera, value: cameraName, icon: <CameraIcon color={theme.label} size={22} />, run: onChooseCamera }
       : null,
     {
       key: "intro",
-      label: content.more.intro,
+      label: content.settings.intro,
       icon: <HelpIcon color={theme.label} size={22} />,
       run: () => router.push("/onboarding/intro"),
     },
@@ -77,19 +76,9 @@ export function MoreSheet({ visible, onClose, onChooseCamera }: Props) {
       <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
       <View
         accessibilityRole="menu"
-        accessibilityLabel={content.more.title}
+        accessibilityLabel={content.settings.title}
         style={[styles.card, { top: insets.top + HEADER_OFFSET, backgroundColor: theme.sheet }]}
       >
-        <View style={styles.header}>
-          <LocalAvatar diameter={40} glyph={22} color={theme.secondary} />
-          <View style={styles.headerText}>
-            <Text style={[typeScale.title, { color: theme.label }]} numberOfLines={1}>
-              {content.more.profileName}
-            </Text>
-            <Text style={[typeScale.caption, { color: theme.secondary }]}>{content.more.profileSub}</Text>
-          </View>
-        </View>
-        <View style={[styles.divider, { backgroundColor: theme.separator, marginBottom: spacing.sm }]} />
         {primary.filter((action): action is Action => action !== null).map((action) => (
           <Row key={action.key} label={action.label} value={action.value} icon={action.icon} onPress={() => open(action)} />
         ))}
@@ -142,15 +131,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     elevation: 8,
   },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.md,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.md,
-  },
-  headerText: { flex: 1, minWidth: 0 },
   divider: { height: 1 },
   dividerGap: { marginVertical: spacing.sm },
   row: {

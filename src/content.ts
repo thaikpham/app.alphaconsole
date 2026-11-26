@@ -419,12 +419,10 @@ export const content = {
     unwritable: (cam: string) => `Chưa hỗ trợ ${cam}`,
     pickOne: "Chọn một bộ",
   },
-  more: {
-    title: "Thêm",
+  settings: {
+    title: "Cài đặt",
     intro: "Xem giới thiệu M1–M4",
     camera: "Đổi máy ảnh",
-    profileName: "Hồ sơ trên máy",
-    profileSub: "Bộ màu lưu trên điện thoại này",
   },
 } as const;
 
